@@ -1,5 +1,5 @@
 #define _main_c
-//#define DEBUG_MODE
+#define DEBUG_MODE
 #define THIS_VERSION ("GPRS V2.90(T) 20190703")
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -215,6 +215,30 @@ int main(void) {
 	moduleMaskEn = 0;
 	moduleMaskDly = 0;
 	while (1) {
+
+#ifdef DEBUG_MODE
+		USART3_InitRXbuf();
+		USART3_SendDataToGPRS("AT+CGDCONT=1,\"IP\",\"CMNET\"", strlen("AT+CGDCONT=1,\"IP\",\"CMNET\""));
+		DelayMs(500);
+		USART3_SendDataToGPRS("AT+CIPMODE=1", strlen("AT+CIPMODE=1"));
+		DelayMs(500);
+		USART3_SendDataToGPRS("AT+NETOPEN", strlen("AT+NETOPEN"));
+		DelayMs(500);
+		USART3_SendDataToGPRS("AT+CIPOPEN=0,\"TCP\",\"123.57.76.211\",20001", strlen("AT+CIPOPEN=0,\"TCP\",\"123.57.76.211\",20001"));
+		DelayMs(500);
+		USART3_SendDataToGPRS("Hello, TCP", strlen("Hello, TCP"));
+		USART3_SendDataToGPRS("+++", strlen("+++"));
+		DelayMs(500);
+		USART3_SendDataToGPRS("ATO", strlen("ATO"));
+		DelayMs(500);
+		USART3_SendDataToGPRS("Hello, IP", strlen("Hello, IP"));
+		USART3_SendDataToGPRS("+++", strlen("+++"));
+		DelayMs(500);
+		USART3_SendDataToGPRS("AT+CIPCLOSE=0", strlen("AT+CIPCLOSE=0"));
+		DelayMs(500);
+		USART3_SendDataToGPRS("AT+NETCLOSE", strlen("AT+NETCLOSE"));
+		DelayMs(500);
+#else
 		if (SysTick_10msflg) {
 			SysTick_10msflg = 0;
 			if (DebugDly > 0)
@@ -578,6 +602,7 @@ int main(void) {
 			}
 
 		} //if()
+#endif
 #ifndef DEBUG_MODE
 		__WFI(); //进入睡眠模式
 #endif
