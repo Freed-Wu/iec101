@@ -58,7 +58,9 @@ void GPRSInitTxStatBuf(void) {
 void GPRS_init(void) {
 	static uint16_t data_flg;
 
-	GPIO_ResetBits(GPIOB, GPIO_Pin_15); //低电压时开机脚为高，不动作
+	GPIO_SetBits(GSM_PWUP, GSM_PWUP_PIN);
+	DelayMs(500);
+	GPIO_ResetBits(GSM_PWUP, GSM_PWUP_PIN);
 
 	memset(GPRS_ReceiveData, 0, GPRS_RCV_BUF);
 	GPRS_ReceiveLength = 0;
