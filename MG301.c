@@ -88,7 +88,7 @@ void GPRS_init(void) {
 ****************************************************************************************************
 * 功能描述：TCP通道重新连接，一旦检测到断开立即重连
 * 输入参数：
-* 返回参数：      
+* 返回参数：
 * 说    明：
 ****************************************************************************************************
 */
@@ -171,7 +171,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 				}else if(strstr((const char *)GPRS_ReceiveData,"SHUTDOWN") != NULL){
 					GPRSStat = GPRS_POWER_ON_START;
 					sGPRSTimeDelay = NEXT_CMD_DLY;
-					
+
 				}*/
 		if (sGPRSTimeDelay == (WAIT_START - 125)) {
 			GPIO_ResetBits(GPIOB, GPIO_Pin_15); //拉低GPRS模块开机引脚电平
@@ -524,7 +524,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		//----------------------Password-------------------------------
 		case GPRS_TCP_Password_SEND:	//Password
 		if(sGPRSTimeDelay == 0){
-		
+
 			uint16_t i = 0;
 			uint8_t APN_Password[64] = "at^sics=0,passwd,";
 			uint16_t Len;
@@ -584,10 +584,10 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		if(sGPRSTimeDelay == 0){
 			uint8_t i = 0;
 			uint8_t j = 0;
-			uint8_t IP_Data[64] = "at^siss=0,address,\"socktcp://\"";  
+			uint8_t IP_Data[64] = "at^siss=0,address,\"socktcp://\"";
 			uint8_t Len = 0;
 			uint8_t Length = 0;
-			
+
 			Len = user_Set.ip_len;
 			Length = strlen("at^siss=0,address,\"socktcp://");
 			while(Len--)
@@ -666,12 +666,12 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 					GPRSOpenErrorCnt++;
 					GPRSStat = GPRS_POWER_RST;
 					sGPRSTimeDelay = NEXT_CMD_DLY;
-				}				
+				}
 			}
 		break;*/
 		/*************************************************************************
 					正常程序运行下面的部分
-			
+
 **************************************************************************/
 	case GPRS_RUN_Rxdata_CMD: //接收数据指令
 		if (ReqGPRSConfigflg) {
