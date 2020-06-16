@@ -16,8 +16,8 @@
 #define GPRS_POWER_WAIT_START (uint16_t)0X0106
 #define GPRS_POWER_RST (uint16_t)0X0107
 #define GPRS_POWER_RST_ACK (uint16_t)0X0108
-#define GPRS_ECHO_CMD_SEND (uint16_t)0X0201
-#define GPRS_ECHO_CMD_ACK (uint16_t)0X0202
+#define GPRS_APN_CMD_SEND (uint16_t)0X0201
+#define GPRS_APN_CMD_ACK (uint16_t)0X0202
 
 #define GPRS_CHECK_CSQ_A (uint16_t)0x0301 //GPRS连接检测
 #define GPRS_CHECK_CSQ_ACK_A (uint16_t)0x0302
@@ -25,6 +25,10 @@
 #define GPRS_CHECK_CMD_ACK (uint16_t)0x0304
 #define GPRS_CHECK_CSQ_B (uint16_t)0x0305 //GPRS连接检测
 #define GPRS_CHECK_CSQ_ACK_B (uint16_t)0x0306
+#define GPRS_CHECK_CREG_SEND (uint16_t)0x0307 //查询注册网络状态
+#define GPRS_CHECK_CREG_ACK (uint16_t)0x0308
+#define GPRS_CHECK_CPSI_SEND (uint16_t)0x0309 //注册信息
+#define GPRS_CHECK_CPSI_ACK (uint16_t)0x030A
 
 #define GPRS_TCP_conType_SEND (uint16_t)0x0403 //conType
 #define GPRS_TCP_conType_ACK (uint16_t)0x0404
@@ -34,6 +38,10 @@
 #define GPRS_TCP_User_ACK (uint16_t)0x0408
 #define GPRS_TCP_Password_SEND (uint16_t)0x0409 //Password
 #define GPRS_TCP_Password_ACK (uint16_t)0x040A
+#define GPRS_TCP_NETOPEN_SEND (uint16_t)0x040B //NETOPEN
+#define GPRS_TCP_NETOPEN_ACK (uint16_t)0x040C
+#define GPRS_TCP_BUFFERMODE_SEND (uint16_t)0x040D //BUFFERMODE
+#define GPRS_TCP_BUFFERMODE_ACK (uint16_t)0x040E
 
 #define GPRS_TCP_srvType_SEND (uint16_t)0x0501 //srvType
 #define GPRS_TCP_srvType_ACK (uint16_t)0x0502
