@@ -156,6 +156,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	case GPRS_POWER_ON_START:
 		if (sGPRSTimeDelay == 0) {
 			GPIO_SetBits(GPIOB, GPIO_Pin_15); //拉低GPRS模块开机引脚电平
+			DelayMs(500);
+			GPIO_ResetBits(GPIOB, GPIO_Pin_15);
 			sGPRSTimeDelay = WAIT_START; //延时2S左右
 			GPRSStat = GPRS_POWER_WAIT_START;
 			USART3_InitRXbuf();
@@ -210,7 +212,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	//设置APN
 	case GPRS_APN_CMD_SEND:
 		if (sGPRSTimeDelay == 0) {
-			USART3_SendDataToGPRS("AT+CGDCONT=1,IP,CMNET\r", SIZEOF("AT+CGDCONT=1,IP,CMNET\r"));
+			USART3_SendDataToGPRS("AT+CGDCONT=1,\"IP\",\"CMNET\"\r", SIZEOF("AT+CGDCONT=1,\"IP\",\"CMNET\"\r"));
 			GPRSStat = GPRS_APN_CMD_ACK;
 			sGPRSTimeDelay = WAIT_ACK; //5S
 		}
@@ -417,7 +419,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	case GPRS_TCP_Name_SEND: //APN
 		if (sGPRSTimeDelay == 0) {
 			uint8_t i = 0;
-			uint8_t APN_Name[64] = "AT+CIPOPEN=0,TCP,";
+			uint8_t APN_Name[64] = "AT+CIPOPEN=0,\"TCP\",";
 			uint8_t Len1 = 0;
 			uint8_t Len2 = 0;
 			uint8_t Length = 0;
@@ -425,7 +427,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			i = 0;
 			Len1 = user_Set.ip_len;
 			Len2 = user_Set.port_len;
-			Length = strlen("AT+CIPOPEN=0,TCP,");
+			Length = strlen("AT+CIPOPEN=0,\"TCP\",");
 			while (Len1--) {
 				APN_Name[i + Length] = user_Set.ip_info[i];
 				i++;
