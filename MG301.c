@@ -695,7 +695,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		else {
 			if (sGPRSSentdataDelay == 0) { //2S钟读一次，去缓冲区读数据
-				USART3_SendDataToGPRS("AT^SISR=0,1500\r", strlen("AT^SISR=0,1500\r"));
+				USART3_SendDataToGPRS("AT+CIPRXGET=2,0\r", strlen("AT+CIPRXGET=2,0\r"));
 				GPRSStat = GPRS_RUN_Rxdata;
 				sGPRSTimeDelay = WAIT_ACK;
 			}
@@ -716,16 +716,16 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 				}
 			}
 			else {
-				pReceiveData = strstr((char*)GPRS_ReceiveData, "\r\n^SISR: 0");
+				pReceiveData = strstr((char*)GPRS_ReceiveData, "+CIPRXGET:2,0,");
 				if (pReceiveData != NULL) {
-					if (pReceiveData[12] == 0x0D) {
-						pReceiveLength = (pReceiveData[11] - 0x30);
+					if (pReceiveData[15] == 0x0D) {
+						pReceiveLength = (pReceiveData[14] - 0x30);
 						for (i = 0; i < pReceiveLength; i++) {
 							pRecBuffer[i] = pReceiveData[i + 14];
 						}
 					}
 					else {
-						pReceiveLength = (pReceiveData[11] - 0x30) * 10 + (pReceiveData[12] - 0x30);
+						pReceiveLength = (pReceiveData[14] - 0x30) * 10 + (pReceiveData[15] - 0x30);
 						for (i = 0; i < pReceiveLength; i++) {
 							pRecBuffer[i] = pReceiveData[i + 15];
 						}
@@ -784,7 +784,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		uint16_t pLength;
 		uint8_t LengthString[6] = {0x00};
 		if (GPRSSendBeatDataflg) { //发送心跳数据
-			strcpy((char*)AT_Cmd, "AT^SISW=0,");
+			strcpy((char*)AT_Cmd, "AT+CIPSEND=1,");
 			Int2Str((char*)LengthString, user_Set.heart_len);
 			while (LengthString[i]) {
 				AT_Cmd[i + 10] = LengthString[i];
@@ -794,7 +794,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		else { //否则发送数据
 			BeatCnt = 0;
 			pLength = GPRS_Tx0.TxLength[GPRS_Tx0.TxPtrOut];
-			strcpy((char*)AT_Cmd, "AT^SISW=0,");
+			strcpy((char*)AT_Cmd, "AT+CIPSEND=1,");
 			Int2Str((char*)LengthString, pLength);
 			while (LengthString[i]) {
 				AT_Cmd[i + 10] = LengthString[i];
@@ -826,7 +826,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 				GPRSStat = GPRS_RUN_Txdata_ACK;
 				sGPRSTimeDelay = WAIT_ACK;
 			}
-			if ((strstr((char*)GPRS_ReceiveData, "\r\nOK\r\n") != NULL) || (strstr((char*)GPRS_ReceiveData, "\r\n^SISW"))) {
+			if ((strstr((char*)GPRS_ReceiveData, "\r\nOK\r\n") != NULL) || (strstr((char*)GPRS_ReceiveData, "+CIPSEND:"))) {
 				GPRSSendFrrorFlg = 0;
 				GPRSLoadStatBuf(GPRS_LED_DATA); //发送数据
 			}
