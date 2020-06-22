@@ -794,7 +794,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		else { //否则发送数据
 			BeatCnt = 0;
 			pLength = GPRS_Tx0.TxLength[GPRS_Tx0.TxPtrOut];
-			strcpy((char*)AT_Cmd, "AT+CIPSEND=1,");
+			strcpy((char*)AT_Cmd, "AT+CIPSEND=0,");
 			Int2Str((char*)LengthString, pLength);
 			while (LengthString[i]) {
 				AT_Cmd[i + 10] = LengthString[i];

@@ -1,5 +1,5 @@
 #define _main_c
-#define DEBUG_MODE
+#define DEBUG_MODE 0
 #define THIS_VERSION ("GPRS V2.90(T) 20190703")
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
