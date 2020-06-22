@@ -63,7 +63,7 @@ uint16_t EE_Init(void) {
 
 	/* Check for invalid header states and repair if necessary */
 	switch (PageStatus0) {
-	case ERASED: //ç•Œé¢0ä¸ºç©º ç¬¬ä¸€æ¬¡è¿è¡Œè‚¯å®šæ˜¯åœ¨è¿™é‡Œ
+	case ERASED: //½çÃæ0Îª¿Õ µÚÒ»´ÎÔËĞĞ¿Ï¶¨ÊÇÔÚÕâÀï
 		if (PageStatus1 == VALID_PAGE) /* Page0 erased, Page1 valid */
 		{
 			/* Erase Page0 */
@@ -73,7 +73,7 @@ uint16_t EE_Init(void) {
 				return FlashStatus;
 			}
 		}
-		else if (PageStatus1 == RECEIVE_DATA) /* Page0 erased, Page1 receive 0xeeee æœ‰æ•°æ®å†™å…¥æ—¶åˆ™å†™å…¥è¿™ä¸ªé¡µé¢*/
+		else if (PageStatus1 == RECEIVE_DATA) /* Page0 erased, Page1 receive 0xeeee ÓĞÊı¾İĞ´ÈëÊ±ÔòĞ´ÈëÕâ¸öÒ³Ãæ*/
 		{
 			/* Erase Page0 */
 			FlashStatus = FLASH_ErasePage(PAGE0_BASE_ADDRESS);
@@ -99,7 +99,7 @@ uint16_t EE_Init(void) {
 		}
 		break;
 
-	case RECEIVE_DATA: //0xeeee å¯ä»¥æ­£å¸¸æ¥æ”¶æ•°æ®ï¼Œå³æœ¬é¡µé¢è¿˜æ²¡æœ‰å†™æ»¡
+	case RECEIVE_DATA: //0xeeee ¿ÉÒÔÕı³£½ÓÊÕÊı¾İ£¬¼´±¾Ò³Ãæ»¹Ã»ÓĞĞ´Âú
 		if (PageStatus1 == VALID_PAGE) /* Page0 receive, Page1 valid */
 		{
 			/* Transfer data from Page1 to Page0 */
@@ -107,10 +107,10 @@ uint16_t EE_Init(void) {
 				if ((*(__IO uint16_t*)(PAGE0_BASE_ADDRESS + 6)) == VirtAddVarTab[VarIdx]) {
 					x = VarIdx;
 				}
-				if (VarIdx != x) //ç¬¬6ä¸ªå­—èŠ‚ä¸­ä¸æ˜¯æŒ‡å®šçš„åœ°å€
+				if (VarIdx != x) //µÚ6¸ö×Ö½ÚÖĞ²»ÊÇÖ¸¶¨µÄµØÖ·
 				{
 					/* Read the last variables' updates */
-					ReadStatus = EE_ReadVariable(VirtAddVarTab[VarIdx], &DataVar); //æŠŠå¯¹åº”åœ°å€çš„æ•°æ®è¯»å‡ºæ¥
+					ReadStatus = EE_ReadVariable(VirtAddVarTab[VarIdx], &DataVar); //°Ñ¶ÔÓ¦µØÖ·µÄÊı¾İ¶Á³öÀ´
 					/* In case variable corresponding to the virtual address was found */
 					if (ReadStatus != 0x1) {
 						/* Transfer the variable to the Page0 */
@@ -216,7 +216,7 @@ uint16_t EE_Init(void) {
 		}
 		break;
 
-	default: /* Any other state -> format eeprom  æœªçŸ¥çŠ¶æ€ åˆ™åˆå§‹åŒ–Flash*/
+	default: /* Any other state -> format eeprom  Î´Öª×´Ì¬ Ôò³õÊ¼»¯Flash*/
 		/* Erase both Page0 and Page1 and set Page0 as valid page */
 		FlashStatus = EE_Format();
 		/* If erase/program operation was failed, a Flash error code is returned */
@@ -238,7 +238,7 @@ uint16_t EE_Init(void) {
   *           - 0: if variable was found
   *           - 1: if the variable was not found
   *           - NO_VALID_PAGE: if no valid page was found.
-  * ä»é¡µå°¾å¼€å§‹æœ æŠŠæŒ‡å®šåœ°å€çš„å˜é‡æ‰¾å‡ºæ¥
+  * ´ÓÒ³Î²¿ªÊ¼ËÑ °ÑÖ¸¶¨µØÖ·µÄ±äÁ¿ÕÒ³öÀ´
   */
 uint16_t EE_ReadVariable(uint16_t VirtAddress, uint16_t* Data) {
 	uint16_t ValidPage = PAGE0;
@@ -246,7 +246,7 @@ uint16_t EE_ReadVariable(uint16_t VirtAddress, uint16_t* Data) {
 	uint32_t Address = 0x08010000, PageStartAddress = 0x08010000;
 
 	/* Get active Page for read operation */
-	ValidPage = EE_FindValidPage(READ_FROM_VALID_PAGE); //æ‰¾åˆ°å½“å‰æ ‡è®°ä¸ºValidçš„ç•Œé¢
+	ValidPage = EE_FindValidPage(READ_FROM_VALID_PAGE); //ÕÒµ½µ±Ç°±ê¼ÇÎªValidµÄ½çÃæ
 
 	/* Check if there is no valid page */
 	if (ValidPage == NO_VALID_PAGE) {
@@ -257,10 +257,10 @@ uint16_t EE_ReadVariable(uint16_t VirtAddress, uint16_t* Data) {
 	PageStartAddress = (uint32_t)(EEPROM_START_ADDRESS + (uint32_t)(ValidPage * PAGE_SIZE));
 
 	/* Get the valid Page end Address */
-	Address = (uint32_t)((EEPROM_START_ADDRESS - 2) + (uint32_t)((1 + ValidPage) * PAGE_SIZE)); //ä¸€ä¸ªé¡µé¢æœ«å°¾çš„åœ°å€
+	Address = (uint32_t)((EEPROM_START_ADDRESS - 2) + (uint32_t)((1 + ValidPage) * PAGE_SIZE)); //Ò»¸öÒ³ÃæÄ©Î²µÄµØÖ·
 
 	/* Check each active page address starting from end */
-	while (Address > (PageStartAddress + 2)) //ä»æœ«å°¾æ‰¾åˆ°å¼€å¤´
+	while (Address > (PageStartAddress + 2)) //´ÓÄ©Î²ÕÒµ½¿ªÍ·
 	{
 		/* Get the current location content to be compared with virtual address */
 		AddressValue = (*(__IO uint16_t*)Address);
@@ -329,7 +329,7 @@ static FLASH_Status EE_Format(void) {
 	}
 
 	/* Set Page0 as valid page: Write VALID_PAGE at Page0 base address */
-	FlashStatus = FLASH_ProgramHalfWord(PAGE0_BASE_ADDRESS, VALID_PAGE); //ä¸¤ä¸ªé¡µé¢å…¨éƒ¨é©±é™¤å®Œæˆå å°±ç½® VALID_PAGE æ ‡è®°
+	FlashStatus = FLASH_ProgramHalfWord(PAGE0_BASE_ADDRESS, VALID_PAGE); //Á½¸öÒ³ÃæÈ«²¿Çı³ıÍê³Éºó ¾ÍÖÃ VALID_PAGE ±ê¼Ç
 
 	/* If program operation was failed, a Flash error code is returned */
 	if (FlashStatus != FLASH_COMPLETE) {
@@ -411,7 +411,7 @@ static uint16_t EE_FindValidPage(uint8_t Operation) {
   *           - PAGE_FULL: if valid page is full
   *           - NO_VALID_PAGE: if no valid page was found
   *           - Flash error code: on write Flash error
-  * æŠŠä¸€ä¸ªæ•°æ®å†™å…¥flash
+  * °ÑÒ»¸öÊı¾İĞ´Èëflash
   */
 static uint16_t EE_VerifyPageFullWriteVariable(uint16_t VirtAddress, uint16_t Data) {
 	FLASH_Status FlashStatus = FLASH_COMPLETE;
@@ -435,7 +435,7 @@ static uint16_t EE_VerifyPageFullWriteVariable(uint16_t VirtAddress, uint16_t Da
 	/* Check each active page address starting from begining */
 	while (Address < PageEndAddress) {
 		/* Verify if Address and Address+2 contents are 0xFFFFFFFF */
-		if ((*(__IO uint32_t*)Address) == 0xFFFFFFFF) //å¯»æ‰¾æœªå†™å…¥è¿‡çš„å­—èŠ‚
+		if ((*(__IO uint32_t*)Address) == 0xFFFFFFFF) //Ñ°ÕÒÎ´Ğ´Èë¹ıµÄ×Ö½Ú
 		{
 			/* Set variable data */
 			FlashStatus = FLASH_ProgramHalfWord(Address, Data);
@@ -476,7 +476,7 @@ static uint16_t EE_PageTransfer(uint16_t VirtAddress, uint16_t Data) {
 	uint16_t EepromStatus = 0, ReadStatus = 0;
 
 	/* Get active Page for read operation */
-	ValidPage = EE_FindValidPage(READ_FROM_VALID_PAGE); //è¿”å›valid pageé¡µé¢
+	ValidPage = EE_FindValidPage(READ_FROM_VALID_PAGE); //·µ»Øvalid pageÒ³Ãæ
 
 	if (ValidPage == PAGE1) /* Page1 valid */
 	{
@@ -499,14 +499,14 @@ static uint16_t EE_PageTransfer(uint16_t VirtAddress, uint16_t Data) {
 	}
 
 	/* Set the new Page status to RECEIVE_DATA status */
-	FlashStatus = FLASH_ProgramHalfWord(NewPageAddress, RECEIVE_DATA); //  æŠŠå½“å‰é¡µçš„æ ‡å¿—å†™æˆ   RECEIVE_DATA
+	FlashStatus = FLASH_ProgramHalfWord(NewPageAddress, RECEIVE_DATA); //  °Ñµ±Ç°Ò³µÄ±êÖ¾Ğ´³É   RECEIVE_DATA
 	/* If program operation was failed, a Flash error code is returned */
 	if (FlashStatus != FLASH_COMPLETE) {
 		return FlashStatus;
 	}
 
 	/* Write the variable passed as parameter in the new active page */
-	EepromStatus = EE_VerifyPageFullWriteVariable(VirtAddress, Data); //æ‰¾åˆ°ä¸€ä¸ªç©ºç™½å­—èŠ‚ï¼ŒæŠŠæ•°å­—å†™å…¥
+	EepromStatus = EE_VerifyPageFullWriteVariable(VirtAddress, Data); //ÕÒµ½Ò»¸ö¿Õ°××Ö½Ú£¬°ÑÊı×ÖĞ´Èë
 	/* If program operation was failed, a Flash error code is returned */
 	if (EepromStatus != FLASH_COMPLETE) {
 		return EepromStatus;

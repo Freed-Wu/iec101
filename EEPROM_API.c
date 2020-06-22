@@ -17,7 +17,7 @@ static uint16_t flash_HalfWordRead(uint16_t _addr);
 ** Patameters:
 ** unsigned char *. -- point to the source data
 ** Return Values:
-** no ä»¥åŠå­—ä¸ºå•ä½å­˜å‚¨
+** no ÒÔ°ë×ÖÎªµ¥Î»´æ´¢
 ** ===================================================================
 */
 void STM32_EE_WriteRecord(uint16_t* src) {
@@ -25,13 +25,13 @@ void STM32_EE_WriteRecord(uint16_t* src) {
 	unsigned char flag_page_switch;
 
 	for (;;) {
-		for (i = 0; i < PAGE_REUSE_TIMES * EEPROM_DATA_LEN; i = i + EEPROM_FRAME_LEN) { //æ‰¾è®°å½•ç¬¬ä¸€ä¸ª0XAA55
+		for (i = 0; i < PAGE_REUSE_TIMES * EEPROM_DATA_LEN; i = i + EEPROM_FRAME_LEN) { //ÕÒ¼ÇÂ¼µÚÒ»¸ö0XAA55
 			if (FLAG_RECORD_USED != flash_HalfWordRead(EEPROM_START_ADDR + i)) {
 				// this record space is empty
 				// wite flag to mark this record is used
 				flash_byte_prog(EEPROM_START_ADDR + i, FLAG_RECORD_USED);
 				// then write the record data to the following addresses
-				for (j = 0; j < EEPROM_DATA_LEN / 2; j++) //æ¯æ¬¡ä¸€ä¸ªåŠå­—
+				for (j = 0; j < EEPROM_DATA_LEN / 2; j++) //Ã¿´ÎÒ»¸ö°ë×Ö
 				{
 					FLASH_ProgramHalfWord(EEPROM_START_ADDR + 1 + i + j, *(src + j));
 				}
@@ -55,7 +55,7 @@ void STM32_EE_WriteRecord(uint16_t* src) {
 ** Patameters:
 ** unsigned char *. -- point to the dest buffer
 ** Return Values:
-** no è¯»æ•°æ®åˆ°ç¼“å†²åŒº
+** no ¶ÁÊı¾İµ½»º³åÇø
 ** ===================================================================
 */
 void STM32_EE_ReadRecord(unsigned char* dest) {

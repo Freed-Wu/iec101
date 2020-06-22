@@ -8,15 +8,15 @@
 
 extern uint8_t Info[16];
 
-//ç”¨æˆ·è®¾ç½®æ•°æ®åš3ä¸ªå¤‡ä»½ï¼Œå½“æ•°æ®1æ£€éªŒå¤±è´¥æ—¶åˆ™è¯»å–æ•°æ®2ï¼Œæ•°æ®2æ ¡éªŒå¤±è´¥æ—¶è¯»å–æ•°æ®3
+//ÓÃ»§ÉèÖÃÊı¾İ×ö3¸ö±¸·İ£¬µ±Êı¾İ1¼ìÑéÊ§°ÜÊ±Ôò¶ÁÈ¡Êı¾İ2£¬Êı¾İ2Ğ£ÑéÊ§°ÜÊ±¶ÁÈ¡Êı¾İ3
 #define EE_STARTADDR_USERSET_0 ((u32)0x0800F000)
 #define EE_STARTADDR_USERSET_1 ((u32)0x0800F400)
 
-//è·Œè½æ•°æ®ç”¨ä¸¤ä¸ª
+//µøÂäÊı¾İÓÃÁ½¸ö
 #define EE_STARTADDR_STATUS_0 ((u32)0x0800f800)
 #define EE_STARTADDR_STATUS_1 ((u32)0x0800fc00)
 
-//è·Œè½æ¨¡å—çŠ¶æ€æ•°æ®ç”¨æ¨¡æ‹ŸEEPROMå­˜å‚¨
+//µøÂäÄ£¿é×´Ì¬Êı¾İÓÃÄ£ÄâEEPROM´æ´¢
 
 extern DEVICE_SET user_Set;
 
@@ -31,14 +31,14 @@ typedef enum {
 
 /*
 ********************************************************************************
-  * å‡½æ•°åç§°ï¼šFLASH_Page_Erase
-  * å‡½æ•°è¯´æ˜ï¼šæ“¦é™¤æŒ‡å®šé¡µé¢
-  * è¾“å…¥å‚æ•°ï¼šuint32_t _addr  é¡µé¢å†…ä»»ä¸€åœ°å€ æ“¦é™¤é¡µé¢åæŸ¥ç©ºï¼Œéç©ºæ—¶æ“¦é™¤3æ¬¡
+  * º¯ÊıÃû³Æ£ºFLASH_Page_Erase
+  * º¯ÊıËµÃ÷£º²Á³ıÖ¸¶¨Ò³Ãæ
+  * ÊäÈë²ÎÊı£ºuint32_t _addr  Ò³ÃæÄÚÈÎÒ»µØÖ· ²Á³ıÒ³Ãæºó²é¿Õ£¬·Ç¿ÕÊ±²Á³ı3´Î
   *
-  * è¾“å‡ºå‚æ•°ï¼šæ— 
-  * è¿”å›å‚æ•°ï¼š	FLASH_COMPLETE æ§é™¤å®Œæˆ
-				FLASH_ERROR_WRP æ§é™¤å¤±è´¥
-  * å¤‡    æ³¨ï¼š
+  * Êä³ö²ÎÊı£ºÎŞ
+  * ·µ»Ø²ÎÊı£º	FLASH_COMPLETE ¿Ø³ıÍê³É
+				FLASH_ERROR_WRP ¿Ø³ıÊ§°Ü
+  * ±¸    ×¢£º
 ********************************************************************************
 */
 static FLASH_Status FLASH_Page_Erase(uint32_t _addr) {
@@ -46,13 +46,13 @@ static FLASH_Status FLASH_Page_Erase(uint32_t _addr) {
 	uint16_t ErrCnt;
 	ErrCnt = 0;
 
-	_addr &= 0xfffffc00; //é¡µå¯¹é½
+	_addr &= 0xfffffc00; //Ò³¶ÔÆë
 
 	while (ErrCnt < 3) {
 		FLASH_SetLatency(FLASH_Latency_2);
 		FLASH_Unlock();
-		FLASH_ErasePage(_addr); //æ“¦é™¤é¡µ
-		FLASH_WaitForLastOperation(0x000B0000); //ç­‰å¾…æ“¦é™¤å®Œæˆ
+		FLASH_ErasePage(_addr); //²Á³ıÒ³
+		FLASH_WaitForLastOperation(0x000B0000); //µÈ´ı²Á³ıÍê³É
 
 		for (i = 0; i < STM32_FLASH_PAGE_SIZE; i += 2) {
 			if (*(uint16_t*)(_addr + STM32_FLASH_PAGE_SIZE) != 0xffff) {
@@ -71,14 +71,14 @@ static FLASH_Status FLASH_Page_Erase(uint32_t _addr) {
 
 /*
 ********************************************************************************
-  * å‡½æ•°åç§°ï¼šFLASH_Write
-  * å‡½æ•°è¯´æ˜ï¼šå‘FLASHä¸­ä¸€æ¬¡å†™å…¥åŠå­—ï¼ˆ2å­—èŠ‚ï¼‰
-  * è¾“å…¥å‚æ•°ï¼šuint32_t Address  è¦å†™å…¥çš„é¦–åœ°å€
-  *            uint8_t *DataObj  å¾…å†™å…¥æ•°æ®çš„é¦–åœ°å€
-  *            uint16_t Counter  å¾…å†™å…¥çš„å­—èŠ‚æ•°
-  * è¾“å‡ºå‚æ•°ï¼šæ— 
-  * è¿”å›å‚æ•°ï¼šæ— 
-  * å¤‡    æ³¨ï¼š
+  * º¯ÊıÃû³Æ£ºFLASH_Write
+  * º¯ÊıËµÃ÷£ºÏòFLASHÖĞÒ»´ÎĞ´Èë°ë×Ö£¨2×Ö½Ú£©
+  * ÊäÈë²ÎÊı£ºuint32_t Address  ÒªĞ´ÈëµÄÊ×µØÖ·
+  *            uint8_t *DataObj  ´ıĞ´ÈëÊı¾İµÄÊ×µØÖ·
+  *            uint16_t Counter  ´ıĞ´ÈëµÄ×Ö½ÚÊı
+  * Êä³ö²ÎÊı£ºÎŞ
+  * ·µ»Ø²ÎÊı£ºÎŞ
+  * ±¸    ×¢£º
 ********************************************************************************
 */
 FLASH_Status FLASH_Write(uint32_t Address, uint16_t* DataObj, uint16_t Counter) {
@@ -91,7 +91,7 @@ FLASH_Status FLASH_Write(uint32_t Address, uint16_t* DataObj, uint16_t Counter) 
 			if (Status == FLASH_COMPLETE) {
 				Address += 2;
 				DataObj++;
-				Status = FLASH_WaitForLastOperation(0x00002000); //ç­‰å¾…ç¼–ç¨‹å®Œæˆ
+				Status = FLASH_WaitForLastOperation(0x00002000); //µÈ´ı±à³ÌÍê³É
 
 				if (Status != FLASH_COMPLETE) {
 					break;
@@ -107,12 +107,12 @@ FLASH_Status FLASH_Write(uint32_t Address, uint16_t* DataObj, uint16_t Counter) 
 
 /*
 ********************************************************************************
-  * å‡½æ•°åç§°ï¼šFLASH_Read
-  * å‡½æ•°è¯´æ˜ï¼šè¯»Counterå­—èŠ‚æ•°æ®ï¼ŒCounterå¿…é¡»ä¸ºå¶æ•°ä¸ªï¼Œbit0æ¸…é›¶
-  * è¾“å…¥å‚æ•°ï¼š
-  * è¾“å‡ºå‚æ•°ï¼š
-  * è¿”å›å‚æ•°ï¼š
-  * å¤‡    æ³¨ï¼š
+  * º¯ÊıÃû³Æ£ºFLASH_Read
+  * º¯ÊıËµÃ÷£º¶ÁCounter×Ö½ÚÊı¾İ£¬Counter±ØĞëÎªÅ¼Êı¸ö£¬bit0ÇåÁã
+  * ÊäÈë²ÎÊı£º
+  * Êä³ö²ÎÊı£º
+  * ·µ»Ø²ÎÊı£º
+  * ±¸    ×¢£º
 ********************************************************************************
 */
 void FLASH_Read(uint32_t Address, uint16_t* DataObj, uint16_t Counter) {
@@ -129,12 +129,12 @@ void FLASH_Read(uint32_t Address, uint16_t* DataObj, uint16_t Counter) {
 */
 /*
 ********************************************************************************
-  * å‡½æ•°åç§°ï¼šFLASH_Check
-  * å‡½æ•°è¯´æ˜ï¼šæ£€æµ‹å†…å­˜æ•°æ®å’ŒFLASHæ•°æ®æ˜¯å¦ä¸€è‡´
-  * è¾“å…¥å‚æ•°ï¼š
-  * è¾“å‡ºå‚æ•°ï¼š
-  * è¿”å›å‚æ•°ï¼š
-  * å¤‡    æ³¨ï¼š
+  * º¯ÊıÃû³Æ£ºFLASH_Check
+  * º¯ÊıËµÃ÷£º¼ì²âÄÚ´æÊı¾İºÍFLASHÊı¾İÊÇ·ñÒ»ÖÂ
+  * ÊäÈë²ÎÊı£º
+  * Êä³ö²ÎÊı£º
+  * ·µ»Ø²ÎÊı£º
+  * ±¸    ×¢£º
 ********************************************************************************
 */
 uint16_t FLASH_Check(uint32_t Address, uint16_t* DataObj, uint16_t Counter) {
@@ -156,7 +156,7 @@ uint16_t FLASH_Check(uint32_t Address, uint16_t* DataObj, uint16_t Counter) {
 
 /*
 
-è®¾ç½®æ•°æ®å†™å…¥
+ÉèÖÃÊı¾İĞ´Èë
 */
 
 uint16_t FLASH_WriteUserSet(void) {
@@ -166,7 +166,7 @@ uint16_t FLASH_WriteUserSet(void) {
 
 	FLASH_Unlock();
 	errcnt = 0;
-	while (errcnt < 3) { //æœ€å¤šå†™å…¥3æ¬¡
+	while (errcnt < 3) { //×î¶àĞ´Èë3´Î
 
 		FLASH_Page_Erase(EE_STARTADDR_USERSET_0);
 		FLASH_Write(EE_STARTADDR_USERSET_0, (uint16_t*)(&user_Set), sizeof(user_Set));
@@ -175,9 +175,9 @@ uint16_t FLASH_WriteUserSet(void) {
 			break;
 		}
 	}
-	//å¤‡ä»½æ•°æ®
+	//±¸·İÊı¾İ
 	errcnt = 0;
-	while (errcnt < 3) { //æœ€å¤šå†™å…¥3æ¬¡
+	while (errcnt < 3) { //×î¶àĞ´Èë3´Î
 
 		FLASH_Page_Erase(EE_STARTADDR_USERSET_1);
 		FLASH_Write(EE_STARTADDR_USERSET_1, (uint16_t*)(&user_Set), sizeof(user_Set));
@@ -192,21 +192,21 @@ uint16_t FLASH_WriteUserSet(void) {
 
 /*
 
-è®¾ç½®æ•°æ®è¯»å‡º
+ÉèÖÃÊı¾İ¶Á³ö
 
 
 */
 uint16_t FLASH_ReadUserSet(void) {
 	uint16_t crc;
 
-	FLASH_Read(EE_STARTADDR_USERSET_0, (uint16_t*)(&user_Set), sizeof(user_Set)); //è¯»å‡ºæ•°æ®
+	FLASH_Read(EE_STARTADDR_USERSET_0, (uint16_t*)(&user_Set), sizeof(user_Set)); //¶Á³öÊı¾İ
 
 	crc = CRC16((uint8_t*)(&user_Set), (uint32_t)(&user_Set.crc16) - (uint32_t)(&user_Set));
 	if (crc == user_Set.crc16) {
 		return SUCCESS;
 	}
 	else {
-		FLASH_Read(EE_STARTADDR_USERSET_1, (uint16_t*)(&user_Set), sizeof(user_Set)); //è¯»å‡ºæ•°æ®
+		FLASH_Read(EE_STARTADDR_USERSET_1, (uint16_t*)(&user_Set), sizeof(user_Set)); //¶Á³öÊı¾İ
 		crc = CRC16((uint8_t*)(&user_Set), (uint32_t)(&user_Set.crc16) - (uint32_t)(&user_Set));
 		if (crc == user_Set.crc16) {
 			return SUCCESS;
@@ -221,33 +221,33 @@ uint16_t FLASH_ReadUserSet(void) {
 *********************************************************************************************
 *********************************************************************************************
 
-							çŠ¶æ€å€¼éƒ¨åˆ†ç”¨ä»¿çœŸeepromå®ç°
+							×´Ì¬Öµ²¿·ÖÓÃ·ÂÕæeepromÊµÏÖ
 
 *********************************************************************************************
 *********************************************************************************************
 */
 
 /*
-			è·Œè½æ¨¡å—å¤„ç†éƒ¨åˆ†
-ã€è¯´æ˜ã€‘è·Œè½æ¨¡å—ç”¨ä¸€å…±ç”¨å››ä¸ªé¡µé¢ï¼Œæ¯ä¸¤ä¸ªé¡µé¢ä¸€ç»„ï¼Œæ¯å¸§æ•°æ®8å­—èŠ‚å­˜å‚¨å€¼ï¼Œ
-æ•°æ®ä½16bit æ¯ä¸ª16bitæ•°æ®åŒ…å«16ä¸ªçŠ¶æ€å€¼
+			µøÂäÄ£¿é´¦Àí²¿·Ö
+¡¾ËµÃ÷¡¿µøÂäÄ£¿éÓÃÒ»¹²ÓÃËÄ¸öÒ³Ãæ£¬Ã¿Á½¸öÒ³ÃæÒ»×é£¬Ã¿Ö¡Êı¾İ8×Ö½Ú´æ´¢Öµ£¬
+Êı¾İÎ»16bit Ã¿¸ö16bitÊı¾İ°üº¬16¸ö×´Ì¬Öµ
 
 0XAA55 16bit 16bit CRC16
 */
 
-//Flash å†™å…¥æ—¶æ˜¯æŒ‰16ä½æ•°æ®è¿›è¡Œçš„
-//å†™å…¥æ¨¡å—çš„çŠ¶æ€åˆ°Flashä¸­
-#define DataNUM 3 //(æ¸©åº¦)å€¼å­—èŠ‚æ•°
+//Flash Ğ´ÈëÊ±ÊÇ°´16Î»Êı¾İ½øĞĞµÄ
+//Ğ´ÈëÄ£¿éµÄ×´Ì¬µ½FlashÖĞ
+#define DataNUM 3 //(ÎÂ¶È)Öµ×Ö½ÚÊı
 #define ONFFRAMEBYTES (uint16_t)((DataNUM * 2) + 2)
 #define WRITEFLG (uint16_t)0XF55A
 
 /*
-1ï¼Œæ‰¾åˆ°ç©ºåœ°å€å†™å…¥
-2ï¼Œè¯»å‡ºå†™å…¥çš„æ•°æ®
-3ï¼Œæ£€æŸ¥å†™å…¥æ•°æ®æ˜¯å¦æ­£ç¡®
-4ï¼Œå¦‚æœå†™å…¥æ•°æ®ä¸æ­£ç¡®ï¼Œåˆ™é‡æ–°æ‰¾ä¸‹ä¸€ä¸ªåœ°å€å†™å…¥æ•°æ®ï¼Œç›´åˆ°å†™å…¥æ­£ç¡®æ•°æ®ä¸ºæ­¢
+1£¬ÕÒµ½¿ÕµØÖ·Ğ´Èë
+2£¬¶Á³öĞ´ÈëµÄÊı¾İ
+3£¬¼ì²éĞ´ÈëÊı¾İÊÇ·ñÕıÈ·
+4£¬Èç¹ûĞ´ÈëÊı¾İ²»ÕıÈ·£¬ÔòÖØĞÂÕÒÏÂÒ»¸öµØÖ·Ğ´ÈëÊı¾İ£¬Ö±µ½Ğ´ÈëÕıÈ·Êı¾İÎªÖ¹
 
-ä¼ å…¥æ•°æ®æ ¼å¼ DATA DATA CRC16
+´«ÈëÊı¾İ¸ñÊ½ DATA DATA CRC16
 */
 
 static FLASH_Status FLASH_WR_OneFrameToOnePage(uint32_t PAGE_StartAddress, uint16_t* pData) {
@@ -255,12 +255,12 @@ static FLASH_Status FLASH_WR_OneFrameToOnePage(uint32_t PAGE_StartAddress, uint1
 	uint16_t ValidIndex;
 	FLASH_Status Status;
 
-	//è§£é”FLASH
+	//½âËøFLASH
 	FLASH_Unlock();
 	FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
 
-	//1 æ‰¾æ•°æ®å¤´
-	for (ValidIndex = 0; ValidIndex <= (STM32_FLASH_PAGE_SIZE - EEPROM_FRAME_LEN); ValidIndex += EEPROM_FRAME_LEN) //æ‰¾åˆ°æœªå†™å…¥çš„å­—èŠ‚
+	//1 ÕÒÊı¾İÍ·
+	for (ValidIndex = 0; ValidIndex <= (STM32_FLASH_PAGE_SIZE - EEPROM_FRAME_LEN); ValidIndex += EEPROM_FRAME_LEN) //ÕÒµ½Î´Ğ´ÈëµÄ×Ö½Ú
 	{
 		Address = PAGE_StartAddress + ValidIndex;
 		if (0xffff == *(uint16_t*)Address) {
@@ -268,15 +268,15 @@ static FLASH_Status FLASH_WR_OneFrameToOnePage(uint32_t PAGE_StartAddress, uint1
 		}
 	}
 
-	//2 æœ¬é¡µå·²ç»å†™æ»¡åˆ™æ¸…é™¤æ•´ä¸ªé¡µé¢
+	//2 ±¾Ò³ÒÑ¾­Ğ´ÂúÔòÇå³ıÕû¸öÒ³Ãæ
 	if (ValidIndex > (STM32_FLASH_PAGE_SIZE - EEPROM_FRAME_LEN)) {
 		FLASH_Page_Erase(PAGE_StartAddress);
-		Address = PAGE_StartAddress; //æ¸…é™¤ååœ°å€è½¬åˆ°ç¬¬ä¸€ä¸ªåœ°å€
+		Address = PAGE_StartAddress; //Çå³ıºóµØÖ·×ªµ½µÚÒ»¸öµØÖ·
 	}
-	//3 å†™å…¥ä¸€å¸§æ•°æ®
+	//3 Ğ´ÈëÒ»Ö¡Êı¾İ
 
 	Status = FLASH_ProgramHalfWord(Address, FLAG_RECORD_USED);
-	Status = FLASH_WaitForLastOperation(0x00002000); //ç­‰å¾…ç¼–ç¨‹å®Œæˆ
+	Status = FLASH_WaitForLastOperation(0x00002000); //µÈ´ı±à³ÌÍê³É
 	Status = FLASH_Write(Address + 2, pData, 6);
 
 	FLASH_Lock();
@@ -284,15 +284,15 @@ static FLASH_Status FLASH_WR_OneFrameToOnePage(uint32_t PAGE_StartAddress, uint1
 	return Status;
 }
 
-//ä»Flashä¸­è¯»å–ä¸€å¸§æ•°æ®
-//flashä¸­çš„åŸå§‹æ•°æ®
+//´ÓFlashÖĞ¶ÁÈ¡Ò»Ö¡Êı¾İ
+//flashÖĞµÄÔ­Ê¼Êı¾İ
 //
 static FLASH_Status FLASH_RD_OneFrameFromOnePage(uint32_t PAGE_StartAddress, uint16_t* pDest) {
 	uint16_t i;
 	uint16_t ValidIndex;
 
-	//æ£€æµ‹ä¸‹ä¸€å¸§æ˜¯å¦æœ‰æ•°æ®å†™å…¥ï¼Œè¿è¡Œåˆ°æœ€åä¸€å¸§æ•°æ®æ—¶ç›´æ¥é€€å‡ºï¼Œå› ä¸ºæœ€åä¸€å¸§çš„ä¸‹ä¸€å¸§å·²ç»è¶…å‡ºäº†æ•°æ®èŒƒå›´ï¼Œåˆ™æœ€åä¸€å¸§å³ä¸ºæœ‰æ•ˆæ•°æ®å¸§
-	for (ValidIndex = 0; ValidIndex < (STM32_FLASH_PAGE_SIZE - EEPROM_FRAME_LEN); ValidIndex += EEPROM_FRAME_LEN) //æ‰¾åˆ°æœªå†™å…¥çš„å­—èŠ‚//æ‰¾åˆ°æœªå†™å…¥çš„å­—èŠ‚
+	//¼ì²âÏÂÒ»Ö¡ÊÇ·ñÓĞÊı¾İĞ´Èë£¬ÔËĞĞµ½×îºóÒ»Ö¡Êı¾İÊ±Ö±½ÓÍË³ö£¬ÒòÎª×îºóÒ»Ö¡µÄÏÂÒ»Ö¡ÒÑ¾­³¬³öÁËÊı¾İ·¶Î§£¬Ôò×îºóÒ»Ö¡¼´ÎªÓĞĞ§Êı¾İÖ¡
+	for (ValidIndex = 0; ValidIndex < (STM32_FLASH_PAGE_SIZE - EEPROM_FRAME_LEN); ValidIndex += EEPROM_FRAME_LEN) //ÕÒµ½Î´Ğ´ÈëµÄ×Ö½Ú//ÕÒµ½Î´Ğ´ÈëµÄ×Ö½Ú
 	{
 		if (FLAG_RECORD_USED != *(uint16_t*)(PAGE_StartAddress + ValidIndex + EEPROM_FRAME_LEN)) {
 			break;
@@ -308,12 +308,12 @@ static FLASH_Status FLASH_RD_OneFrameFromOnePage(uint32_t PAGE_StartAddress, uin
 
 /*
 ********************************************************************************
-  * å‡½æ•°åç§°ï¼šFLASH_WR_Module_Status
-  * å‡½æ•°è¯´æ˜ï¼šå†™å…¥ä¸€å¸§æ•°æ®
-  * è¾“å…¥å‚æ•°ï¼š
-  * è¾“å‡ºå‚æ•°ï¼š
-  * è¿”å›å‚æ•°ï¼š
-  * å¤‡    æ³¨ï¼š
+  * º¯ÊıÃû³Æ£ºFLASH_WR_Module_Status
+  * º¯ÊıËµÃ÷£ºĞ´ÈëÒ»Ö¡Êı¾İ
+  * ÊäÈë²ÎÊı£º
+  * Êä³ö²ÎÊı£º
+  * ·µ»Ø²ÎÊı£º
+  * ±¸    ×¢£º
 ********************************************************************************
 */
 
@@ -322,15 +322,15 @@ int FLASH_WR_Module_Status(void) {
 	uint16_t rData[3];
 	uint16_t i;
 
-	//ç”Ÿæˆè¦å­˜å…¥çš„æ•°æ®
+	//Éú³ÉÒª´æÈëµÄÊı¾İ
 
 	if (CheckInfoCRCIsOK() == 0) {
 		FLASH_RD_Module_Status();
 	}
 
-	pdata[0] = 0x00; //é‡æ–°æ’åˆ—æ•°æ®
-	for (i = 0; i < 16; i++) { //ä¸€å…±å­˜å‚¨åä¸ªæ•°æ®
-		if (Info[i] == 0) { //æ­£å¸¸
+	pdata[0] = 0x00; //ÖØĞÂÅÅÁĞÊı¾İ
+	for (i = 0; i < 16; i++) { //Ò»¹²´æ´¢Ê®¸öÊı¾İ
+		if (Info[i] == 0) { //Õı³£
 			pdata[0] = pdata[0] | (1 << i);
 		}
 	}
@@ -340,23 +340,23 @@ int FLASH_WR_Module_Status(void) {
 	rData[0] = 0;
 	rData[1] = 1;
 	rData[2] = 2;
-	//å†™å…¥æ•°æ® å†™å…¥å¤±è´¥æ—¶æœ€å¤šå†™æ»¡æ•´ä¸ªé¡µ
+	//Ğ´ÈëÊı¾İ Ğ´ÈëÊ§°ÜÊ±×î¶àĞ´ÂúÕû¸öÒ³
 	i = 0;
 	while (i < PAGE_REUSE_TIMES) {
 		i++;
-		FLASH_RD_OneFrameFromOnePage(EE_STARTADDR_STATUS_0, rData); //å…ˆè¯»å‡ºæ•°æ®ï¼Œå¦‚æœæ•°æ®ä¸€è‡´åˆ™ä¸å­˜å‚¨
+		FLASH_RD_OneFrameFromOnePage(EE_STARTADDR_STATUS_0, rData); //ÏÈ¶Á³öÊı¾İ£¬Èç¹ûÊı¾İÒ»ÖÂÔò²»´æ´¢
 		if ((pdata[0] == rData[0]) && (pdata[1] == rData[1]) && (pdata[2] == rData[2])) {
 			break;
 		}
 		FLASH_WR_OneFrameToOnePage(EE_STARTADDR_STATUS_0, pdata);
 	}
 
-	//å†™å…¥æ•°æ® å†™å…¥å¤±è´¥æ—¶æœ€å¤šå†™æ»¡æ•´ä¸ªé¡µ
+	//Ğ´ÈëÊı¾İ Ğ´ÈëÊ§°ÜÊ±×î¶àĞ´ÂúÕû¸öÒ³
 	rData[0] = 0;
 	rData[1] = 1;
 	rData[2] = 2;
 	i = 0;
-	while (i < PAGE_REUSE_TIMES) { //å…ˆè¯»å‡ºæ•°æ®ï¼Œå¦‚æœæ•°æ®ä¸€è‡´åˆ™ä¸å­˜å‚¨
+	while (i < PAGE_REUSE_TIMES) { //ÏÈ¶Á³öÊı¾İ£¬Èç¹ûÊı¾İÒ»ÖÂÔò²»´æ´¢
 		i++;
 		FLASH_RD_OneFrameFromOnePage(EE_STARTADDR_STATUS_1, rData);
 		if ((pdata[0] == rData[0]) && (pdata[1] == rData[1]) && (pdata[2] == rData[2])) {
@@ -368,7 +368,7 @@ int FLASH_WR_Module_Status(void) {
 	return 0;
 }
 
-//ä»Flashä¸­è¯»å–æ¨¡å—çš„çŠ¶æ€ï¼Œåœ¨ç³»ç»Ÿå¤ä½æ—¶è¯»å–ã€‚
+//´ÓFlashÖĞ¶ÁÈ¡Ä£¿éµÄ×´Ì¬£¬ÔÚÏµÍ³¸´Î»Ê±¶ÁÈ¡¡£
 void FLASH_RD_Module_Status(void) {
 	uint16_t rData[3];
 	uint16_t i;
@@ -385,7 +385,7 @@ void FLASH_RD_Module_Status(void) {
 
 		FLASH_RD_OneFrameFromOnePage(EE_STARTADDR_STATUS_1, rData);
 
-		if ((rData[0] != rData[1]) || CRC16((uint8_t*)rData, 4) != rData[2]) { //è¯»FLASHå¤±è´¥æ—¶ç½®é»˜è®¤å€¼
+		if ((rData[0] != rData[1]) || CRC16((uint8_t*)rData, 4) != rData[2]) { //¶ÁFLASHÊ§°ÜÊ±ÖÃÄ¬ÈÏÖµ
 			for (i = 0; i < 16; i++) {
 				Info[i] = 0;
 			}
@@ -394,12 +394,12 @@ void FLASH_RD_Module_Status(void) {
 		}
 	}
 
-	for (i = 0; i < 16; i++) { //è¯»æ•°æ®æˆåŠŸæ—¶
-		if ((rData[1] & (1 << i)) == 0) { //è·Œè½
+	for (i = 0; i < 16; i++) { //¶ÁÊı¾İ³É¹¦Ê±
+		if ((rData[1] & (1 << i)) == 0) { //µøÂä
 			Info[i] = 1;
 		}
 		else {
-			Info[i] = 0; //æ­£å¸¸
+			Info[i] = 0; //Õı³£
 		}
 	}
 	RefreshInfoCRC();

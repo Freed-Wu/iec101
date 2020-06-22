@@ -13,19 +13,19 @@
 #include "stm32f10x.h"
 
 /*
-æ¸©åº¦æ¨¡å—åœ°å€ 01 02 03
-å±è”½é¥æ§å™¨åœ°å€ 0x20
-è·Œè½æ¨¡å—åœ°å€ 61 62 63
-ä¸€å¸§æ•°æ®12ä¸ªå­—èŠ‚
-æ•°æ®æ ¼å¼å˜æ›´ä¸º 		68 08 08 68 FF FF FF FF 01 00 SUM 16 æ¨¡å—ä¸Šä¼ 
-					68 08 08 68 FF FF FF FF 01 00 SUM 16  åº”ç­”å¸§
+ÎÂ¶ÈÄ£¿éµØÖ· 01 02 03
+ÆÁ±ÎÒ£¿ØÆ÷µØÖ· 0x20
+µøÂäÄ£¿éµØÖ· 61 62 63
+Ò»Ö¡Êı¾İ12¸ö×Ö½Ú
+Êı¾İ¸ñÊ½±ä¸üÎª 		68 08 08 68 FF FF FF FF 01 00 SUM 16 Ä£¿éÉÏ´«
+					68 08 08 68 FF FF FF FF 01 00 SUM 16  Ó¦´ğÖ¡
 
 */
-/*åº”ç­”å¸§   68 L L 68 ctrl id id id id addr data crc crc 16*/
+/*Ó¦´ğÖ¡   68 L L 68 ctrl id id id id addr data crc crc 16*/
 
 const unsigned char RFConf[11] = {0x00, 0x6C, 0x0C, 0x44, 0x0C, 0x06, 0xa1, 0x52, 0xa3, 0x54, 0xDB};
 
-#define WIRELESS_DCntTop 64 //ä¸€æ¬¡ä¸­æ–­æœ€å¤šå­˜å‚¨64å­—èŠ‚æ•°æ®
+#define WIRELESS_DCntTop 64 //Ò»´ÎÖĞ¶Ï×î¶à´æ´¢64×Ö½ÚÊı¾İ
 
 unsigned char WIRELESS_Rxd[WIRELESS_DCntTop]; //unsigned char WIRELESS_Rxd[64];
 uint16_t Wireless_WrPtr;
@@ -39,7 +39,7 @@ extern DEVICE_SET user_Set;
 extern TimeStructure Tx_Time; //main
 extern uint16_t info_wr_flash_flag;
 extern uint16_t temp_wr_flash_flag;
-extern uint8_t moduleMaskEn; // æ¨¡å—æ•…éšœMASK
+extern uint8_t moduleMaskEn; // Ä£¿é¹ÊÕÏMASK
 extern uint32_t moduleMaskDly;
 extern uint8_t InfoTemp[8];
 extern uint8_t Info[16];
@@ -173,7 +173,7 @@ void TxPacket(void) {
 	//	Delay(500);
 }
 /*
-ä¸­æ–­ä¸­è°ƒç”¨è¿™ä¸ªå‡½æ•°
+ÖĞ¶ÏÖĞµ÷ÓÃÕâ¸öº¯Êı
 
 */
 uint16_t tst_receiveCNT = 0;
@@ -189,15 +189,15 @@ void Wait_Rec_Packet(void) {
 	}
 
 	DisableExtINT();
-	//æ¯æ¬¡æ•°æ®å¤„ç†å®Œé€€å‡º è¿›å…¥æ—¶é‡æ–°æ”¾å…¥æ–°æ•°æ®ï¼Œä¸€æ¬¡æœ€å¤šæ”¾å…¥64å­—èŠ‚
+	//Ã¿´ÎÊı¾İ´¦ÀíÍêÍË³ö ½øÈëÊ±ÖØĞÂ·ÅÈëĞÂÊı¾İ£¬Ò»´Î×î¶à·ÅÈë64×Ö½Ú
 
-	Wireless_WrPtr = 0; //æ¯æ¬¡äº§ç”Ÿä¸­æ–­éƒ½æ¸…ç¼“å†²åŒºï¼Œè¿›ä¸­æ–­åå¤„ç†å®Œæ•°æ®é€€å‡ºä¸­æ–­
+	Wireless_WrPtr = 0; //Ã¿´Î²úÉúÖĞ¶Ï¶¼Çå»º³åÇø£¬½øÖĞ¶Ïºó´¦ÀíÍêÊı¾İÍË³öÖĞ¶Ï
 	Wireless_CNT = 0;
 	Wireless_RdPtr = 0;
 
 	if (GPIO_ReadInputDataBit(NRF905_DR, NRF905_DR_PIN) != 0) //WAIT FOR DR = 1
 	{
-		GPIO_WriteBit(NRF905_TRCE, NRF905_TRCE_PIN, Bit_RESET); //clear TRX_CE = 0 ç¦æ­¢å‘é€å’Œæ¥æ”¶
+		GPIO_WriteBit(NRF905_TRCE, NRF905_TRCE_PIN, Bit_RESET); //clear TRX_CE = 0 ½ûÖ¹·¢ËÍºÍ½ÓÊÕ
 		GPIO_WriteBit(NRF905_CSN, NRF905_CSN_PIN, Bit_RESET); //CSN = 0
 
 		SpiWrite(0x24); //read rx buffer                                       //read RX buffer command
@@ -213,29 +213,29 @@ void Wait_Rec_Packet(void) {
 			}
 		}
 		GPIO_WriteBit(NRF905_TXEN, NRF905_TXEN_PIN, Bit_RESET);
-		GPIO_WriteBit(NRF905_TRCE, NRF905_TRCE_PIN, Bit_SET); //å…è®¸æ¥æ”¶
+		GPIO_WriteBit(NRF905_TRCE, NRF905_TRCE_PIN, Bit_SET); //ÔÊĞí½ÓÊÕ
 		GPIO_WriteBit(NRF905_CSN, NRF905_CSN_PIN, Bit_SET); //CSN = 0
 	}
 
-	//å¤„ç†åŠåº”ç­”æ•°æ® ack to wireless
+	//´¦Àí¼°Ó¦´ğÊı¾İ ack to wireless
 	while (Wireless_CNT >= 12) {
-		//è·Œè½æ•°æ® æ¨¡å—æ•°æ®åœ¨è¿™é‡Œé¢
-		if ((WIRELESS_Rxd[Wireless_RdPtr] == 0x68) && (WIRELESS_Rxd[Wireless_RdPtr + 3] == 0x68) //æ•°æ®å¤´
-			&& (WIRELESS_Rxd[Wireless_RdPtr + 1] == 0x06) && (WIRELESS_Rxd[Wireless_RdPtr + 2] == 0x06) //æ•°æ®é•¿åº¦
+		//µøÂäÊı¾İ Ä£¿éÊı¾İÔÚÕâÀïÃæ
+		if ((WIRELESS_Rxd[Wireless_RdPtr] == 0x68) && (WIRELESS_Rxd[Wireless_RdPtr + 3] == 0x68) //Êı¾İÍ·
+			&& (WIRELESS_Rxd[Wireless_RdPtr + 1] == 0x06) && (WIRELESS_Rxd[Wireless_RdPtr + 2] == 0x06) //Êı¾İ³¤¶È
 			&& (WIRELESS_Rxd[Wireless_RdPtr + 4] == user_Set.ModuleID[0]) && (WIRELESS_Rxd[(Wireless_RdPtr + 5)] == user_Set.ModuleID[1]) && (WIRELESS_Rxd[Wireless_RdPtr + 6] == user_Set.ModuleID[2])
-			&& (WIRELESS_Rxd[Wireless_RdPtr + 7] == user_Set.ModuleID[3]) && (WIRELESS_Rxd[Wireless_RdPtr + 11] == 0x16) //æ•°æ®å°¾
+			&& (WIRELESS_Rxd[Wireless_RdPtr + 7] == user_Set.ModuleID[3]) && (WIRELESS_Rxd[Wireless_RdPtr + 11] == 0x16) //Êı¾İÎ²
 			&& ((uint8_t)(WIRELESS_Rxd[Wireless_RdPtr + 4] + WIRELESS_Rxd[Wireless_RdPtr + 5] + WIRELESS_Rxd[Wireless_RdPtr + 6] + WIRELESS_Rxd[Wireless_RdPtr + 7] + WIRELESS_Rxd[Wireless_RdPtr + 8]
 						  + WIRELESS_Rxd[Wireless_RdPtr + 9])
 				== WIRELESS_Rxd[Wireless_RdPtr + 10])
 
-		) { //æ ¡éªŒé€šè¿‡
+		) { //Ğ£ÑéÍ¨¹ı
 			/*
-						è¿”å›åº”ç­”å¸§
+						·µ»ØÓ¦´ğÖ¡
 			*/
 			tst_receiveCNT++;
-			pAddr = WIRELESS_Rxd[Wireless_RdPtr + 8]; //åœ°å€ è·Œè½æ¸©åº¦
-			pData = WIRELESS_Rxd[Wireless_RdPtr + 9]; //æ•°æ®
-			if ((pAddr & 0xf0) == 0x00) //è·Œè½æ¨¡å—
+			pAddr = WIRELESS_Rxd[Wireless_RdPtr + 8]; //µØÖ· µøÂäÎÂ¶È
+			pData = WIRELESS_Rxd[Wireless_RdPtr + 9]; //Êı¾İ
+			if ((pAddr & 0xf0) == 0x00) //µøÂäÄ£¿é
 			{
 				WIRELESS_TxBuffer[0] = 0xAA;
 				WIRELESS_TxBuffer[1] = user_Set.ModuleID[0];
@@ -245,7 +245,7 @@ void Wait_Rec_Packet(void) {
 				WIRELESS_TxBuffer[5] = (pAddr << 0x4) + 0xf; //(WIRELESS_Rxd[(Wireless_RdPtr + 5)%WIRELESS_DCntTop]&0xf0) + 0x0f;
 				TxPacket();
 			}
-			else if ((pAddr & 0xf0) == 0x20) //é¥æ§å±è”½ä¿¡å·
+			else if ((pAddr & 0xf0) == 0x20) //Ò£¿ØÆÁ±ÎĞÅºÅ
 			{
 				if (pData == 0x53) {
 					WIRELESS_TxBuffer[0] = 0xA6;
@@ -255,7 +255,7 @@ void Wait_Rec_Packet(void) {
 					WIRELESS_TxBuffer[4] = 0xFF;
 					WIRELESS_TxBuffer[5] = 0x53;
 					moduleMaskEn = 1;
-					moduleMaskDly = 50 * 60 * 60 * 24; //24å°æ—¶è‡ªåŠ¨æ¢å¤
+					moduleMaskDly = 50 * 60 * 60 * 24; //24Ğ¡Ê±×Ô¶¯»Ö¸´
 					TxPacket();
 				}
 				else if (pAddr == 0x5c) {
@@ -271,15 +271,15 @@ void Wait_Rec_Packet(void) {
 				}
 			}
 			/*
-							å¤„ç†æ•°æ®
+							´¦ÀíÊı¾İ
 			*/
 			ReadDATATime();
-			switch (pAddr) { //é€šè¿‡åœ°å€æ¥æ ‡ç¤ºæ˜¯ä»€ä¹ˆè®¾å¤‡
+			switch (pAddr) { //Í¨¹ıµØÖ·À´±êÊ¾ÊÇÊ²Ã´Éè±¸
 			case 0x01:
 			case 0x02:
-			case 0x03: //è·Œè½A //è·Œè½B //è·Œè½C
+			case 0x03: //µøÂäA //µøÂäB //µøÂäC
 				if (pData == 0x01) {
-					if (moduleMaskEn == 0) { //éå±è”½çŠ¶æ€åŠæ—¶å‘é€çŠ¶æ€
+					if (moduleMaskEn == 0) { //·ÇÆÁ±Î×´Ì¬¼°Ê±·¢ËÍ×´Ì¬
 						ChangeUpdate(pAddr, 0x01, &Tx_Time);
 					}
 					if (CheckInfoCRCIsOK() == 0) {
@@ -291,7 +291,7 @@ void Wait_Rec_Packet(void) {
 					info_wr_flash_flag = 1;
 				}
 				else if (pData == 0x02) {
-					if (moduleMaskEn == 0) { //éå±è”½çŠ¶æ€åŠæ—¶å‘é€çŠ¶æ€
+					if (moduleMaskEn == 0) { //·ÇÆÁ±Î×´Ì¬¼°Ê±·¢ËÍ×´Ì¬
 						ChangeUpdate(pAddr, 0x00, &Tx_Time);
 					}
 					if (CheckInfoCRCIsOK() == 0) {
@@ -306,20 +306,20 @@ void Wait_Rec_Packet(void) {
 			case 0x04:
 			case 0x05:
 			case 0x06:
-			case 0x07: //æ¼æŠ¥1
+			case 0x07: //Â©±¨1
 				if (pData == 0x01) {
-					if (moduleMaskEn == 0) { //éå±è”½çŠ¶æ€åŠæ—¶å‘é€çŠ¶æ€
+					if (moduleMaskEn == 0) { //·ÇÆÁ±Î×´Ì¬¼°Ê±·¢ËÍ×´Ì¬
 						ChangeUpdate(pAddr + 3, 0x01, &Tx_Time);
 					}
 					if (CheckInfoCRCIsOK() == 0) {
 						FLASH_RD_Module_Status();
 					}
-					Info[pAddr + 2] = 0x01; //æ¼ä¿å­˜å‚¨åœ¨Infoä¸­çš„6 7 8 9
+					Info[pAddr + 2] = 0x01; //Â©±£´æ´¢ÔÚInfoÖĞµÄ6 7 8 9
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
 				}
 				else if (pData == 0x02) {
-					if (moduleMaskEn == 0) { //éå±è”½çŠ¶æ€åŠæ—¶å‘é€çŠ¶æ€
+					if (moduleMaskEn == 0) { //·ÇÆÁ±Î×´Ì¬¼°Ê±·¢ËÍ×´Ì¬
 						ChangeUpdate(pAddr + 3, 0x00, &Tx_Time);
 					}
 					if (CheckInfoCRCIsOK() == 0) {
@@ -335,11 +335,11 @@ void Wait_Rec_Packet(void) {
 			case 0x62:
 			case 0x63:
 
-				if ((int8_t)pData < 125 && (int8_t)pData > (int8_t)(-85)) { //æ¸©åº¦åœ¨æœ‰æ•ˆèŒƒå›´å†…
+				if ((int8_t)pData < 125 && (int8_t)pData > (int8_t)(-85)) { //ÎÂ¶ÈÔÚÓĞĞ§·¶Î§ÄÚ
 					InfoTemp[pAddr - 0x61] = pData;
 					TempDisConnectDelay[pAddr - 61] = 50 * 60 * 60 * 12;
-					if (moduleMaskEn == 0) { //éå±è”½çŠ¶æ€åŠæ—¶å‘é€çŠ¶æ€
-						TempChangeUpdate(pAddr - 0x60, InfoTemp[pAddr - 0x61], &Tx_Time); //æ¸©åº¦å€¼çªå‘ä¸Šä¼ 
+					if (moduleMaskEn == 0) { //·ÇÆÁ±Î×´Ì¬¼°Ê±·¢ËÍ×´Ì¬
+						TempChangeUpdate(pAddr - 0x60, InfoTemp[pAddr - 0x61], &Tx_Time); //ÎÂ¶ÈÖµÍ»·¢ÉÏ´«
 					}
 					temp_wr_flash_flag = 1;
 				}
@@ -351,24 +351,24 @@ void Wait_Rec_Packet(void) {
 			Wireless_CNT = Wireless_CNT - 12;
 			Wireless_RdPtr = Wireless_RdPtr + 12;
 
-		} //æ ¡éªŒé€šè¿‡
+		} //Ğ£ÑéÍ¨¹ı
 
-		//é¥æ§å±è”½æ•°æ®åœ¨è¿™é‡Œ
-		else if ((WIRELESS_Rxd[Wireless_RdPtr] == 0x68) && (WIRELESS_Rxd[Wireless_RdPtr + 3] == 0x68) //æ•°æ®å¤´
-				 && (WIRELESS_Rxd[Wireless_RdPtr + 1] == 0x06) && (WIRELESS_Rxd[Wireless_RdPtr + 2] == 0x06) //æ•°æ®é•¿åº¦
+		//Ò£¿ØÆÁ±ÎÊı¾İÔÚÕâÀï
+		else if ((WIRELESS_Rxd[Wireless_RdPtr] == 0x68) && (WIRELESS_Rxd[Wireless_RdPtr + 3] == 0x68) //Êı¾İÍ·
+				 && (WIRELESS_Rxd[Wireless_RdPtr + 1] == 0x06) && (WIRELESS_Rxd[Wireless_RdPtr + 2] == 0x06) //Êı¾İ³¤¶È
 				 && (WIRELESS_Rxd[Wireless_RdPtr + 4] == 0XFF) && (WIRELESS_Rxd[(Wireless_RdPtr + 5)] == 0XFF) && (WIRELESS_Rxd[Wireless_RdPtr + 6] == 0XFF)
-				 && (WIRELESS_Rxd[Wireless_RdPtr + 7] == 0XFF) && (WIRELESS_Rxd[Wireless_RdPtr + 11] == 0x16) //æ•°æ®å°¾
+				 && (WIRELESS_Rxd[Wireless_RdPtr + 7] == 0XFF) && (WIRELESS_Rxd[Wireless_RdPtr + 11] == 0x16) //Êı¾İÎ²
 				 && ((uint8_t)(WIRELESS_Rxd[Wireless_RdPtr + 4] + WIRELESS_Rxd[Wireless_RdPtr + 5] + WIRELESS_Rxd[Wireless_RdPtr + 6] + WIRELESS_Rxd[Wireless_RdPtr + 7]
 							   + WIRELESS_Rxd[Wireless_RdPtr + 8] + WIRELESS_Rxd[Wireless_RdPtr + 9])
 					 == WIRELESS_Rxd[Wireless_RdPtr + 10])
 
-		) { //æ ¡éªŒé€šè¿‡
+		) { //Ğ£ÑéÍ¨¹ı
 			/*
-						è¿”å›åº”ç­”å¸§
+						·µ»ØÓ¦´ğÖ¡
 			*/
-			pAddr = WIRELESS_Rxd[Wireless_RdPtr + 8]; //åœ°å€ è·Œè½æ¸©åº¦
-			pData = WIRELESS_Rxd[Wireless_RdPtr + 9]; //æ•°æ®
-			if ((pAddr & 0xf0) == 0x20) //é¥æ§å±è”½ä¿¡å·
+			pAddr = WIRELESS_Rxd[Wireless_RdPtr + 8]; //µØÖ· µøÂäÎÂ¶È
+			pData = WIRELESS_Rxd[Wireless_RdPtr + 9]; //Êı¾İ
+			if ((pAddr & 0xf0) == 0x20) //Ò£¿ØÆÁ±ÎĞÅºÅ
 			{
 				if (pData == 0x53) {
 					WIRELESS_TxBuffer[0] = 0xA6;
@@ -378,7 +378,7 @@ void Wait_Rec_Packet(void) {
 					WIRELESS_TxBuffer[4] = 0xFF;
 					WIRELESS_TxBuffer[5] = 0x53;
 					moduleMaskEn = 1;
-					moduleMaskDly = 50 * 60 * 60 * 24; //24å°æ—¶è‡ªåŠ¨æ¢å¤
+					moduleMaskDly = 50 * 60 * 60 * 24; //24Ğ¡Ê±×Ô¶¯»Ö¸´
 					TxPacket();
 				}
 				else if (pAddr == 0x5c) {
@@ -395,9 +395,9 @@ void Wait_Rec_Packet(void) {
 			}
 			Wireless_CNT = Wireless_CNT - 12;
 			Wireless_RdPtr = Wireless_RdPtr + 12;
-		} //é¥æ§å±è”½ç»“æŸ
+		} //Ò£¿ØÆÁ±Î½áÊø
 		else {
-			Wireless_CNT = Wireless_CNT - 1; //å‘åç§»ä¸€ä½
+			Wireless_CNT = Wireless_CNT - 1; //ÏòºóÒÆÒ»Î»
 			Wireless_RdPtr = Wireless_RdPtr + 1;
 		}
 

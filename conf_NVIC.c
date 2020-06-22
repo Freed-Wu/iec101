@@ -49,7 +49,7 @@ void DisableExtINT(void) {
 	NVIC_InitStructure.NVIC_IRQChannelCmd = DISABLE;
 	NVIC_Init(&NVIC_InitStructure);
 }
-/*NRF905 涓柇淇″彿閲囬泦*/
+/*NRF905 中断信号采集*/
 void EXTI_Configuration(void) {
 	EXTI_InitTypeDef EXTI_InitStructure;
 	/* Connect EXTI Line11 */

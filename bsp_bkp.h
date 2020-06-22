@@ -1,8 +1,8 @@
 #include "stm32f10x.h"
 
-/*è¯»æ¸©åº¦æ•°æ®*/
+/*¶ÁÎÂ¶ÈÊı¾İ*/
 uint16_t bkp_ReadTempData(void);
 
-/*å†™æ¸©åº¦æ•°æ®*/
+/*Ğ´ÎÂ¶ÈÊı¾İ*/
 
 uint16_t bkp_WriteTempData(void);

@@ -1,20 +1,20 @@
 /***********************************************************************
-æ–‡ä»¶åç§°ï¼šSCI.h
-åŠŸ    èƒ½ï¼š
-ç¼–å†™æ—¶é—´ï¼š2012.11.22
-ç¼– å†™ äººï¼š
-æ³¨    æ„ï¼š
+ÎÄ¼şÃû³Æ£ºSCI.h
+¹¦    ÄÜ£º
+±àĞ´Ê±¼ä£º2012.11.22
+±à Ğ´ ÈË£º
+×¢    Òâ£º
 ***********************************************************************/
 #ifndef _SCI_H_
 #define _SCI_H_
 
 #define RS232_REC_BUFF_SIZE 256
-#define RS232_END_FLAG1 '?' //RS232ä¸€æ¡¢æ•°æ®ç»“æŸæ ‡å¿—1
-#define RS232_END_FLAG2 ';' //RS232ä¸€æ¡¢æ•°æ®ç»“æŸæ ‡å¿—2
+#define RS232_END_FLAG1 '?' //RS232Ò»èåÊı¾İ½áÊø±êÖ¾1
+#define RS232_END_FLAG2 ';' //RS232Ò»èåÊı¾İ½áÊø±êÖ¾2
 
 extern volatile unsigned char RS232_REC_Flag;
-extern volatile unsigned char RS232_buff[RS232_REC_BUFF_SIZE]; //ç”¨äºæ¥æ”¶æ•°æ®
-extern volatile unsigned int RS232_rec_counter; //ç”¨äºRS232æ¥æ”¶è®¡æ•°
+extern volatile unsigned char RS232_buff[RS232_REC_BUFF_SIZE]; //ÓÃÓÚ½ÓÊÕÊı¾İ
+extern volatile unsigned int RS232_rec_counter; //ÓÃÓÚRS232½ÓÊÕ¼ÆÊı
 
 void USART1_Configuration(void);
 void RS232_Send_Data(unsigned char* send_buff, unsigned int length);

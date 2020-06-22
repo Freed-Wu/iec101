@@ -5,11 +5,11 @@
 
 #define ParaSaveAddress 0x0800C800
 
-// 鎶婃墍鏈夎淇濆瓨鐨勫弬鏁扮粍缁囧湪涓�涓粨鏋勪綋涓紝鏂逛究浠ｇ爜缂栧啓
+// 把所有要保存的参数组织在一个结构体中，方便代码编写
 typedef struct {
 	int8_t ServerIP_Port[21];
 	uint8_t HeartTime;
-	int8_t HeartData[32]; //蹇冭烦鍖呮暟鎹负32瀛楄妭
+	int8_t HeartData[32]; //心跳包数据为32字节
 	uint8_t HeartLength;
 	uint16_t LinkAddress;
 	uint8_t WriteFlag1;

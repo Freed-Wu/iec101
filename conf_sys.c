@@ -24,7 +24,7 @@ void IWDG_Feed(void) {
 	IWDG_ReloadCounter();
 }
 
-//10ms‰∏≠Êñ≠‰∏ÄÊ¨°
+//10ms÷–∂œ“ª¥Œ
 void SysTick_Init(void) {
 	if (SysTick_Config(SystemCoreClock / 50)) {
 		/* Capture error */

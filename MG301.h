@@ -2,11 +2,11 @@
 #define __MG301_H__
 #include "stm32f10x.h"
 
-//#define GPRS_IDLE 			(uint16_t)0x0000		//å¾…æœºçŠ¶æ€
-//#define GPRS_POWER   		(uint16_t)0x0100		//å¼€æœº
-//#define GPRS_CHECK_GPRS		(uint16_t)0x0200		//æ£€æµ‹GPRSæ˜¯å¦æ­£å¸¸
-//#define	GPRS_CONNECT_TCP	(uint16_t)0x0300		//è¿æ¥TCP
-//define GPRS_RUNNING		(uint16_t)0x0400		//æ­£å¸¸è¿è¡Œ
+//#define GPRS_IDLE 			(uint16_t)0x0000		//´ı»ú×´Ì¬
+//#define GPRS_POWER   		(uint16_t)0x0100		//¿ª»ú
+//#define GPRS_CHECK_GPRS		(uint16_t)0x0200		//¼ì²âGPRSÊÇ·ñÕı³£
+//#define	GPRS_CONNECT_TCP	(uint16_t)0x0300		//Á¬½ÓTCP
+//define GPRS_RUNNING		(uint16_t)0x0400		//Õı³£ÔËĞĞ
 //#define GPRS_ECHO_CLOSE		(uint16_t)0x0500
 
 #define GPRS_IDLE (uint16_t)0x0000 //
@@ -19,15 +19,15 @@
 #define GPRS_APN_CMD_SEND (uint16_t)0X0201
 #define GPRS_APN_CMD_ACK (uint16_t)0X0202
 
-#define GPRS_CHECK_CSQ_A (uint16_t)0x0301 //GPRSè¿æ¥æ£€æµ‹
+#define GPRS_CHECK_CSQ_A (uint16_t)0x0301 //GPRSÁ¬½Ó¼ì²â
 #define GPRS_CHECK_CSQ_ACK_A (uint16_t)0x0302
-#define GPRS_CHECK_CMD_SEND (uint16_t)0x0303 //GPRSè¿æ¥æ£€æµ‹
+#define GPRS_CHECK_CMD_SEND (uint16_t)0x0303 //GPRSÁ¬½Ó¼ì²â
 #define GPRS_CHECK_CMD_ACK (uint16_t)0x0304
-#define GPRS_CHECK_CSQ_B (uint16_t)0x0305 //GPRSè¿æ¥æ£€æµ‹
+#define GPRS_CHECK_CSQ_B (uint16_t)0x0305 //GPRSÁ¬½Ó¼ì²â
 #define GPRS_CHECK_CSQ_ACK_B (uint16_t)0x0306
-#define GPRS_CHECK_CREG_SEND (uint16_t)0x0307 //æŸ¥è¯¢æ³¨å†Œç½‘ç»œçŠ¶æ€
+#define GPRS_CHECK_CREG_SEND (uint16_t)0x0307 //²éÑ¯×¢²áÍøÂç×´Ì¬
 #define GPRS_CHECK_CREG_ACK (uint16_t)0x0308
-#define GPRS_CHECK_CPSI_SEND (uint16_t)0x0309 //æ³¨å†Œä¿¡æ¯
+#define GPRS_CHECK_CPSI_SEND (uint16_t)0x0309 //×¢²áĞÅÏ¢
 #define GPRS_CHECK_CPSI_ACK (uint16_t)0x030A
 
 #define GPRS_TCP_conType_SEND (uint16_t)0x0403 //conType
@@ -101,18 +101,18 @@ typedef struct {
 ////extern uint8_t FrameFlag;
 
 //extern uint8_t RecDataFlag;
-//extern uint8_t GPRS_SysStartCpltFlag; //GPRSæ¨¡å—å¯åŠ¨å®Œæˆæ ‡å¿—ä½
-//extern uint8_t BeatFlag; //å‘é€å¿ƒè·³åŒ…æ ‡å¿—ï¼Œç½®1è¡¨ç¤ºå¯ä»¥å‘é€
+//extern uint8_t GPRS_SysStartCpltFlag; //GPRSÄ£¿éÆô¶¯Íê³É±êÖ¾Î»
+//extern uint8_t BeatFlag; //·¢ËÍĞÄÌø°ü±êÖ¾£¬ÖÃ1±íÊ¾¿ÉÒÔ·¢ËÍ
 
-//extern uint8_t ConfigMode; //é»˜è®¤ä¸ºéé…ç½®æ¨¡å¼
+//extern uint8_t ConfigMode; //Ä¬ÈÏÎª·ÇÅäÖÃÄ£Ê½
 
-//extern uint8_t ConnectTCPFlag; //å·²å»ºç«‹TCPè¿æ¥
+//extern uint8_t ConnectTCPFlag; //ÒÑ½¨Á¢TCPÁ¬½Ó
 
 //extern uint32_t HeartTime;
 
-//extern const uint32_t ReConnectTimeOut; //å®šä¹‰æ–­çº¿é‡è¿æ—¶é—´ï¼Œé»˜è®¤ä¸º30åˆ†é’Ÿ
+//extern const uint32_t ReConnectTimeOut; //¶¨Òå¶ÏÏßÖØÁ¬Ê±¼ä£¬Ä¬ÈÏÎª30·ÖÖÓ
 
-////æ–­çº¿é‡è¿æ ‡å¿—ä½,ä¸º1æ—¶è¡¨ç¤ºé‡è¿æ—¶é—´åˆ°ï¼Œé»˜è®¤ä¸º1ï¼Œåˆ™ç¬¬ä¸€æ¬¡æ–­çº¿åä¼šç«‹å³é‡è¿
+////¶ÏÏßÖØÁ¬±êÖ¾Î»,Îª1Ê±±íÊ¾ÖØÁ¬Ê±¼äµ½£¬Ä¬ÈÏÎª1£¬ÔòµÚÒ»´Î¶ÏÏßºó»áÁ¢¼´ÖØÁ¬
 //extern uint8_t ReConnectFlag;
 
 //extern void Int2Str(uint32_t Data,char *str);

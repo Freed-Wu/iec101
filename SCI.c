@@ -1,23 +1,23 @@
 #include "SCI.H"
 #include "stm32f10x_lib.h"
 /***********************************************************************
-æ–‡ä»¶åç§°ï¼šSCI.C
-åŠŸ    èƒ½ï¼šå®Œæˆå¯¹usart1çš„æ“ä½œ
-ç¼–å†™æ—¶é—´ï¼š2012.11.22
-ç¼– å†™ äººï¼š
-æ³¨    æ„ï¼šæœ¬ä¾‹ç¨‹æ˜¯é€šè¿‡åˆ¤æ–­ä¸¤ä¸ªç‰¹å®šçš„å­—ç¬¦æ¥ç¡®å®šä¸€å¸§æ•°æ®æ˜¯å¦ç»“æŸçš„ã€‚
+ÎÄ¼şÃû³Æ£ºSCI.C
+¹¦    ÄÜ£ºÍê³É¶Ôusart1µÄ²Ù×÷
+±àĞ´Ê±¼ä£º2012.11.22
+±à Ğ´ ÈË£º
+×¢    Òâ£º±¾Àı³ÌÊÇÍ¨¹ıÅĞ¶ÏÁ½¸öÌØ¶¨µÄ×Ö·ûÀ´È·¶¨Ò»Ö¡Êı¾İÊÇ·ñ½áÊøµÄ¡£
 ***********************************************************************/
 
 volatile unsigned char RS232_REC_Flag = 0;
-volatile unsigned char RS232_buff[RS232_REC_BUFF_SIZE] = 0; //ç”¨äºæ¥æ”¶æ•°æ®
-volatile unsigned int RS232_rec_counter = 0; //ç”¨äºRS232æ¥æ”¶è®¡æ•°
+volatile unsigned char RS232_buff[RS232_REC_BUFF_SIZE] = 0; //ÓÃÓÚ½ÓÊÕÊı¾İ
+volatile unsigned int RS232_rec_counter = 0; //ÓÃÓÚRS232½ÓÊÕ¼ÆÊı
 
 void USART1_Configuration(void) {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
-	/********************ä»¥ä¸‹ä¸ºUSART1é…ç½®**************************/
+	/********************ÒÔÏÂÎªUSART1ÅäÖÃ**************************/
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD,ENABLE);
 	//GPIO_PinRemapConfig(GPIO_Remap_USART2,ENABLE);
@@ -35,18 +35,18 @@ void USART1_Configuration(void) {
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	USART_InitStructure.USART_BaudRate = 115200;
-	//USART_InitStructure.USART_WordLength = USART_WordLength_9b;//9ä½æ•°æ®
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b; //8ä½æ•°æ®
-	USART_InitStructure.USART_StopBits = USART_StopBits_1; //1ä½åœæ­¢ä½
-	//USART_InitStructure.USART_Parity = USART_Parity_Even;//å¶æ ¡éªŒï¼Œæœ‰æ ¡éªŒæ—¶åº”è¯¥é€‰æ‹©9ä½æ•°æ®
-	USART_InitStructure.USART_Parity = USART_Parity_No; //å¥‡å¶å¤±èƒ½
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; //ç¡¬ä»¶æµæ§åˆ¶å¤±èƒ½
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx; //å‘é€å’Œæ¥å—ä½¿èƒ½
+	//USART_InitStructure.USART_WordLength = USART_WordLength_9b;//9Î»Êı¾İ
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b; //8Î»Êı¾İ
+	USART_InitStructure.USART_StopBits = USART_StopBits_1; //1Î»Í£Ö¹Î»
+	//USART_InitStructure.USART_Parity = USART_Parity_Even;//Å¼Ğ£Ñé£¬ÓĞĞ£ÑéÊ±Ó¦¸ÃÑ¡Ôñ9Î»Êı¾İ
+	USART_InitStructure.USART_Parity = USART_Parity_No; //ÆæÅ¼Ê§ÄÜ
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; //Ó²¼şÁ÷¿ØÖÆÊ§ÄÜ
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx; //·¢ËÍºÍ½ÓÊÜÊ¹ÄÜ
 
 	USART_Init(USART1, &USART_InitStructure);
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); //ä½¿èƒ½USART1ä¸­æ–­
-	USART_Cmd(USART1, ENABLE); //ä½¿èƒ½USART1å¤–è®¾
-	USART_ClearITPendingBit(USART1, USART_IT_TC); //æ¸…é™¤ä¸­æ–­TCä½
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); //Ê¹ÄÜUSART1ÖĞ¶Ï
+	USART_Cmd(USART1, ENABLE); //Ê¹ÄÜUSART1ÍâÉè
+	USART_ClearITPendingBit(USART1, USART_IT_TC); //Çå³ıÖĞ¶ÏTCÎ»
 
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
@@ -56,29 +56,29 @@ void USART1_Configuration(void) {
 }
 
 /***********************************************************************
-å‡½æ•°åç§°ï¼švoid USART1_IRQHandler(void)
-åŠŸ    èƒ½ï¼šå®ŒæˆSCIçš„æ•°æ®çš„æ¥æ”¶ï¼Œå¹¶åšæ ‡è¯†
-è¾“å…¥å‚æ•°ï¼š
-è¾“å‡ºå‚æ•°ï¼š
-ç¼–å†™æ—¶é—´ï¼š2012.11.22
-ç¼– å†™ äººï¼š
-æ³¨    æ„ï¼šRS232ç”¨çš„æ˜¯USART1
+º¯ÊıÃû³Æ£ºvoid USART1_IRQHandler(void)
+¹¦    ÄÜ£ºÍê³ÉSCIµÄÊı¾İµÄ½ÓÊÕ£¬²¢×ö±êÊ¶
+ÊäÈë²ÎÊı£º
+Êä³ö²ÎÊı£º
+±àĞ´Ê±¼ä£º2012.11.22
+±à Ğ´ ÈË£º
+×¢    Òâ£ºRS232ÓÃµÄÊÇUSART1
 ***********************************************************************/
 void USART1_IRQHandler(void) {
-	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) //æ¥æ”¶åˆ°äº†æ•°æ®
+	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) //½ÓÊÕµ½ÁËÊı¾İ
 	{
 		RS232_buff[RS232_rec_counter] = USART1->DR; //
 		RS232_rec_counter++;
-		/***ä»¥RS232_END_FLAG1å’ŒRS232_END_FLAG2å®šä¹‰çš„å­—ç¬¦ä½œä¸ºä¸€å¸§æ•°æ®çš„ç»“æŸæ ‡è¯†***/
-		if (RS232_rec_counter >= 2) //åªæœ‰æ¥æ”¶åˆ°2ä¸ªæ•°æ®ä»¥ä¸Šæ‰åšåˆ¤æ–­
+		/***ÒÔRS232_END_FLAG1ºÍRS232_END_FLAG2¶¨ÒåµÄ×Ö·û×÷ÎªÒ»Ö¡Êı¾İµÄ½áÊø±êÊ¶***/
+		if (RS232_rec_counter >= 2) //Ö»ÓĞ½ÓÊÕµ½2¸öÊı¾İÒÔÉÏ²Å×öÅĞ¶Ï
 		{
-			if (RS232_buff[RS232_rec_counter - 2] == RS232_END_FLAG1 && RS232_buff[RS232_rec_counter - 1] == RS232_END_FLAG2) //å¸§èµ·å§‹æ ‡å¿—
+			if (RS232_buff[RS232_rec_counter - 2] == RS232_END_FLAG1 && RS232_buff[RS232_rec_counter - 1] == RS232_END_FLAG2) //Ö¡ÆğÊ¼±êÖ¾
 			{
 				RS232_REC_Flag = 1;
 				RS232_rec_counter = 0;
 			}
 		}
-		if (RS232_rec_counter > RS232_REC_BUFF_SIZE) //è¶…è¿‡æ¥æ”¶ç¼“å†²åŒºå¤§å°
+		if (RS232_rec_counter > RS232_REC_BUFF_SIZE) //³¬¹ı½ÓÊÕ»º³åÇø´óĞ¡
 		{
 			RS232_rec_counter = 0;
 		}
@@ -89,13 +89,13 @@ void USART1_IRQHandler(void) {
 }
 
 /***********************************************************************
-å‡½æ•°åç§°ï¼šRS232_Send_Data(unsigned char *send_buff,unsigned int length)
-åŠŸ    èƒ½ï¼šRS232å‘é€å­—ç¬¦ä¸²
-è¾“å…¥å‚æ•°ï¼šsend_buff:å¾…å‘é€çš„æ•°æ®æŒ‡é’ˆï¼›lengthï¼šå‘é€çš„æ•°æ®é•¿åº¦ï¼ˆå­—ç¬¦ä¸ªæ•°ï¼‰
-è¾“å‡ºå‚æ•°ï¼š
-ç¼–å†™æ—¶é—´ï¼š2012.11.22
-ç¼– å†™ äººï¼š
-æ³¨    æ„ï¼š
+º¯ÊıÃû³Æ£ºRS232_Send_Data(unsigned char *send_buff,unsigned int length)
+¹¦    ÄÜ£ºRS232·¢ËÍ×Ö·û´®
+ÊäÈë²ÎÊı£ºsend_buff:´ı·¢ËÍµÄÊı¾İÖ¸Õë£»length£º·¢ËÍµÄÊı¾İ³¤¶È£¨×Ö·û¸öÊı£©
+Êä³ö²ÎÊı£º
+±àĞ´Ê±¼ä£º2012.11.22
+±à Ğ´ ÈË£º
+×¢    Òâ£º
 ***********************************************************************/
 void RS232_Send_Data(unsigned char* send_buff, unsigned int length) {
 	unsigned int i = 0;

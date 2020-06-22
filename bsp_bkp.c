@@ -1,9 +1,9 @@
 #include "crc.h"
 #include "stm32f10x.h"
 
-extern uint8_t InfoTemp[8]; //æ¸©åº¦
+extern uint8_t InfoTemp[8]; //ÎÂ¶È
 
-/*è¯»æ¸©åº¦æ•°æ®*/
+/*¶ÁÎÂ¶ÈÊı¾İ*/
 uint16_t bkp_ReadTempData(void) {
 	uint16_t tempdata[9];
 
@@ -29,10 +29,10 @@ uint16_t bkp_ReadTempData(void) {
 		return 0;
 	}
 
-	return 1; //è¯»å–å¤±è´¥
+	return 1; //¶ÁÈ¡Ê§°Ü
 }
 
-/*å†™æ¸©åº¦æ•°æ®*/
+/*Ğ´ÎÂ¶ÈÊı¾İ*/
 
 uint16_t bkp_WriteTempData(void) {
 	uint16_t tempdata[9];
@@ -45,7 +45,7 @@ uint16_t bkp_WriteTempData(void) {
 	tempdata[5] = InfoTemp[5];
 	tempdata[6] = InfoTemp[6];
 	tempdata[7] = InfoTemp[7];
-	tempdata[8] = CRC16((uint8_t*)tempdata, 16); //æ¯ä¸ªæ•°æ®å ç”¨ä¸¤ä¸ªå­—èŠ‚
+	tempdata[8] = CRC16((uint8_t*)tempdata, 16); //Ã¿¸öÊı¾İÕ¼ÓÃÁ½¸ö×Ö½Ú
 
 	BKP_WriteBackupRegister(BKP_DR2, tempdata[0]);
 	BKP_WriteBackupRegister(BKP_DR3, tempdata[1]);

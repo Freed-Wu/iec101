@@ -11,25 +11,25 @@
 #include "string.h"
 
 unsigned char RS232_REC_Flag = 0;
-unsigned char RS232_buff[RS232_REC_BUFF_SIZE] = {0}; //ç”¨äºæ¥æ”¶æ•°æ®
-unsigned int RS232_rec_counter = 0; //ç”¨äºRS232æ¥æ”¶è®¡æ•°
+unsigned char RS232_buff[RS232_REC_BUFF_SIZE] = {0}; //ÓÃÓÚ½ÓÊÕÊı¾İ
+unsigned int RS232_rec_counter = 0; //ÓÃÓÚRS232½ÓÊÕ¼ÆÊı
 
 static volatile uint16_t USART3_RxTimeoutCnt = 0;
 static volatile uint16_t USART3_RxFlag = 0;
-static volatile uint16_t USART3_RxLength = 0; //å®šä¹‰æ¥æ”¶æ•°æ®çš„é•¿åº¦
-static volatile uint8_t USART3_RxBuf[GPRS_RCV_BUF]; //åœ¨ä¸­æ–­ä¸­æ¥æ”¶GPRSå‘é€è¿‡æ¥çš„æ•°æ®
+static volatile uint16_t USART3_RxLength = 0; //¶¨Òå½ÓÊÕÊı¾İµÄ³¤¶È
+static volatile uint8_t USART3_RxBuf[GPRS_RCV_BUF]; //ÔÚÖĞ¶ÏÖĞ½ÓÊÕGPRS·¢ËÍ¹ıÀ´µÄÊı¾İ
 
-extern uint16_t DebugDly; //åˆšä¸Šç”µåç­‰å¾…é…ç½®ï¼Œä¸Šç”µ10åˆ†é’Ÿåä¸²å£å‘é€è°ƒè¯•æ•°æ®å‡ºæ¥
+extern uint16_t DebugDly; //¸ÕÉÏµçºóµÈ´ıÅäÖÃ£¬ÉÏµç10·ÖÖÓºó´®¿Ú·¢ËÍµ÷ÊÔÊı¾İ³öÀ´
 extern uint16_t DebugNRF905Dly;
 uint16_t reqVersionflg;
 /************************************************************************************
-									è°ƒè¯•ç«¯å£
+									µ÷ÊÔ¶Ë¿Ú
 *************************************************************************************/
 void USART1_Configuration(void) {
 	USART_InitTypeDef USART_InitStructure;
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* å¼€å¯è°ƒè¯•ç«¯å£çš„æ—¶é’Ÿ */
+	/* ¿ªÆôµ÷ÊÔ¶Ë¿ÚµÄÊ±ÖÓ */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 
 	USART_InitStructure.USART_BaudRate = 115200;
@@ -45,13 +45,13 @@ void USART1_Configuration(void) {
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
-	/* é…ç½®è°ƒè¯•ç«¯å£çš„TX */
+	/* ÅäÖÃµ÷ÊÔ¶Ë¿ÚµÄTX */
 	GPIO_InitStructure.GPIO_Pin = DEBUG_COM_TX_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(DEBUG_COM_GPIO_PORT, &GPIO_InitStructure);
 
-	/* é…ç½®è°ƒè¯•ç«¯å£çš„RX */
+	/* ÅäÖÃµ÷ÊÔ¶Ë¿ÚµÄRX */
 	GPIO_InitStructure.GPIO_Pin = DEBUG_COM_RX_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(DEBUG_COM_GPIO_PORT, &GPIO_InitStructure);
@@ -59,17 +59,17 @@ void USART1_Configuration(void) {
 
 /*
 ****************************************************************************************************
-* åŠŸèƒ½æè¿°ï¼šåˆå§‹åŒ–ä¸GPRSæ¨¡å—è¿æ¥çš„USARTå‚æ•°
-* è¾“å…¥å‚æ•°ï¼š
-* è¿”å›å‚æ•°ï¼š
-* è¯´    æ˜ï¼š
+* ¹¦ÄÜÃèÊö£º³õÊ¼»¯ÓëGPRSÄ£¿éÁ¬½ÓµÄUSART²ÎÊı
+* ÊäÈë²ÎÊı£º
+* ·µ»Ø²ÎÊı£º
+* Ëµ    Ã÷£º
 ****************************************************************************************************
 */
 void USART3_Configuration(void) {
 	USART_InitTypeDef USART_InitStructure;
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE); //æ—¶é’Ÿè¦å…ˆè®¾ç½®ï¼Ÿï¼Ÿï¼Ÿ
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE); //Ê±ÖÓÒªÏÈÉèÖÃ£¿£¿£¿
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
 	USART_InitStructure.USART_BaudRate = 115200;
@@ -87,28 +87,28 @@ void USART3_Configuration(void) {
 	//USART_ITConfig(USART3,USART_IT_TC,ENABLE);
 	USART_Cmd(USART3, ENABLE);
 
-	/* å¼€å¯è°ƒè¯•ç«¯å£å¼•è„šæ‰€åœ¨çš„GPIOçš„æ—¶é’Ÿ */
+	/* ¿ªÆôµ÷ÊÔ¶Ë¿ÚÒı½ÅËùÔÚµÄGPIOµÄÊ±ÖÓ */
 
-	/* é…ç½®è°ƒè¯•ç«¯å£çš„TX */
+	/* ÅäÖÃµ÷ÊÔ¶Ë¿ÚµÄTX */
 	GPIO_InitStructure.GPIO_Pin = GPRS_COM_TX_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPRS_COM_GPIO_PORT, &GPIO_InitStructure);
 
-	/* é…ç½®è°ƒè¯•ç«¯å£çš„RX */
+	/* ÅäÖÃµ÷ÊÔ¶Ë¿ÚµÄRX */
 	GPIO_InitStructure.GPIO_Pin = GPRS_COM_RX_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GPRS_COM_GPIO_PORT, &GPIO_InitStructure);
 
-	GPIO_ResetBits(GPRS_COM_GPIO_PORT, GPRS_COM_TX_PIN); //ä¸²å£å…³æ–­æ—¶æ­¤å¼•è„šä¸ºä½ç”µå¹³
+	GPIO_ResetBits(GPRS_COM_GPIO_PORT, GPRS_COM_TX_PIN); //´®¿Ú¹Ø¶ÏÊ±´ËÒı½ÅÎªµÍµçÆ½
 }
 
 /*
 ****************************************************************************************************
-* åŠŸèƒ½æè¿°ï¼š
-* è¾“å…¥å‚æ•°ï¼š
-* è¿”å›å‚æ•°ï¼š
-* è¯´    æ˜ï¼š
+* ¹¦ÄÜÃèÊö£º
+* ÊäÈë²ÎÊı£º
+* ·µ»Ø²ÎÊı£º
+* Ëµ    Ã÷£º
 ****************************************************************************************************
 */
 void USART3_SendDataToGPRS(uint8_t* pString, uint16_t DataLength) {
@@ -116,56 +116,56 @@ void USART3_SendDataToGPRS(uint8_t* pString, uint16_t DataLength) {
 	USART3_InitRXbuf();
 	for (i = 0; i < DataLength; i++) {
 		if (DebugDly > 0) {
-			USART_SendData(DEBUG_COM, pString[i]); //ç”¨äºè°ƒè¯•ä¿¡å·
+			USART_SendData(DEBUG_COM, pString[i]); //ÓÃÓÚµ÷ÊÔĞÅºÅ
 		}
 		USART_SendData(GPRS_COM, pString[i]);
 		while (USART_GetFlagStatus(GPRS_COM, USART_FLAG_TXE) == RESET)
 			;
 	}
-	USART3_RxFlag = 0; //é‡æ–°å¯åŠ¨ä¸€æ¬¡æ¥æ”¶
+	USART3_RxFlag = 0; //ÖØĞÂÆô¶¯Ò»´Î½ÓÊÕ
 }
 
 /***********************************************************************
-å‡½æ•°åç§°ï¼švoid USART1_IRQHandler(void)
-åŠŸ    èƒ½ï¼šå®ŒæˆSCIçš„æ•°æ®çš„æ¥æ”¶ï¼Œå¹¶åšæ ‡è¯†
-è¾“å…¥å‚æ•°ï¼š
-è¾“å‡ºå‚æ•°ï¼š
-ç¼–å†™æ—¶é—´ï¼š2012.11.22
-ç¼– å†™ äººï¼š
-æ³¨    æ„ï¼šRS232ç”¨çš„æ˜¯USART1
+º¯ÊıÃû³Æ£ºvoid USART1_IRQHandler(void)
+¹¦    ÄÜ£ºÍê³ÉSCIµÄÊı¾İµÄ½ÓÊÕ£¬²¢×ö±êÊ¶
+ÊäÈë²ÎÊı£º
+Êä³ö²ÎÊı£º
+±àĞ´Ê±¼ä£º2012.11.22
+±à Ğ´ ÈË£º
+×¢    Òâ£ºRS232ÓÃµÄÊÇUSART1
 ***********************************************************************/
 uint16_t USART1_RecDly;
 void USART1_IRQHandler(void) {
-	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) //æ¥æ”¶åˆ°äº†æ•°æ®
+	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) //½ÓÊÕµ½ÁËÊı¾İ
 	{
 		USART1_RecDly = 25;
 		RS232_buff[RS232_rec_counter] = USART1->DR; //
 		RS232_rec_counter++;
-		/***ä»¥RS232_END_FLAG1å’ŒRS232_END_FLAG2å®šä¹‰çš„å­—ç¬¦ä½œä¸ºä¸€å¸§æ•°æ®çš„ç»“æŸæ ‡è¯†***/
-		if (RS232_rec_counter >= 2) //åªæœ‰æ¥æ”¶åˆ°2ä¸ªæ•°æ®ä»¥ä¸Šæ‰åšåˆ¤æ–­
+		/***ÒÔRS232_END_FLAG1ºÍRS232_END_FLAG2¶¨ÒåµÄ×Ö·û×÷ÎªÒ»Ö¡Êı¾İµÄ½áÊø±êÊ¶***/
+		if (RS232_rec_counter >= 2) //Ö»ÓĞ½ÓÊÕµ½2¸öÊı¾İÒÔÉÏ²Å×öÅĞ¶Ï
 		{
-			if (RS232_buff[RS232_rec_counter - 2] == RS232_END_FLAG1 && RS232_buff[RS232_rec_counter - 1] == RS232_END_FLAG2) //å¸§èµ·å§‹æ ‡å¿—
+			if (RS232_buff[RS232_rec_counter - 2] == RS232_END_FLAG1 && RS232_buff[RS232_rec_counter - 1] == RS232_END_FLAG2) //Ö¡ÆğÊ¼±êÖ¾
 			{
 				RS232_REC_Flag = 1;
 				RS232_rec_counter = 0;
 			}
 			else {
-				if (strstr((char*)&RS232_buff[RS232_rec_counter - 5], "debug") || strstr((char*)&RS232_buff[RS232_rec_counter - 5], "DEBUG")) { //debugå…è®¸ä¿¡å·
-					DebugDly = 50 * 60 * 1; //è¾“å‡º5åˆ†é’Ÿæ•°æ®
+				if (strstr((char*)&RS232_buff[RS232_rec_counter - 5], "debug") || strstr((char*)&RS232_buff[RS232_rec_counter - 5], "DEBUG")) { //debugÔÊĞíĞÅºÅ
+					DebugDly = 50 * 60 * 1; //Êä³ö5·ÖÖÓÊı¾İ
 					DebugNRF905Dly = 0;
 					RS232_rec_counter = 0;
 				}
-				else if (strstr((char*)&RS232_buff[RS232_rec_counter - 6], "nrf905") || strstr((char*)&RS232_buff[RS232_rec_counter - 6], "NRF905")) { //debugå…è®¸ä¿¡å·
-					DebugNRF905Dly = 50 * 60 * 1; //è¾“å‡º5åˆ†é’Ÿæ•°?
+				else if (strstr((char*)&RS232_buff[RS232_rec_counter - 6], "nrf905") || strstr((char*)&RS232_buff[RS232_rec_counter - 6], "NRF905")) { //debugÔÊĞíĞÅºÅ
+					DebugNRF905Dly = 50 * 60 * 1; //Êä³ö5·ÖÖÓÊı?
 					DebugDly = 0;
 					RS232_rec_counter = 0;
 				}
-				else if (strstr((char*)&RS232_buff[RS232_rec_counter - 7], "version") || strstr((char*)&RS232_buff[RS232_rec_counter - 7], "VERSION")) { //debugå…è®¸ä¿¡å·
-					reqVersionflg = 1; //è¾“å‡º5åˆ†é’Ÿæ•°?
+				else if (strstr((char*)&RS232_buff[RS232_rec_counter - 7], "version") || strstr((char*)&RS232_buff[RS232_rec_counter - 7], "VERSION")) { //debugÔÊĞíĞÅºÅ
+					reqVersionflg = 1; //Êä³ö5·ÖÖÓÊı?
 				}
 			}
 		}
-		if (RS232_rec_counter > RS232_REC_BUFF_SIZE) //è¶…è¿‡æ¥æ”¶ç¼“å†²åŒºå¤§å°
+		if (RS232_rec_counter > RS232_REC_BUFF_SIZE) //³¬¹ı½ÓÊÕ»º³åÇø´óĞ¡
 		{
 			RS232_rec_counter = 0;
 		}
@@ -186,10 +186,10 @@ void USART1_supervise(void) {
 void USART3_IRQHandler(void) {
 	if (USART_GetFlagStatus(GPRS_COM, USART_FLAG_RXNE) == SET) {
 		USART_ClearFlag(GPRS_COM, USART_FLAG_RXNE);
-		USART3_RxFlag = 1; //å¯åŠ¨ä¸­æ–­çš„è¶…æ—¶è®°æ•°ï¼Œæ¯æ¥æ”¶ä¸€ç»„æ•°æ®ï¼Œè¿™ä¸ªéƒ½è¦ç½®ä½ä¸€æ¬¡
-		USART3_RxTimeoutCnt = 0; //ä¸€ç›´æ¥æ”¶æ—¶æ¸…é™¤å»¶æ—¶
+		USART3_RxFlag = 1; //Æô¶¯ÖĞ¶ÏµÄ³¬Ê±¼ÇÊı£¬Ã¿½ÓÊÕÒ»×éÊı¾İ£¬Õâ¸ö¶¼ÒªÖÃÎ»Ò»´Î
+		USART3_RxTimeoutCnt = 0; //Ò»Ö±½ÓÊÕÊ±Çå³ıÑÓÊ±
 		USART3_RxBuf[USART3_RxLength] = USART_ReceiveData(GPRS_COM);
-		if (DebugDly > 0) { //æ¥æ”¶åˆ°çš„ä¿¡å·é€šè¿‡è°ƒè¯•ä¸²å£å‘å‡º
+		if (DebugDly > 0) { //½ÓÊÕµ½µÄĞÅºÅÍ¨¹ıµ÷ÊÔ´®¿Ú·¢³ö
 			DEBUG_COM->DR = USART3_RxBuf[USART3_RxLength];
 		}
 		if (USART3_RxLength < 61)
@@ -198,13 +198,13 @@ void USART3_IRQHandler(void) {
 }
 
 /***********************************************************************
-å‡½æ•°åç§°ï¼šRUSART1_SendDataToRS232(uint8_t *pString,uint16_t DataLength)
-åŠŸ    èƒ½ï¼šRS232å‘é€å­—ç¬¦ä¸²
-è¾“å…¥å‚æ•°ï¼šsend_buff:å¾…å‘é€çš„æ•°æ®æŒ‡é’ˆï¼›lengthï¼šå‘é€çš„æ•°æ®é•¿åº¦ï¼ˆå­—ç¬¦ä¸ªæ•°ï¼‰
-è¾“å‡ºå‚æ•°ï¼š
-ç¼–å†™æ—¶é—´ï¼š2015.11.22
-ç¼– å†™ äººï¼š
-æ³¨    æ„ï¼š
+º¯ÊıÃû³Æ£ºRUSART1_SendDataToRS232(uint8_t *pString,uint16_t DataLength)
+¹¦    ÄÜ£ºRS232·¢ËÍ×Ö·û´®
+ÊäÈë²ÎÊı£ºsend_buff:´ı·¢ËÍµÄÊı¾İÖ¸Õë£»length£º·¢ËÍµÄÊı¾İ³¤¶È£¨×Ö·û¸öÊı£©
+Êä³ö²ÎÊı£º
+±àĞ´Ê±¼ä£º2015.11.22
+±à Ğ´ ÈË£º
+×¢    Òâ£º
 ***********************************************************************/
 uint16_t usart1sentdelay;
 void USART1_SendDataToRS232(uint8_t* pString, uint16_t DataLength) {
@@ -227,13 +227,13 @@ void USART1_SendCharToRS232(uint8_t CharData) {
 	USART_ClearITPendingBit(USART1, USART_IT_TC);
 }
 /***************************************************************************************
-å‡½æ•°åç§°ï¼šRS232_Send_Data(unsigned char *send_buff,unsigned int length)
-åŠŸ    èƒ½ï¼šç›‘æ§USART3çš„æ¥æ”¶æ•°æ®,åœ¨æ¥æ”¶åˆ°ä¸€ä¸²å®Œæ•´æ•°æ®åç½®ä½æ ‡å¿—ä½,æ•°æ®å†™å…¥data;
-è¾“å…¥å‚æ•°ï¼š
-è¾“å‡ºå‚æ•°ï¼šè¿”å›æ•°æ®é•¿åº¦ï¼Œæ¥æ”¶æ•°æ®æŒ‡é’ˆ
-ç¼–å†™æ—¶é—´ï¼š2015.12.19
-ç¼– å†™ äººï¼šé™ˆè¿é¹
-æ³¨    æ„ï¼š
+º¯ÊıÃû³Æ£ºRS232_Send_Data(unsigned char *send_buff,unsigned int length)
+¹¦    ÄÜ£º¼à¿ØUSART3µÄ½ÓÊÕÊı¾İ,ÔÚ½ÓÊÕµ½Ò»´®ÍêÕûÊı¾İºóÖÃÎ»±êÖ¾Î»,Êı¾İĞ´Èëdata;
+ÊäÈë²ÎÊı£º
+Êä³ö²ÎÊı£º·µ»ØÊı¾İ³¤¶È£¬½ÓÊÕÊı¾İÖ¸Õë
+±àĞ´Ê±¼ä£º2015.12.19
+±à Ğ´ ÈË£º³ÂÁ¬Åô
+×¢    Òâ£º
 
 
 ****************************************************************************************/
@@ -242,27 +242,27 @@ uint16_t Supervise_USART3(uint8_t* pReceiveData) {
 	uint16_t pReceiveLength;
 
 	pReceiveLength = 0;
-	if (USART3_RxFlag == 1) //GPRSé€šè¿‡ä¸²å£ä¸‹å‘æ•°æ®æ—¶å°±ä¼šç½®æ­¤ä½
+	if (USART3_RxFlag == 1) //GPRSÍ¨¹ı´®¿ÚÏÂ·¢Êı¾İÊ±¾Í»áÖÃ´ËÎ»
 	{
-		USART3_RxTimeoutCnt++; //æ¯æ¥æ”¶åˆ°ä¸€ä¸ªæ•°æ®ï¼Œè¿™ä¸ªéƒ½ä¼šè¢«æ¸…é›¶
+		USART3_RxTimeoutCnt++; //Ã¿½ÓÊÕµ½Ò»¸öÊı¾İ£¬Õâ¸ö¶¼»á±»ÇåÁã
 	}
 	else {
 		USART3_RxTimeoutCnt = 0;
 	}
-	if (USART3_RxTimeoutCnt > 3) //æ¥æ”¶æ•°æ®å30ms
+	if (USART3_RxTimeoutCnt > 3) //½ÓÊÕÊı¾İºó30ms
 	{
 		USART3_RxFlag = 0;
 		USART3_RxTimeoutCnt = 0;
 		memset(pReceiveData, 0, GPRS_RCV_BUF);
-		for (i = 0; i < USART3_RxLength; i++) //æœ€é•¿63ä¸ªï¼Œæœ€åä¸€ä¸ªå­—èŠ‚ä¸ºå­—ç¬¦ä¸²ç»“æŸç¬¦
+		for (i = 0; i < USART3_RxLength; i++) //×î³¤63¸ö£¬×îºóÒ»¸ö×Ö½ÚÎª×Ö·û´®½áÊø·û
 		{
 			pReceiveData[i] = USART3_RxBuf[i];
 		}
-		pReceiveData[i] = '\0'; //å­—ç¬¦ä¸²ç»“æŸç¬¦ï¼Œåœ¨ä¸€äº›å­—ç¬¦ä¸²å¤„ç†ä¸­éœ€è¦é€šè¿‡è¿™ä¸ªè¯†åˆ«ç»“æŸæ¡ä»¶
+		pReceiveData[i] = '\0'; //×Ö·û´®½áÊø·û£¬ÔÚÒ»Ğ©×Ö·û´®´¦ÀíÖĞĞèÒªÍ¨¹ıÕâ¸öÊ¶±ğ½áÊøÌõ¼ş
 		pReceiveLength = USART3_RxLength;
 		USART3_RxLength = 0;
 	}
-	return pReceiveLength; //è¿”å›æ•°æ®é•¿åº¦
+	return pReceiveLength; //·µ»ØÊı¾İ³¤¶È
 }
 
 void USART3_InitRXbuf(void) {

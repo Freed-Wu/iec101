@@ -37,30 +37,30 @@
 *																			*
 *****************************************************************************/
 /*define NRF905 control pin*/
-#define NRF905_PWUP GPIOA ////nrf905ä¸Šç”µ
+#define NRF905_PWUP GPIOA ////nrf905ÉÏµç
 #define NRF905_PWUP_PIN GPIO_Pin_0
 
-#define NRF905_TRCE GPIOA //ä½¿èƒ½èŠ¯ç‰‡å‘é€æˆ–æ¥æ”¶
+#define NRF905_TRCE GPIOA //Ê¹ÄÜĞ¾Æ¬·¢ËÍ»ò½ÓÊÕ
 #define NRF905_TRCE_PIN GPIO_Pin_2
 
-#define NRF905_TXEN GPIOA //è®¾ç½®å‘é€æˆ–æ¥æ”¶æ¨¡å¼
+#define NRF905_TXEN GPIOA //ÉèÖÃ·¢ËÍ»ò½ÓÊÕÄ£Ê½
 #define NRF905_TXEN_PIN GPIO_Pin_3
 
-#define NRF905_CSN GPIOA //ä½¿èƒ½SPI
+#define NRF905_CSN GPIOA //Ê¹ÄÜSPI
 #define NRF905_CSN_PIN GPIO_Pin_12
 #define RCC_NRF905_CSN RCC_APB2Periph_GPIOA
 
-#define NRF905_CD GPIOA //nrfè¾“å‡ºè½½æ³¢æ£€æµ‹
+#define NRF905_CD GPIOA //nrfÊä³öÔØ²¨¼ì²â
 #define NRF905_CD_PIN GPIO_Pin_1
 
-#define NRF905_AM GPIOA //nrfåœ°å€åŒ¹é…
+#define NRF905_AM GPIOA //nrfµØÖ·Æ¥Åä
 #define NRF905_AM_PIN GPIO_Pin_4
 
 //#define NRF905_DR                      	GPIOA
 //#define NRF905_DR_PIN                     GPIO_Pin_9
 //#define GPIO_NRF905_DR_EXTI_Line          EXTI_Line9
 
-#define NRF905_DR GPIOA //æ¥æ”¶æˆ–å‘é€æ•°æ®å®Œæˆ
+#define NRF905_DR GPIOA //½ÓÊÕ»ò·¢ËÍÊı¾İÍê³É
 #define NRF905_DR_PIN GPIO_Pin_11
 #define GPIO_NRF905_DR_EXTI_Line EXTI_Line11
 
@@ -78,7 +78,7 @@
 #define TIMER_INT GPIOC
 #define TIMER_INT_PIN GPIO_Pin_11
 
-#define ARM_RUN GPIOC //ARMè¿è¡ŒæŒ‡ç¤ºç¯ ä½ç”µå¹³äº®
+#define ARM_RUN GPIOC //ARMÔËĞĞÖ¸Ê¾µÆ µÍµçÆ½ÁÁ
 #define ARM_RUN_PIN GPIO_Pin_9
 
 #define DEBUG_COM USART1
@@ -104,8 +104,8 @@
 #define GPRS_RCV_BUF 80
 
 #define RS232_REC_BUFF_SIZE 80
-#define RS232_END_FLAG1 '?' //RS232ä¸€æ¡¢æ•°æ®ç»“æŸæ ‡å¿—1
-#define RS232_END_FLAG2 ';' //RS232ä¸€æ¡¢æ•°æ®ç»“æŸæ ‡å¿—2
+#define RS232_END_FLAG1 '?' //RS232Ò»èåÊı¾İ½áÊø±êÖ¾1
+#define RS232_END_FLAG2 ';' //RS232Ò»èåÊı¾İ½áÊø±êÖ¾2
 
 #define TRUE 1
 #define FALSE 0

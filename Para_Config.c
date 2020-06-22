@@ -5,8 +5,8 @@
 #include "stm32f10x.h"
 #include "string.h"
 ConfigParaObj MG301_ConfigParaObj;
-uint8_t IsFirstUsed = 0; //æ˜¯å¦ç¬¬ä¸€æ¬¡ä¸Šç”µæ ‡å¿—ä½
-uint8_t ConfigFlag = 0; //é…ç½®ä¿¡æ¯æ ‡å¿—ä½ï¼Œç½®1è¡¨ç¤ºæœ‰ä¿¡æ¯éœ€è¦å†™å…¥åˆ°FLASHä¸­
+uint8_t IsFirstUsed = 0; //ÊÇ·ñµÚÒ»´ÎÉÏµç±êÖ¾Î»
+uint8_t ConfigFlag = 0; //ÅäÖÃĞÅÏ¢±êÖ¾Î»£¬ÖÃ1±íÊ¾ÓĞĞÅÏ¢ĞèÒªĞ´Èëµ½FLASHÖĞ
 
 void ReadParaToRam(ConfigParaObj* ParaObj) {
 	uint8_t i = 0;
@@ -17,7 +17,7 @@ void ReadParaToRam(ConfigParaObj* ParaObj) {
 		ParaObj->WriteFlag2 = 0x33;
 		ParaObj->LinkAddress = 0x0021;
 		memcpy(ParaObj->ServerIP_Port, "180.175.212.248:1008", strlen("180.175.212.248:1008"));
-		ParaObj->HeartTime = 30; //å¿ƒè·³åŒ…é—´éš”ä¸º30s
+		ParaObj->HeartTime = 30; //ĞÄÌø°ü¼ä¸ôÎª30s
 		for (i = 0; i < 32; i++) {
 			ParaObj->HeartData[i] = Heart[i];
 		}

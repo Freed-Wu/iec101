@@ -6,148 +6,148 @@
 #define VARIABLE_DATA 1
 #define STABLE_DATA 2
 
-//在监视方向上的过程信息
-#define NULL 0 //未定义
-#define M_SP_NA_1 1 //单点信息
-#define M_SP_TA_1 2 //带时标的单点信息
-#define M_DP_NA_1 3 //双点信息
-#define M_DP_TA_1 4 //带时标的双点信息
-#define M_ST_NA_1 5 //步位置信息
-#define M_ST_TA_1 6 //带时标的步位置信息
-#define M_BO_NA_1 7 //32比特串
-#define M_BO_TA_1 8 //带时标的32比特串
-#define M_ME_NA_1 9 //测量值，规一化值
-#define M_ME_TA_1 10 //测量值，带时标的规一化值
-#define M_ME_NB_1 11 //测量值，标度化值
-#define M_ME_TB_1 12 //测量值，带时标的标度化值
-#define M_ME_NC_1 13 //测量值，短浮点数
-#define M_ME_TC_1 14 //测量值，带时标的短浮点数
-#define M_IT_NA_1 15 //累计量
-#define M_IT_TA_1 16 //带时标的累计量
-#define M_EP_TA_1 17 //带时标的继电设备保护事件
-#define M_EP_TB_1 18 //时标的继电保护设备成组启动事件
-#define M_EP_TC_1 19 //带时标的继电保护设备成组输出电路信息
-#define M_PS_NA_1 20 //带变位检出的成组单点信息
-#define M_ME_ND_1 21 //测量值，不带品质描述词的规一化值
-#define RESERVED_22 22 //为将来兼容定义保留
-#define RESERVED_23 23 //为将来兼容定义保留
-#define RESERVED_24 24 //为将来兼容定义保留
-#define RESERVED_25 25 //为将来兼容定义保留
-#define RESERVED_26 26 //为将来兼容定义保留
-#define RESERVED_27 27 //为将来兼容定义保留
-#define RESERVED_28 28 //为将来兼容定义保留
-#define RESERVED_29 29 //为将来兼容定义保留
-#define M_SP_TB_1 30 //带CP56Time2a时标的单点信息
-#define M_DP_TB_1 31 //带CP56Time2a时标的双点信息
-#define M_ST_TB_1 32 //带CP56Time2a时标的步位置信息
-#define M_BO_TB_1 33 //带CP56Time2a时标的32比特串
-#define M_ME_TD_1 34 //带CP56Time2a时标的测量值, 规一化值
-#define M_ME_TE_1 35 //带CP56Time2a时标的测量值, 标度化值
-#define M_ME_TF_1 36 //带CP56Time2a时标的测量值, 短浮点数
-#define M_IT_TB_1 37 //带CP56Time2a时标的累计量
-#define M_EP_TD_1 38 //带CP56Time2a时标的继电保护设备事件
-#define M_EP_TE_1 39 //带CP56Time2a时标的继电保护设备成组启动事件
-#define M_EP_TF_1 40 //带CP56Time2a时标的继电保护设备成组输出电路信息
-#define RESERVED_41 41 //为将来兼容定义保留
-#define RESERVED_42 42 //为将来兼容定义保留
-#define RESERVED_43 43 //为将来兼容定义保留
-#define RESERVED_44 44 //为将来兼容定义保留
+//�ڼ��ӷ����ϵĹ�����Ϣ
+#define NULL 0 //δ����
+#define M_SP_NA_1 1 //������Ϣ
+#define M_SP_TA_1 2 //��ʱ��ĵ�����Ϣ
+#define M_DP_NA_1 3 //˫����Ϣ
+#define M_DP_TA_1 4 //��ʱ���˫����Ϣ
+#define M_ST_NA_1 5 //��λ����Ϣ
+#define M_ST_TA_1 6 //��ʱ��Ĳ�λ����Ϣ
+#define M_BO_NA_1 7 //32���ش�
+#define M_BO_TA_1 8 //��ʱ���32���ش�
+#define M_ME_NA_1 9 //����ֵ����һ��ֵ
+#define M_ME_TA_1 10 //����ֵ����ʱ��Ĺ�һ��ֵ
+#define M_ME_NB_1 11 //����ֵ����Ȼ�ֵ
+#define M_ME_TB_1 12 //����ֵ����ʱ��ı�Ȼ�ֵ
+#define M_ME_NC_1 13 //����ֵ���̸�����
+#define M_ME_TC_1 14 //����ֵ����ʱ��Ķ̸�����
+#define M_IT_NA_1 15 //�ۼ���
+#define M_IT_TA_1 16 //��ʱ����ۼ���
+#define M_EP_TA_1 17 //��ʱ��ļ̵��豸�����¼�
+#define M_EP_TB_1 18 //ʱ��ļ̵籣���豸���������¼�
+#define M_EP_TC_1 19 //��ʱ��ļ̵籣���豸���������·��Ϣ
+#define M_PS_NA_1 20 //����λ����ĳ��鵥����Ϣ
+#define M_ME_ND_1 21 //����ֵ������Ʒ�������ʵĹ�һ��ֵ
+#define RESERVED_22 22 //Ϊ�������ݶ��屣��
+#define RESERVED_23 23 //Ϊ�������ݶ��屣��
+#define RESERVED_24 24 //Ϊ�������ݶ��屣��
+#define RESERVED_25 25 //Ϊ�������ݶ��屣��
+#define RESERVED_26 26 //Ϊ�������ݶ��屣��
+#define RESERVED_27 27 //Ϊ�������ݶ��屣��
+#define RESERVED_28 28 //Ϊ�������ݶ��屣��
+#define RESERVED_29 29 //Ϊ�������ݶ��屣��
+#define M_SP_TB_1 30 //��CP56Time2aʱ��ĵ�����Ϣ
+#define M_DP_TB_1 31 //��CP56Time2aʱ���˫����Ϣ
+#define M_ST_TB_1 32 //��CP56Time2aʱ��Ĳ�λ����Ϣ
+#define M_BO_TB_1 33 //��CP56Time2aʱ���32���ش�
+#define M_ME_TD_1 34 //��CP56Time2aʱ��Ĳ���ֵ, ��һ��ֵ
+#define M_ME_TE_1 35 //��CP56Time2aʱ��Ĳ���ֵ, ��Ȼ�ֵ
+#define M_ME_TF_1 36 //��CP56Time2aʱ��Ĳ���ֵ, �̸�����
+#define M_IT_TB_1 37 //��CP56Time2aʱ����ۼ���
+#define M_EP_TD_1 38 //��CP56Time2aʱ��ļ̵籣���豸�¼�
+#define M_EP_TE_1 39 //��CP56Time2aʱ��ļ̵籣���豸���������¼�
+#define M_EP_TF_1 40 //��CP56Time2aʱ��ļ̵籣���豸���������·��Ϣ
+#define RESERVED_41 41 //Ϊ�������ݶ��屣��
+#define RESERVED_42 42 //Ϊ�������ݶ��屣��
+#define RESERVED_43 43 //Ϊ�������ݶ��屣��
+#define RESERVED_44 44 //Ϊ�������ݶ��屣��
 
-//在控制方向上的过程信息
-#define C_SC_NA_1 45 //单点命令
-#define C_DC_NA_1 46 //双点命令
-#define C_RC_NA_1 47 //步调节命令
-#define C_SE_NA_1 48 //设定值命令, 规一化值
-#define C_SE_NB_1 49 //设定值命令, 标度化值
-#define C_SE_NC_1 50 //设定值命令, 短浮点数
-#define C_BO_NA_1 51 //32比特串
-#define RESERVED_52 52 //为将来兼容定义保留
-#define RESERVED_53 53 //为将来兼容定义保留
-#define RESERVED_54 54 //为将来兼容定义保留
-#define RESERVED_55 55 //为将来兼容定义保留
-#define RESERVED_56 56 //为将来兼容定义保留
-#define RESERVED_57 57 //为将来兼容定义保留
-#define RESERVED_58 58 //为将来兼容定义保留
-#define RESERVED_59 59 //为将来兼容定义保留
-#define RESERVED_60 60 //为将来兼容定义保留
-#define RESERVED_61 61 //为将来兼容定义保留
-#define RESERVED_62 62 //为将来兼容定义保留
-#define RESERVED_63 63 //为将来兼容定义保留
-#define RESERVED_64 64 //为将来兼容定义保留
-#define RESERVED_65 65 //为将来兼容定义保留
-#define RESERVED_66 66 //为将来兼容定义保留
-#define RESERVED_67 67 //为将来兼容定义保留
-#define RESERVED_68 68 //为将来兼容定义保留
-#define RESERVED_69 69 //为将来兼容定义保留
+//�ڿ��Ʒ����ϵĹ�����Ϣ
+#define C_SC_NA_1 45 //��������
+#define C_DC_NA_1 46 //˫������
+#define C_RC_NA_1 47 //����������
+#define C_SE_NA_1 48 //�趨ֵ����, ��һ��ֵ
+#define C_SE_NB_1 49 //�趨ֵ����, ��Ȼ�ֵ
+#define C_SE_NC_1 50 //�趨ֵ����, �̸�����
+#define C_BO_NA_1 51 //32���ش�
+#define RESERVED_52 52 //Ϊ�������ݶ��屣��
+#define RESERVED_53 53 //Ϊ�������ݶ��屣��
+#define RESERVED_54 54 //Ϊ�������ݶ��屣��
+#define RESERVED_55 55 //Ϊ�������ݶ��屣��
+#define RESERVED_56 56 //Ϊ�������ݶ��屣��
+#define RESERVED_57 57 //Ϊ�������ݶ��屣��
+#define RESERVED_58 58 //Ϊ�������ݶ��屣��
+#define RESERVED_59 59 //Ϊ�������ݶ��屣��
+#define RESERVED_60 60 //Ϊ�������ݶ��屣��
+#define RESERVED_61 61 //Ϊ�������ݶ��屣��
+#define RESERVED_62 62 //Ϊ�������ݶ��屣��
+#define RESERVED_63 63 //Ϊ�������ݶ��屣��
+#define RESERVED_64 64 //Ϊ�������ݶ��屣��
+#define RESERVED_65 65 //Ϊ�������ݶ��屣��
+#define RESERVED_66 66 //Ϊ�������ݶ��屣��
+#define RESERVED_67 67 //Ϊ�������ݶ��屣��
+#define RESERVED_68 68 //Ϊ�������ݶ��屣��
+#define RESERVED_69 69 //Ϊ�������ݶ��屣��
 
-//在监视方向的系统命令
-#define M_EI_NA_1 70 //初始化结束
-#define RESERVED_71 71 //为将来兼容定义保留
-#define RESERVED_72 72 //为将来兼容定义保留
-#define RESERVED_73 73 //为将来兼容定义保留
-#define RESERVED_74 74 //为将来兼容定义保留
-#define RESERVED_75 75 //为将来兼容定义保留
-#define RESERVED_76 76 //为将来兼容定义保留
-#define RESERVED_77 77 //为将来兼容定义保留
-#define RESERVED_78 78 //为将来兼容定义保留
-#define RESERVED_79 79 //为将来兼容定义保留
-#define RESERVED_80 80 //为将来兼容定义保留
-#define RESERVED_81 81 //为将来兼容定义保留
-#define RESERVED_82 82 //为将来兼容定义保留
-#define RESERVED_83 83 //为将来兼容定义保留
-#define RESERVED_84 84 //为将来兼容定义保留
-#define RESERVED_85 85 //为将来兼容定义保留
-#define RESERVED_86 86 //为将来兼容定义保留
-#define RESERVED_87 87 //为将来兼容定义保留
-#define RESERVED_88 88 //为将来兼容定义保留
-#define RESERVED_89 89 //为将来兼容定义保留
-#define RESERVED_90 90 //为将来兼容定义保留
-#define RESERVED_91 91 //为将来兼容定义保留
-#define RESERVED_92 92 //为将来兼容定义保留
-#define RESERVED_93 93 //为将来兼容定义保留
-#define RESERVED_94 94 //为将来兼容定义保留
-#define RESERVED_95 95 //为将来兼容定义保留
-#define RESERVED_96 96 //为将来兼容定义保留
-#define RESERVED_97 97 //为将来兼容定义保留
-#define RESERVED_98 98 //为将来兼容定义保留
-#define RESERVED_99 99 //为将来兼容定义保留
+//�ڼ��ӷ����ϵͳ����
+#define M_EI_NA_1 70 //��ʼ������
+#define RESERVED_71 71 //Ϊ�������ݶ��屣��
+#define RESERVED_72 72 //Ϊ�������ݶ��屣��
+#define RESERVED_73 73 //Ϊ�������ݶ��屣��
+#define RESERVED_74 74 //Ϊ�������ݶ��屣��
+#define RESERVED_75 75 //Ϊ�������ݶ��屣��
+#define RESERVED_76 76 //Ϊ�������ݶ��屣��
+#define RESERVED_77 77 //Ϊ�������ݶ��屣��
+#define RESERVED_78 78 //Ϊ�������ݶ��屣��
+#define RESERVED_79 79 //Ϊ�������ݶ��屣��
+#define RESERVED_80 80 //Ϊ�������ݶ��屣��
+#define RESERVED_81 81 //Ϊ�������ݶ��屣��
+#define RESERVED_82 82 //Ϊ�������ݶ��屣��
+#define RESERVED_83 83 //Ϊ�������ݶ��屣��
+#define RESERVED_84 84 //Ϊ�������ݶ��屣��
+#define RESERVED_85 85 //Ϊ�������ݶ��屣��
+#define RESERVED_86 86 //Ϊ�������ݶ��屣��
+#define RESERVED_87 87 //Ϊ�������ݶ��屣��
+#define RESERVED_88 88 //Ϊ�������ݶ��屣��
+#define RESERVED_89 89 //Ϊ�������ݶ��屣��
+#define RESERVED_90 90 //Ϊ�������ݶ��屣��
+#define RESERVED_91 91 //Ϊ�������ݶ��屣��
+#define RESERVED_92 92 //Ϊ�������ݶ��屣��
+#define RESERVED_93 93 //Ϊ�������ݶ��屣��
+#define RESERVED_94 94 //Ϊ�������ݶ��屣��
+#define RESERVED_95 95 //Ϊ�������ݶ��屣��
+#define RESERVED_96 96 //Ϊ�������ݶ��屣��
+#define RESERVED_97 97 //Ϊ�������ݶ��屣��
+#define RESERVED_98 98 //Ϊ�������ݶ��屣��
+#define RESERVED_99 99 //Ϊ�������ݶ��屣��
 
-//在控制方向的系统命令
-#define C_IC_NA_1 100 //总召唤命令
-#define C_CI_NA_1 101 //计数量召唤命令
-#define C_RD_NA_1 102 //读命令
-#define C_CS_NA_1 103 //时钟同步命令
-#define C_TS_NA_1 104 //测试命今
-#define C_RP_NA_1 105 //复位进程命令
-#define C_CD_NA_1 106 //延时获得命今
-#define RESERVED_107 107 //为将来兼容定义保留
-#define RESERVED_108 108 //为将来兼容定义保留
-#define RESERVED_109 109 //为将来兼容定义保留
+//�ڿ��Ʒ����ϵͳ����
+#define C_IC_NA_1 100 //���ٻ�����
+#define C_CI_NA_1 101 //�������ٻ�����
+#define C_RD_NA_1 102 //������
+#define C_CS_NA_1 103 //ʱ��ͬ������
+#define C_TS_NA_1 104 //��������
+#define C_RP_NA_1 105 //��λ��������
+#define C_CD_NA_1 106 //��ʱ�������
+#define RESERVED_107 107 //Ϊ�������ݶ��屣��
+#define RESERVED_108 108 //Ϊ�������ݶ��屣��
+#define RESERVED_109 109 //Ϊ�������ݶ��屣��
 
-//在控制方向的参数命令
-#define P_ME_NA_1 110 //测量值参数, 规一化值
-#define P_ME_NB_1 111 //测量值参数, 标度化值
-#define P_ME_NC_1 112 //测量值参数, 短浮点数
-#define P_AC_NA_1 113 //参数激活
-#define RESERVED_114 114 //为将来兼容定义保留
-#define RESERVED_115 115 //为将来兼容定义保留
-#define RESERVED_116 116 //为将来兼容定义保留
-#define RESERVED_117 117 //为将来兼容定义保留
-#define RESERVED_118 118 //为将来兼容定义保留
-#define RESERVED_119 119 //为将来兼容定义保留
+//�ڿ��Ʒ���Ĳ�������
+#define P_ME_NA_1 110 //����ֵ����, ��һ��ֵ
+#define P_ME_NB_1 111 //����ֵ����, ��Ȼ�ֵ
+#define P_ME_NC_1 112 //����ֵ����, �̸�����
+#define P_AC_NA_1 113 //��������
+#define RESERVED_114 114 //Ϊ�������ݶ��屣��
+#define RESERVED_115 115 //Ϊ�������ݶ��屣��
+#define RESERVED_116 116 //Ϊ�������ݶ��屣��
+#define RESERVED_117 117 //Ϊ�������ݶ��屣��
+#define RESERVED_118 118 //Ϊ�������ݶ��屣��
+#define RESERVED_119 119 //Ϊ�������ݶ��屣��
 
-//文件传输
-#define F_FR_NA_1 120 //文件准备就绪
-#define F_SR_NA_1 121 //节准备就绪
-#define F_SC_NA_1 122 //召唤目录, 选择文件, 召唤文件，召唤节
-#define F_LS_NA_1 123 //最后的节,最后的段
-#define F_AF_NA_1 124 //认可文件,认可节
-#define F_SG_NA_1 125 //段
-#define F_DR_TA_1 126 //目录
-#define RESERVED_127 127 //为将来兼容定义保留
+//�ļ�����
+#define F_FR_NA_1 120 //�ļ�׼������
+#define F_SR_NA_1 121 //��׼������
+#define F_SC_NA_1 122 //�ٻ�Ŀ¼, ѡ���ļ�, �ٻ��ļ����ٻ���
+#define F_LS_NA_1 123 //���Ľ�,���Ķ�
+#define F_AF_NA_1 124 //�Ͽ��ļ�,�Ͽɽ�
+#define F_SG_NA_1 125 //��
+#define F_DR_TA_1 126 //Ŀ¼
+#define RESERVED_127 127 //Ϊ�������ݶ��屣��
 
-//定义控制域功能码(平衡传输)
-//启动站向从动站传输报文控制域的功能码(PRM=1)
+//�������������(ƽ�⴫��)
+//����վ��Ӷ�վ���䱨�Ŀ�����Ĺ�����(PRM=1)
 #define RST_LINK_FUNC 0x00
 #define RST_PROCESS_FUNC 0x01
 #define TEST_LINK_FUNC 0x02
@@ -155,13 +155,13 @@
 #define NO_ANSWER_DATA_FUNC 0x04
 #define LINK_STATUS_FUNC 0x09
 
-//从动站向启动站传输报文控制域的功能码(PRM=0)
+//�Ӷ�վ������վ���䱨�Ŀ�����Ĺ�����(PRM=0)
 #define RETURN_OK_FUNC 0x00
 #define RETURN_NO_OK_FUNC 0x01
 #define ACK_LINK_STATUS 0x0B
 
-#define S2M_DIR 1 //从从站(B站)到主站(A站)DIR为1
-#define M2S_DIR 0 //从主站(A站)到从站(B站)DIR为0
+#define S2M_DIR 1 //�Ӵ�վ(Bվ)����վ(Aվ)DIRΪ1
+#define M2S_DIR 0 //����վ(Aվ)����վ(Bվ)DIRΪ0
 
 typedef struct {
 	uint8_t TypeID;
@@ -184,9 +184,9 @@ typedef struct {
 
 extern unsigned char Time_Data[8];
 
-extern uint8_t ProtocolRxBuffer[64]; //存储主站发过来的命令
+extern uint8_t ProtocolRxBuffer[64]; //�洢��վ������������
 
-extern uint16_t LINK_ADDRESS; //定义链路地址
+extern uint16_t LINK_ADDRESS; //������·��ַ
 
 uint8_t Protocol(uint8_t* pBuffer);
 

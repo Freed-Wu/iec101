@@ -18,7 +18,7 @@ static uint16_t GPRS_ReceiveLength;
 
 #define TIME_GPRSNotCallRstDelay (uint32_t)(50 * 60 * 12) //(50 * 60 * 12)
 
-uint32_t HeartTime = 3000; //å®šä¹‰å¿ƒè·³åŒ…æ—¶é—´é»˜è®¤å€¼ä¸º30s
+uint32_t HeartTime = 3000; //¶¨ÒåĞÄÌø°üÊ±¼äÄ¬ÈÏÖµÎª30s
 uint16_t GPRSStat = GPRS_IDLE;
 //uint16_t GPRSSubStat = GPRS_IDLE_SUB;
 uint16_t sGPRSTimeDelay;
@@ -27,13 +27,13 @@ uint32_t sGPRSNotCallRstDelay;
 uint16_t GPRSErrorCnt = 0;
 uint16_t GPRSOpenErrorCnt;
 uint16_t GPRSSendBeatDataflg = 0;
-uint16_t GPRSFaultcnt; //æ¥æ”¶ä¸åˆ°æ€»å¬å”¤è®¡æ•°ï¼Œæ¯æ¬¡æ”¶ä¸åˆ°æ€»å¬å”¤åˆ™å¤ä½301ï¼Œ3æ¬¡å¤ä½ä¸æˆåŠŸåˆ™å…³æœºé‡å¯
+uint16_t GPRSFaultcnt; //½ÓÊÕ²»µ½×ÜÕÙ»½¼ÆÊı£¬Ã¿´ÎÊÕ²»µ½×ÜÕÙ»½Ôò¸´Î»301£¬3´Î¸´Î»²»³É¹¦Ôò¹Ø»úÖØÆô
 uint16_t GPRSCheckRstcnt;
-uint16_t GPRSSendFrrorFlg; //å‘é€æ•°æ®é”™è¯¯æŒ‡ä»¤
+uint16_t GPRSSendFrrorFlg; //·¢ËÍÊı¾İ´íÎóÖ¸Áî
 
 extern DEVICE_SET user_Set;
 
-//å†…éƒ¨å‡½æ•°å£°æ˜
+//ÄÚ²¿º¯ÊıÉùÃ÷
 //static uint16_t GetDataToGPRSTxbuf(char * pdata);
 void rmDataFromGPRSTxbuf(void);
 
@@ -58,17 +58,17 @@ void GPRSInitTxStatBuf(void) {
 void GPRS_init(void) {
 	static uint16_t data_flg;
 
-	GPIO_ResetBits(GPIOB, GPIO_Pin_15); //ä½ç”µå‹æ—¶å¼€æœºè„šä¸ºé«˜ï¼Œä¸åŠ¨ä½œ
+	GPIO_ResetBits(GPIOB, GPIO_Pin_15); //µÍµçÑ¹Ê±¿ª»ú½ÅÎª¸ß£¬²»¶¯×÷
 
 	memset(GPRS_ReceiveData, 0, GPRS_RCV_BUF);
 	GPRS_ReceiveLength = 0;
 
-	//ä»¥ä¸‹æ˜¯å°†éƒ¨åˆ†å‚æ•°çš„å­—ç¬¦å‹è½¬ä¸ºæ•´å‹æ•°æ®
-	//å°†å¿ƒè·³åŒ…æ—¶é—´ä»å­—ç¬¦ä¸²è½¬ä¸ºæ•´å‹
+	//ÒÔÏÂÊÇ½«²¿·Ö²ÎÊıµÄ×Ö·ûĞÍ×ªÎªÕûĞÍÊı¾İ
+	//½«ĞÄÌø°üÊ±¼ä´Ó×Ö·û´®×ªÎªÕûĞÍ
 	HeartTime = Str2Int((char*)user_Set.heart_time_info);
-	HeartTime *= 100; //æ¢ç®—æˆms
+	HeartTime *= 100; //»»Ëã³Éms
 
-	//åˆå§‹åŒ–å‘é€ç¼“å†²åŒº
+	//³õÊ¼»¯·¢ËÍ»º³åÇø
 	if (data_flg == 0) {
 		data_flg = 1;
 		GPRSInitTxBuf();
@@ -86,59 +86,59 @@ void GPRS_init(void) {
 }
 /*
 ****************************************************************************************************
-* åŠŸèƒ½æè¿°ï¼šTCPé€šé“é‡æ–°è¿æ¥ï¼Œä¸€æ—¦æ£€æµ‹åˆ°æ–­å¼€ç«‹å³é‡è¿
-* è¾“å…¥å‚æ•°ï¼š
-* è¿”å›å‚æ•°ï¼š
-* è¯´    æ˜ï¼š
+* ¹¦ÄÜÃèÊö£ºTCPÍ¨µÀÖØĞÂÁ¬½Ó£¬Ò»µ©¼ì²âµ½¶Ï¿ªÁ¢¼´ÖØÁ¬
+* ÊäÈë²ÎÊı£º
+* ·µ»Ø²ÎÊı£º
+* Ëµ    Ã÷£º
 ****************************************************************************************************
 */
 
 /*******************************************************************************
-					ç®¡ç†TCPçš„æ­£å¸¸è¿è¡Œ
+					¹ÜÀíTCPµÄÕı³£ÔËĞĞ
 ********************************************************************************/
 
 uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
-	char* pReceiveData; //æŒ‡å‘æ•°æ®åŸŸåœ°å€
+	char* pReceiveData; //Ö¸ÏòÊı¾İÓòµØÖ·
 	uint16_t pReceiveLength;
 	uint16_t i;
 
 	pReceiveLength = 0;
-	GPRS_ReceiveLength = Supervise_USART3(GPRS_ReceiveData); //æ¥æ”¶åˆ°æ•°æ®æ ‡ç¤º
+	GPRS_ReceiveLength = Supervise_USART3(GPRS_ReceiveData); //½ÓÊÕµ½Êı¾İ±êÊ¾
 	if (sGPRSTimeDelay > 0)
 		sGPRSTimeDelay--;
 	if (sGPRSSentdataDelay > 0)
 		sGPRSSentdataDelay--;
 	if (BeatCnt < HeartTime) {
-		BeatCnt += 2; //æ­¥è¿›æ˜¯20ms
+		BeatCnt += 2; //²½½øÊÇ20ms
 	}
-	if (GPRSStat > 0x700) { //æ­£å¸¸æ”¶å‘æ•°æ®çŠ¶æ€5åˆ†é’Ÿæœªæ”¶åˆ°æ€»å¬å”¤æ—¶é‡å‘
+	if (GPRSStat > 0x700) { //Õı³£ÊÕ·¢Êı¾İ×´Ì¬5·ÖÖÓÎ´ÊÕµ½×ÜÕÙ»½Ê±ÖØ·¢
 		if (sGPRSNotCallRstDelay) {
 			sGPRSNotCallRstDelay--;
 		}
 	}
 	else {
-		sGPRSNotCallRstDelay = TIME_GPRSNotCallRstDelay; //12åˆ†é’Ÿ;
+		sGPRSNotCallRstDelay = TIME_GPRSNotCallRstDelay; //12·ÖÖÓ;
 	}
 
 	switch (GPRSStat) {
 	case GPRS_IDLE:
 		if (sGPRSTimeDelay == 0) {
 			GPRSErrorCnt = 0;
-			memset(GPRS_ReceiveData, 0, GPRS_RCV_BUF); //åˆå§‹åŒ–ReceiveDataåºåˆ—
+			memset(GPRS_ReceiveData, 0, GPRS_RCV_BUF); //³õÊ¼»¯ReceiveDataĞòÁĞ
 			sGPRSTimeDelay = NEXT_CMD_DLY; //
 			GPRSStat = GPRS_POWER_CMD_SEND;
 		}
 		break;
 	case GPRS_POWER_CMD_SEND:
 		USART3_InitRXbuf();
-		USART3_SendDataToGPRS("AT\r", strlen("AT\r")); //æ˜¯å¦å¼€æœº
+		USART3_SendDataToGPRS("AT\r", strlen("AT\r")); //ÊÇ·ñ¿ª»ú
 		sGPRSTimeDelay = WAIT_ACK;
 
 		GPRSStat = GPRS_POWER_CMD_ACK;
 		break;
 	case GPRS_POWER_CMD_ACK:
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //å¼€æœºçŠ¶æ€
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
+			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //¿ª»ú×´Ì¬
 			{
 				GPRSStat = GPRS_APN_CMD_SEND;
 				sGPRSTimeDelay = NEXT_CMD_DLY;
@@ -155,34 +155,34 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		break;
 	case GPRS_POWER_ON_START:
 		if (sGPRSTimeDelay == 0) {
-			GPIO_SetBits(GPIOB, GPIO_Pin_15); //æ‹‰ä½GPRSæ¨¡å—å¼€æœºå¼•è„šç”µå¹³
+			GPIO_SetBits(GPIOB, GPIO_Pin_15); //À­µÍGPRSÄ£¿é¿ª»úÒı½ÅµçÆ½
 			DelayMs(500);
 			GPIO_ResetBits(GPIOB, GPIO_Pin_15);
-			sGPRSTimeDelay = WAIT_START; //å»¶æ—¶2Så·¦å³
+			sGPRSTimeDelay = WAIT_START; //ÑÓÊ±2S×óÓÒ
 			GPRSStat = GPRS_POWER_WAIT_START;
 			USART3_InitRXbuf();
 		}
 		break;
-	case GPRS_POWER_WAIT_START: //ä¸Šç”µæˆåŠŸåä¼šè¿”å›ä¸€ä¸ªå­—ç¬¦ä¸²
-		/*if(GPRS_ReceiveLength != 0){//æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-				if(strstr((const char *)GPRS_ReceiveData,"SYSSTART") != NULL)//å¼€æœºçŠ¶æ€
+	case GPRS_POWER_WAIT_START: //ÉÏµç³É¹¦ºó»á·µ»ØÒ»¸ö×Ö·û´®
+		/*if(GPRS_ReceiveLength != 0){//½ÓÊÕµ½Ò»Ö¡Êı¾İ
+				if(strstr((const char *)GPRS_ReceiveData,"SYSSTART") != NULL)//¿ª»ú×´Ì¬
 				{
 					GPRSStat = GPRS_ECHO_CMD_SEND;
 					sGPRSTimeDelay = NEXT_CMD_DLY;
-					GPIO_ResetBits(GPIOB,GPIO_Pin_15);	//æ‹‰ä½GPRSæ¨¡å—å¼€æœºå¼•è„šç”µå¹³
+					GPIO_ResetBits(GPIOB,GPIO_Pin_15);	//À­µÍGPRSÄ£¿é¿ª»úÒı½ÅµçÆ½
 				}else if(strstr((const char *)GPRS_ReceiveData,"SHUTDOWN") != NULL){
 					GPRSStat = GPRS_POWER_ON_START;
 					sGPRSTimeDelay = NEXT_CMD_DLY;
 
 				}*/
 		if (sGPRSTimeDelay == (WAIT_START - 125)) {
-			GPIO_ResetBits(GPIOB, GPIO_Pin_15); //æ‹‰ä½GPRSæ¨¡å—å¼€æœºå¼•è„šç”µå¹³
+			GPIO_ResetBits(GPIOB, GPIO_Pin_15); //À­µÍGPRSÄ£¿é¿ª»úÒı½ÅµçÆ½
 			GPRSStat = GPRS_APN_CMD_SEND;
 			sGPRSTimeDelay = NEXT_CMD_DLY;
 		}
 		else if (sGPRSTimeDelay == 0) {
 			GPRSStat = GPRS_IDLE;
-			GPIO_ResetBits(GPIOB, GPIO_Pin_15); //æ‹‰ä½GPRSæ¨¡å—å¼€æœºå¼•è„šç”µå¹³
+			GPIO_ResetBits(GPIOB, GPIO_Pin_15); //À­µÍGPRSÄ£¿é¿ª»úÒı½ÅµçÆ½
 		}
 		break;
 	case GPRS_POWER_RST:
@@ -193,8 +193,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_POWER_RST_ACK:
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //å¼€æœºçŠ¶æ€
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
+			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //¿ª»ú×´Ì¬
 			{
 				GPRSStat = GPRS_POWER_WAIT_START;
 				sGPRSTimeDelay = WAIT_ACK;
@@ -209,7 +209,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			sGPRSTimeDelay = 0;
 		}
 		break;
-	//è®¾ç½®APN
+	//ÉèÖÃAPN
 	case GPRS_APN_CMD_SEND:
 		if (sGPRSTimeDelay == 0) {
 			USART3_SendDataToGPRS("AT+CGDCONT=1,\"IP\",\"CMNET\"\r", SIZEOF("AT+CGDCONT=1,\"IP\",\"CMNET\"\r"));
@@ -218,11 +218,11 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_APN_CMD_ACK:
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //å¼€æœºçŠ¶æ€
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
+			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //¿ª»ú×´Ì¬
 			{
 				GPRSStat = GPRS_CHECK_CSQ_A;
-				sGPRSTimeDelay = 200; //å»¶æ—¶4Sæ£€æµ‹ä¿¡å·è´¨é‡
+				sGPRSTimeDelay = 200; //ÑÓÊ±4S¼ì²âĞÅºÅÖÊÁ¿
 			}
 			else {
 				GPRSStat = GPRS_IDLE;
@@ -232,8 +232,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			GPRSStat = GPRS_IDLE;
 		}
 		break;
-		//é“¾æ¥GPRS-------------------------------------------------------
-		//æœç½‘æ˜¯æ˜¾ç¤ºä¿¡å·å¼ºåº¦-------------------------------------
+		//Á´½ÓGPRS-------------------------------------------------------
+		//ËÑÍøÊÇÏÔÊ¾ĞÅºÅÇ¿¶È-------------------------------------
 	case GPRS_CHECK_CSQ_A:
 		if (sGPRSTimeDelay == 0) {
 			//	GPRSErrorCnt = 0;
@@ -243,14 +243,14 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_CHECK_CSQ_ACK_A:
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //å¼€æœºçŠ¶æ€
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
+			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //¿ª»ú×´Ì¬
 			{
 				GPRSStat = GPRS_CHECK_CREG_SEND;
 				sGPRSTimeDelay = NEXT_CMD_DLY;
 			}
 			else {
-				GPRSStat = GPRS_CHECK_CREG_SEND; //æ˜¯å¦æ£€æµ‹æ­£ç¡®éƒ½è¿›è¡Œä¸‹ä¸€æ¡æŒ‡ä»¤
+				GPRSStat = GPRS_CHECK_CREG_SEND; //ÊÇ·ñ¼ì²âÕıÈ·¶¼½øĞĞÏÂÒ»ÌõÖ¸Áî
 				sGPRSTimeDelay = NEXT_CMD_DLY;
 			}
 		}
@@ -258,7 +258,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			GPRSStat = GPRS_IDLE;
 		}
 		break;
-	//æŸ¥è¯¢æ³¨å†Œç½‘ç»œçŠ¶æ€
+	//²éÑ¯×¢²áÍøÂç×´Ì¬
 	case GPRS_CHECK_CREG_SEND:
 		if (sGPRSTimeDelay == 0) {
 			USART3_SendDataToGPRS("AT+CREG?\r", strlen("AT+CREG?\r"));
@@ -267,14 +267,14 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_CHECK_CREG_ACK:
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //å¼€æœºçŠ¶æ€
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
+			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //¿ª»ú×´Ì¬
 			{
 				GPRSStat = GPRS_CHECK_CPSI_SEND;
 				sGPRSTimeDelay = NEXT_CMD_DLY;
 			}
 			else {
-				GPRSStat = GPRS_CHECK_CPSI_SEND; //æ˜¯å¦æ£€æµ‹æ­£ç¡®éƒ½è¿›è¡Œä¸‹ä¸€æ¡æŒ‡ä»¤
+				GPRSStat = GPRS_CHECK_CPSI_SEND; //ÊÇ·ñ¼ì²âÕıÈ·¶¼½øĞĞÏÂÒ»ÌõÖ¸Áî
 				sGPRSTimeDelay = NEXT_CMD_DLY;
 			}
 		}
@@ -282,7 +282,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			GPRSStat = GPRS_IDLE;
 		}
 		break;
-	//æŸ¥è¯¢æ³¨å†Œä¿¡æ¯
+	//²éÑ¯×¢²áĞÅÏ¢
 	case GPRS_CHECK_CPSI_SEND:
 		if (sGPRSTimeDelay == 0) {
 			USART3_SendDataToGPRS("AT+CPSI?\r", strlen("AT+CPSI?\r"));
@@ -291,14 +291,14 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_CHECK_CPSI_ACK:
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //å¼€æœºçŠ¶æ€
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
+			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //¿ª»ú×´Ì¬
 			{
 				GPRSStat = GPRS_CHECK_CMD_SEND;
 				sGPRSTimeDelay = NEXT_CMD_DLY;
 			}
 			else {
-				GPRSStat = GPRS_CHECK_CMD_SEND; //æ˜¯å¦æ£€æµ‹æ­£ç¡®éƒ½è¿›è¡Œä¸‹ä¸€æ¡æŒ‡ä»¤
+				GPRSStat = GPRS_CHECK_CMD_SEND; //ÊÇ·ñ¼ì²âÕıÈ·¶¼½øĞĞÏÂÒ»ÌõÖ¸Áî
 				sGPRSTimeDelay = NEXT_CMD_DLY;
 			}
 		}
@@ -314,8 +314,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_CHECK_CMD_ACK: //
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-			if ((strstr((const char*)GPRS_ReceiveData, "CGREG: 0,1\r\n\r\nOK") != NULL) || (strstr((const char*)GPRS_ReceiveData, "CGREG: 0,5\r\n\r\nOK") != NULL)) //å¼€æœºçŠ¶æ€
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
+			if ((strstr((const char*)GPRS_ReceiveData, "CGREG: 0,1\r\n\r\nOK") != NULL) || (strstr((const char*)GPRS_ReceiveData, "CGREG: 0,5\r\n\r\nOK") != NULL)) //¿ª»ú×´Ì¬
 			{
 				GPRSStat = GPRS_TCP_conType_SEND;
 				sGPRSTimeDelay = NEXT_CMD_DLY;
@@ -330,9 +330,9 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 				}
 				else {
 					GPRSErrorCnt = 0;
-					GPRSCheckRstcnt = 0; //ä¸‰æ¬¡æ— æ•ˆåé‡å¯
+					GPRSCheckRstcnt = 0; //Èı´ÎÎŞĞ§ºóÖØÆô
 					GPRSStat = GPRS_POWER_ON_START;
-					sGPRSTimeDelay = 12000; //4åˆ†é’Ÿåé‡è¯•
+					sGPRSTimeDelay = 12000; //4·ÖÖÓºóÖØÊÔ
 				}
 			}
 		}
@@ -340,7 +340,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			GPRSStat = GPRS_IDLE;
 		}
 		break;
-	//é“¾æ¥TCP-------------------------------------------------------------------
+	//Á´½ÓTCP-------------------------------------------------------------------
 	case GPRS_TCP_conType_SEND:
 		if (sGPRSTimeDelay == 0) {
 			GPRSErrorCnt = 0;
@@ -350,8 +350,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_TCP_conType_ACK:
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //å¼€æœºçŠ¶æ€
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
+			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //¿ª»ú×´Ì¬
 			{
 				GPRSStat = GPRS_TCP_NETOPEN_SEND;
 				sGPRSTimeDelay = NEXT_CMD_DLY;
@@ -374,8 +374,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_TCP_NETOPEN_ACK:
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //å¼€æœºçŠ¶æ€
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
+			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //¿ª»ú×´Ì¬
 			{
 				GPRSStat = GPRS_TCP_BUFFERMODE_SEND;
 				sGPRSTimeDelay = NEXT_CMD_DLY;
@@ -399,8 +399,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_TCP_BUFFERMODE_ACK:
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //å¼€æœºçŠ¶æ€
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
+			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //¿ª»ú×´Ì¬
 			{
 				GPRSStat = GPRS_TCP_Name_SEND;
 				sGPRSTimeDelay = NEXT_CMD_DLY;
@@ -447,10 +447,10 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_TCP_Name_ACK:
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //å¼€æœºçŠ¶æ€
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
+			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //¿ª»ú×´Ì¬
 			{
-				GPRSErrorCnt = 0; //é…ç½®æˆåŠŸåæ¸…é™¤é”™è¯¯è®¡æ•°
+				GPRSErrorCnt = 0; //ÅäÖÃ³É¹¦ºóÇå³ı´íÎó¼ÆÊı
 				GPRSOpenErrorCnt = 0;
 				GPRSInitTxBuf();
 				GPRSStat = GPRS_RUN_Rxdata_CMD;
@@ -464,7 +464,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 				if (GPRSOpenErrorCnt > 1) {
 					GPRSOpenErrorCnt = 0;
 					GPRSStat = GPRS_POWER_ON_START;
-					sGPRSTimeDelay = 50 * 60 * 2; //ç­‰2åˆ†é’Ÿé‡å¯
+					sGPRSTimeDelay = 50 * 60 * 2; //µÈ2·ÖÖÓÖØÆô
 				}
 				else {
 					GPRSOpenErrorCnt++;
@@ -510,8 +510,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			}
 		break;
 		case GPRS_TCP_User_ACK:
-			if(GPRS_ReceiveLength != 0){//æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-				if(strstr((const char *)GPRS_ReceiveData,"OK") != NULL)//å¼€æœºçŠ¶æ€
+			if(GPRS_ReceiveLength != 0){//½ÓÊÕµ½Ò»Ö¡Êı¾İ
+				if(strstr((const char *)GPRS_ReceiveData,"OK") != NULL)//¿ª»ú×´Ì¬
 				{
 					GPRSStat = GPRS_TCP_Password_SEND;
 					sGPRSTimeDelay = NEXT_CMD_DLY;
@@ -548,8 +548,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 		case GPRS_TCP_Password_ACK:
-			if(GPRS_ReceiveLength != 0){//æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-				if(strstr((const char *)GPRS_ReceiveData,"OK") != NULL)//å¼€æœºçŠ¶æ€
+			if(GPRS_ReceiveLength != 0){//½ÓÊÕµ½Ò»Ö¡Êı¾İ
+				if(strstr((const char *)GPRS_ReceiveData,"OK") != NULL)//¿ª»ú×´Ì¬
 				{
 					GPRSStat = GPRS_TCP_srvType_SEND;
 					sGPRSTimeDelay = NEXT_CMD_DLY;
@@ -569,8 +569,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			}
 		break;
 		case GPRS_TCP_srvType_ACK:
-			if(GPRS_ReceiveLength != 0){//æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-				if(strstr((const char *)GPRS_ReceiveData,"OK") != NULL)//å¼€æœºçŠ¶æ€
+			if(GPRS_ReceiveLength != 0){//½ÓÊÕµ½Ò»Ö¡Êı¾İ
+				if(strstr((const char *)GPRS_ReceiveData,"OK") != NULL)//¿ª»ú×´Ì¬
 				{
 					GPRSStat = GPRS_TCP_IP_SEND;
 					sGPRSTimeDelay = NEXT_CMD_DLY;
@@ -594,7 +594,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			Length = strlen("at^siss=0,address,\"socktcp://");
 			while(Len--)
 			{
-				IP_Data[i+Length] = user_Set.ip_info[i]; //å°†IPå¤åˆ¶åˆ°æ•°ç»„ä¸­åˆé€‚çš„ä½ç½®
+				IP_Data[i+Length] = user_Set.ip_info[i]; //½«IP¸´ÖÆµ½Êı×éÖĞºÏÊÊµÄÎ»ÖÃ
 				i++;
 			}
 			IP_Data[i+Length] = ':';
@@ -602,7 +602,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			Len = user_Set.port_len;
 			while(Len--)
 			{
-				IP_Data[i+Length] = user_Set.port_info[j]; //å°†ç«¯å£ä¿¡æ¯å¤åˆ¶åˆ°æ•°ç»„ä¸­IPä¿¡æ¯ä¹‹å
+				IP_Data[i+Length] = user_Set.port_info[j]; //½«¶Ë¿ÚĞÅÏ¢¸´ÖÆµ½Êı×éÖĞIPĞÅÏ¢Ö®ºó
 				j++;
 				i++;
 			}
@@ -616,8 +616,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 		case GPRS_TCP_IP_ACK:
-			if(GPRS_ReceiveLength != 0){//æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-				if(strstr((const char *)GPRS_ReceiveData,"OK") != NULL)//å¼€æœºçŠ¶æ€
+			if(GPRS_ReceiveLength != 0){//½ÓÊÕµ½Ò»Ö¡Êı¾İ
+				if(strstr((const char *)GPRS_ReceiveData,"OK") != NULL)//¿ª»ú×´Ì¬
 					{
 						GPRSStat = GPRS_TCP_SISO_SEND;
 						sGPRSTimeDelay = NEXT_CMD_DLY;
@@ -638,10 +638,10 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			}
 		break;
 		case GPRS_TCP_SISO_ACK:
-			if(GPRS_ReceiveLength != 0){//æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
-				if(strstr((const char *)GPRS_ReceiveData,"OK") != NULL)//å¼€æœºçŠ¶æ€
+			if(GPRS_ReceiveLength != 0){//½ÓÊÕµ½Ò»Ö¡Êı¾İ
+				if(strstr((const char *)GPRS_ReceiveData,"OK") != NULL)//¿ª»ú×´Ì¬
 				{
-					GPRSErrorCnt = 0;					//é…ç½®æˆåŠŸåæ¸…é™¤é”™è¯¯è®¡æ•°
+					GPRSErrorCnt = 0;					//ÅäÖÃ³É¹¦ºóÇå³ı´íÎó¼ÆÊı
 					GPRSOpenErrorCnt = 0;
 					GPRSInitTxBuf();
 					GPRSStat = GPRS_RUN_Rxdata_CMD;
@@ -652,7 +652,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 					if(GPRSOpenErrorCnt > 1 ){
 						GPRSOpenErrorCnt = 0;
 						GPRSStat = GPRS_POWER_ON_START;
-						sGPRSTimeDelay = 50 * 60 *2;//ç­‰2åˆ†é’Ÿé‡å¯
+						sGPRSTimeDelay = 50 * 60 *2;//µÈ2·ÖÖÓÖØÆô
 					}else{
 						GPRSOpenErrorCnt++;
 						GPRSStat = GPRS_POWER_RST;
@@ -672,10 +672,10 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			}
 		break;*/
 		/*************************************************************************
-					æ­£å¸¸ç¨‹åºè¿è¡Œä¸‹é¢çš„éƒ¨åˆ†
+					Õı³£³ÌĞòÔËĞĞÏÂÃæµÄ²¿·Ö
 
 **************************************************************************/
-	case GPRS_RUN_Rxdata_CMD: //æ¥æ”¶æ•°æ®æŒ‡ä»¤
+	case GPRS_RUN_Rxdata_CMD: //½ÓÊÕÊı¾İÖ¸Áî
 		if (ReqGPRSConfigflg) {
 			GPRSStat = GPRS_POWER_RST;
 			ReqGPRSConfigflg = 0;
@@ -687,22 +687,22 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			}
 			BeatCnt = 0;
 		}
-		else if (BeatCnt >= HeartTime) { //ç¼“å†²åŒºä¸­æœ‰æ•°æ®æ—¶è¿›å…¥å‘é€çŠ¶æ€
+		else if (BeatCnt >= HeartTime) { //»º³åÇøÖĞÓĞÊı¾İÊ±½øÈë·¢ËÍ×´Ì¬
 			BeatCnt = 0;
 			GPRSSendBeatDataflg = 1;
 			GPRSStat = GPRS_RUN_Txdata_CMD;
 			sGPRSTimeDelay = NEXT_CMD_DLY;
 		}
 		else {
-			if (sGPRSSentdataDelay == 0) { //2Sé’Ÿè¯»ä¸€æ¬¡ï¼Œå»ç¼“å†²åŒºè¯»æ•°æ®
+			if (sGPRSSentdataDelay == 0) { //2SÖÓ¶ÁÒ»´Î£¬È¥»º³åÇø¶ÁÊı¾İ
 				USART3_SendDataToGPRS("AT+CIPRXGET=2,0\r", strlen("AT+CIPRXGET=2,0\r"));
 				GPRSStat = GPRS_RUN_Rxdata;
 				sGPRSTimeDelay = WAIT_ACK;
 			}
 		}
 		break;
-	case GPRS_RUN_Rxdata: //æ¥æ”¶æ•°æ®
-		if (GPRS_ReceiveLength != 0) { //ç¼“å†²åŒºä¸­æœ‰æ•°æ®
+	case GPRS_RUN_Rxdata: //½ÓÊÕÊı¾İ
+		if (GPRS_ReceiveLength != 0) { //»º³åÇøÖĞÓĞÊı¾İ
 			if (strstr((char*)GPRS_ReceiveData, "ERROR")) {
 				if (GPRSFaultcnt < 1) {
 					GPRSFaultcnt++;
@@ -744,11 +744,11 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 					}
 				}
 				else {
-					if (pReceiveLength != 0) { //æ¥æ”¶åˆ°æ•°æ®åæ¸…é™¤é”™è¯¯æ ‡å¿—
+					if (pReceiveLength != 0) { //½ÓÊÕµ½Êı¾İºóÇå³ı´íÎó±êÖ¾
 						GPRSFaultcnt = 0;
 					}
 					GPRSStat = GPRS_RUN_Rxdata_CMD;
-					sGPRSSentdataDelay = 100; //2Sé’Ÿè¯»ä¸€æ¬¡ç¼“å†²
+					sGPRSSentdataDelay = 100; //2SÖÓ¶ÁÒ»´Î»º³å
 					sGPRSTimeDelay = NEXT_CMD_DLY;
 					if (pReceiveLength != 0) {
 						sGPRSNotCallRstDelay = TIME_GPRSNotCallRstDelay;
@@ -756,10 +756,10 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 				}
 			}
 		}
-		else if (sGPRSTimeDelay == 0) { //æ¥æ”¶è¶…æ—¶
+		else if (sGPRSTimeDelay == 0) { //½ÓÊÕ³¬Ê±
 			if (sGPRSNotCallRstDelay != 0) {
 				GPRSStat = GPRS_POWER_RST;
-				sGPRSSentdataDelay = 100; //2Sé’Ÿè¯»ä¸€æ¬¡ç¼“å†²
+				sGPRSSentdataDelay = 100; //2SÖÓ¶ÁÒ»´Î»º³å
 				sGPRSTimeDelay = NEXT_CMD_DLY;
 			}
 			else {
@@ -777,13 +777,13 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 
 		break;
-	case GPRS_RUN_Txdata_CMD: //å‘é€æ•°æ®æŒ‡ä»¤
+	case GPRS_RUN_Txdata_CMD: //·¢ËÍÊı¾İÖ¸Áî
 	{
 		uint8_t i = 0;
 		uint8_t AT_Cmd[20] = {0x00};
 		uint16_t pLength;
 		uint8_t LengthString[6] = {0x00};
-		if (GPRSSendBeatDataflg) { //å‘é€å¿ƒè·³æ•°æ®
+		if (GPRSSendBeatDataflg) { //·¢ËÍĞÄÌøÊı¾İ
 			strcpy((char*)AT_Cmd, "AT+CIPSEND=1,");
 			Int2Str((char*)LengthString, user_Set.heart_len);
 			while (LengthString[i]) {
@@ -791,7 +791,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 				i++;
 			}
 		}
-		else { //å¦åˆ™å‘é€æ•°æ®
+		else { //·ñÔò·¢ËÍÊı¾İ
 			BeatCnt = 0;
 			pLength = GPRS_Tx0.TxLength[GPRS_Tx0.TxPtrOut];
 			strcpy((char*)AT_Cmd, "AT+CIPSEND=0,");
@@ -803,21 +803,21 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		AT_Cmd[i + 10] = '\r';
 		i++;
-		AT_Cmd[i + 10] = '\0'; //å­—ç¬¦ä¸²ç»“æŸç¬¦
+		AT_Cmd[i + 10] = '\0'; //×Ö·û´®½áÊø·û
 		USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
 		//USART3_SendDataToGPRS("AT^SISW=0,5\r",strlen((const char *)"AT^SISW=0,5\r"));
 		GPRSStat = GPRS_RUN_Txdata;
 		sGPRSTimeDelay = WAIT_ACK;
 		GPRSLoadStatBuf(GPRS_LED_START);
 	} break;
-	case GPRS_RUN_Txdata: //å¿ƒè·³åŒ…æŒ‡ä»¤åº”ç­”ä¿¡å·
+	case GPRS_RUN_Txdata: //ĞÄÌø°üÖ¸ÁîÓ¦´ğĞÅºÅ
 		if ((GPRS_ReceiveLength != 0)) {
-			//æ¥æ”¶åˆ°æ•°æ®å°±å¼€å§‹å‘é€æ•°æ®ï¼Œå¹¶ä¸ç®¡æ˜¯å¦æ­£ç¡®
+			//½ÓÊÕµ½Êı¾İ¾Í¿ªÊ¼·¢ËÍÊı¾İ£¬²¢²»¹ÜÊÇ·ñÕıÈ·
 			if (GPRSSendBeatDataflg) {
 				USART3_SendDataToGPRS(user_Set.heart_info, user_Set.heart_len);
 				USART3_SendDataToGPRS("\r", 1);
 				GPRSStat = GPRS_RUN_Txdata_ACK;
-				sGPRSTimeDelay = WAIT_ACK; //ä¸¤ä¸ªæ•°æ®çš„é—´éš”
+				sGPRSTimeDelay = WAIT_ACK; //Á½¸öÊı¾İµÄ¼ä¸ô
 			}
 			else {
 				BeatCnt = 0;
@@ -828,19 +828,19 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			}
 			if ((strstr((char*)GPRS_ReceiveData, "\r\nOK\r\n") != NULL) || (strstr((char*)GPRS_ReceiveData, "+CIPSEND:"))) {
 				GPRSSendFrrorFlg = 0;
-				GPRSLoadStatBuf(GPRS_LED_DATA); //å‘é€æ•°æ®
+				GPRSLoadStatBuf(GPRS_LED_DATA); //·¢ËÍÊı¾İ
 			}
 			else { //
 				GPRSSendFrrorFlg = 1;
 				GPRSLoadStatBuf(GPRS_LED_CMD_ERROR);
 			}
 		}
-		else if (sGPRSTimeDelay == 0) { //å‘é€æŒ‡ä»¤å¤±è´¥æ—¶ä¾ç„¶å‘é€æ•°æ®ï¼Œå¦åˆ™ä¼šå‡ºç°ä¸‹ä¸€æ¬¡æŒ‡ä»¤å½“æ•°æ®å‘çš„æƒ…å†µ
+		else if (sGPRSTimeDelay == 0) { //·¢ËÍÖ¸ÁîÊ§°ÜÊ±ÒÀÈ»·¢ËÍÊı¾İ£¬·ñÔò»á³öÏÖÏÂÒ»´ÎÖ¸Áîµ±Êı¾İ·¢µÄÇé¿ö
 			if (GPRSSendBeatDataflg) {
 				USART3_SendDataToGPRS(user_Set.heart_info, user_Set.heart_len);
 				USART3_SendDataToGPRS("\r", 1);
 				GPRSStat = GPRS_RUN_Txdata_ACK;
-				sGPRSTimeDelay = WAIT_ACK; //ä¸¤ä¸ªæ•°æ®çš„é—´éš”
+				sGPRSTimeDelay = WAIT_ACK; //Á½¸öÊı¾İµÄ¼ä¸ô
 			}
 			else {
 				BeatCnt = 0;
@@ -855,15 +855,15 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_RUN_Txdata_ACK:
-		if (GPRS_ReceiveLength != 0) { //æ¥æ”¶åˆ°ä¸€å¸§æ•°æ®
+		if (GPRS_ReceiveLength != 0) { //½ÓÊÕµ½Ò»Ö¡Êı¾İ
 			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //
 			{
 				GPRSSendFrrorFlg = 0;
-				GPRSErrorCnt = 0; //é…ç½®æˆåŠŸåæ¸…é™¤é”™è¯¯è®¡æ•°
+				GPRSErrorCnt = 0; //ÅäÖÃ³É¹¦ºóÇå³ı´íÎó¼ÆÊı
 				GPRSStat = GPRS_RUN_Rxdata_CMD;
-				sGPRSTimeDelay = NEXT_CMD_DLY; //ä¸¤ä¸ªæ•°æ®çš„é—´éš”;
+				sGPRSTimeDelay = NEXT_CMD_DLY; //Á½¸öÊı¾İµÄ¼ä¸ô;
 				BeatCnt = 0;
-				if (GPRSSendBeatDataflg == 0) //å‘é€æ•°æ®æˆåŠŸ
+				if (GPRSSendBeatDataflg == 0) //·¢ËÍÊı¾İ³É¹¦
 					rmDataFromGPRSTxbuf();
 				GPRSLoadStatBuf(GPRS_LED_DATA_OK);
 			}
@@ -907,7 +907,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		GPRSStat = GPRS_IDLE;
 		break;
 	}
-	return pReceiveLength; //è¿”å›æ¥æ”¶æ•°æ®çš„é•¿åº¦
+	return pReceiveLength; //·µ»Ø½ÓÊÕÊı¾İµÄ³¤¶È
 }
 
 void SendDataToGPRSbuf(char* pDataBuf, uint16_t pLength) {
@@ -915,7 +915,7 @@ void SendDataToGPRSbuf(char* pDataBuf, uint16_t pLength) {
 	if (GPRS_Tx0.TxNum < GPRS_TX_BUF_NUM) {
 		GPRS_Tx0.TxNum++;
 
-		if (GPRS_Tx0.TxPtrIn > (GPRS_TX_BUF_NUM - 1)) //æŒ‡é’ˆè¶…å‡ºèŒƒå›´æ—¶æ¸…é›¶
+		if (GPRS_Tx0.TxPtrIn > (GPRS_TX_BUF_NUM - 1)) //Ö¸Õë³¬³ö·¶Î§Ê±ÇåÁã
 		{
 			GPRSInitTxBuf();
 		}
@@ -930,10 +930,10 @@ void SendDataToGPRSbuf(char* pDataBuf, uint16_t pLength) {
 		else {
 			GPRS_Tx0.TxPtrIn = 0;
 		}
-	} //æ•°æ®æ”¾æ»¡æ—¶ä¸¢å¼ƒ
-	//ç­‰äº3æ—¶ç›´æ¥é€€å‡º
+	} //Êı¾İ·ÅÂúÊ±¶ªÆú
+	//µÈÓÚ3Ê±Ö±½ÓÍË³ö
 }
-//åªè¯»æ•°æ®ä¸å¢åŠ æŒ‡é’ˆï¼Œå‘é€æ­£å¸¸æ—¶å†å¢åŠ æŒ‡é’ˆ
+//Ö»¶ÁÊı¾İ²»Ôö¼ÓÖ¸Õë£¬·¢ËÍÕı³£Ê±ÔÙÔö¼ÓÖ¸Õë
 /*uint16_t GetDataToGPRSTxbuf(char *pdata)
 {
 	if(GPRS_Tx0.TxNum > 0){
@@ -943,8 +943,8 @@ void SendDataToGPRSbuf(char* pDataBuf, uint16_t pLength) {
 		return 0;
 	}
 }*/
-/*æ•°æ®æ­£å¸¸å‘å‡ºåè°ƒç”¨æœ¬å‡½æ•°ï¼Œç›®çš„æ˜¯å¯ä»¥å¤šæ¬¡è¯»åŒä¸€ä¸ªç¼“å†²æ•°æ®ï¼Œä»¥é˜²è¯»å‡ºåæ•°æ®æ²¡æœ‰æ­£å¸¸å‘å‡º?
-éœ€è¦æ­¤åŠŸèƒ½è¿˜è¦æ£€æµ‹æ•°æ®å‘å‡ºè¿”å›å€¼*/
+/*Êı¾İÕı³£·¢³öºóµ÷ÓÃ±¾º¯Êı£¬Ä¿µÄÊÇ¿ÉÒÔ¶à´Î¶ÁÍ¬Ò»¸ö»º³åÊı¾İ£¬ÒÔ·À¶Á³öºóÊı¾İÃ»ÓĞÕı³£·¢³ö?
+ĞèÒª´Ë¹¦ÄÜ»¹Òª¼ì²âÊı¾İ·¢³ö·µ»ØÖµ*/
 void rmDataFromGPRSTxbuf(void) {
 	if (GPRS_Tx0.TxNum > 0) {
 		GPRS_Tx0.TxNum--;
@@ -960,7 +960,7 @@ void rmDataFromGPRSTxbuf(void) {
 	}
 }
 void GPRSLoadStatBuf(uint16_t pDataBuf) {
-	if (GPRSStatBuf0.PtrIn > (GPRS_STAT_BUF_NUM - 1)) //æŒ‡é’ˆè¶…å‡ºèŒƒå›´æ—¶æ¸…é›¶
+	if (GPRSStatBuf0.PtrIn > (GPRS_STAT_BUF_NUM - 1)) //Ö¸Õë³¬³ö·¶Î§Ê±ÇåÁã
 	{
 		GPRSInitTxStatBuf();
 	}
@@ -975,8 +975,8 @@ void GPRSLoadStatBuf(uint16_t pDataBuf) {
 		else {
 			GPRSStatBuf0.PtrIn = 0;
 		}
-	} //æ•°æ®æ”¾æ»¡æ—¶ä¸¢å¼ƒ
-	//ç­‰äº3æ—¶ç›´æ¥é€€å‡º
+	} //Êı¾İ·ÅÂúÊ±¶ªÆú
+	//µÈÓÚ3Ê±Ö±½ÓÍË³ö
 }
 uint16_t GPRSGetStatBuf(void) {
 	uint16_t pDataBuf;
@@ -984,7 +984,7 @@ uint16_t GPRSGetStatBuf(void) {
 	if (GPRSStatBuf0.Num > 0) {
 		GPRSStatBuf0.Num--;
 
-		if (GPRSStatBuf0.PtrOut > (GPRS_STAT_BUF_NUM - 1)) //æŒ‡é’ˆè¶…å‡ºèŒƒå›´æ—¶æ¸…é›¶
+		if (GPRSStatBuf0.PtrOut > (GPRS_STAT_BUF_NUM - 1)) //Ö¸Õë³¬³ö·¶Î§Ê±ÇåÁã
 		{
 			GPRSInitTxStatBuf();
 		}
@@ -1004,6 +1004,6 @@ uint16_t GPRSGetStatBuf(void) {
 		pDataBuf = GPRS_LED_IDLE;
 	}
 	return pDataBuf;
-	//æ•°æ®æ”¾æ»¡æ—¶ä¸¢å¼ƒ
-	//ç­‰äº3æ—¶ç›´æ¥é€€å‡º
+	//Êı¾İ·ÅÂúÊ±¶ªÆú
+	//µÈÓÚ3Ê±Ö±½ÓÍË³ö
 }

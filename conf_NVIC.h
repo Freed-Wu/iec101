@@ -6,11 +6,11 @@
 
 /**/
 void NVIC_Configuration(void);
-/*æ‰“å¼€å¤–éƒ¨ä¸­æ–­*/
+/*´ò¿ªÍâ²¿ÖĞ¶Ï*/
 void EnableExtINT(void);
-//å…³é—­å¤–éƒ¨ä¸­æ–­
+//¹Ø±ÕÍâ²¿ÖĞ¶Ï
 void DisableExtINT(void);
-/*NRF905 ä¸­æ–­ä¿¡å·é‡‡é›†ï¼Œæ˜ å°„ç®¡è„š*/
+/*NRF905 ÖĞ¶ÏĞÅºÅ²É¼¯£¬Ó³Éä¹Ü½Å*/
 void EXTI_Configuration(void);
 
 #endif

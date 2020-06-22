@@ -3,10 +3,10 @@
 
 /*
 ****************************************************************************************************
-* ÂäüËÉΩÊèèËø∞Ôºö
-* ËæìÂÖ•ÂèÇÊï∞Ôºö
-* ËøîÂõûÂèÇÊï∞Ôºö      
-* ËØ¥    ÊòéÔºö
+* π¶ƒ‹√Ë ˆ£∫
+*  ‰»Î≤Œ ˝£∫
+* ∑µªÿ≤Œ ˝£∫      
+* Àµ    √˜£∫
 ****************************************************************************************************
 */
 void GPIO_Configuration(void) {
@@ -15,40 +15,40 @@ void GPIO_Configuration(void) {
 	// RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE);
 	/********************************************************************************************************
-								NRF905 Áõ∏ÂÖ≥ÂºïËÑö
+								NRF905 œ‡πÿ“˝Ω≈
 	*********************************************************************************************************/
-	/* Configure NRF905 POWERUP  nrf905‰∏äÁîµ*/
+	/* Configure NRF905 POWERUP  nrf905…œµÁ*/
 	GPIO_InitStructure.GPIO_Pin = NRF905_PWUP_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(NRF905_PWUP, &GPIO_InitStructure);
 
-	/* Configure NRF905 TX OR RX CE  		NRF905‰ΩøËÉΩËäØÁâáÂèëÈÄÅÊàñÊé•Êî∂*/
+	/* Configure NRF905 TX OR RX CE  		NRF905 πƒ‹–æ∆¨∑¢ÀÕªÚΩ” ’*/
 	GPIO_InitStructure.GPIO_Pin = NRF905_TRCE_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(NRF905_TRCE, &GPIO_InitStructure);
-	/* Configure NRF905 TX ENABLE  		NRF905ËÆæÁΩÆÂèëÈÄÅÊàñÊé•Êî∂Ê®°Âºè*/
+	/* Configure NRF905 TX ENABLE  		NRF905…Ë÷√∑¢ÀÕªÚΩ” ’ƒ£ Ω*/
 	GPIO_InitStructure.GPIO_Pin = NRF905_TXEN_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(NRF905_TXEN, &GPIO_InitStructure);
-	/* Configure NRF905 CSN --> PA12 					NRF905‰ΩøËÉΩSPI*/
+	/* Configure NRF905 CSN --> PA12 					NRF905 πƒ‹SPI*/
 	GPIO_InitStructure.GPIO_Pin = NRF905_CSN_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(NRF905_CSN, &GPIO_InitStructure);
-	/* Configure NRF905 CD  								NRF905ËæìÂá∫ ËΩΩÊ≥¢Ê£ÄÊµã*/
+	/* Configure NRF905 CD  								NRF905 ‰≥ˆ ‘ÿ≤®ºÏ≤‚*/
 	GPIO_InitStructure.GPIO_Pin = NRF905_CD_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(NRF905_CD, &GPIO_InitStructure);
 
-	/* Configure NRF905 AM  								NRFÂú∞ÂùÄÂåπÈÖç*/
+	/* Configure NRF905 AM  								NRFµÿ÷∑∆•≈‰*/
 	GPIO_InitStructure.GPIO_Pin = NRF905_AM_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(NRF905_AM, &GPIO_InitStructure);
 
-	/* Configure NRF905 DR --> PA11  					NRF905Êé•Êî∂ÊàñÂèëÈÄÅÊï∞ÊçÆÂÆåÊàê*/
+	/* Configure NRF905 DR --> PA11  					NRF905Ω” ’ªÚ∑¢ÀÕ ˝æ›ÕÍ≥…*/
 	GPIO_InitStructure.GPIO_Pin = NRF905_DR_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(NRF905_DR, &GPIO_InitStructure);
@@ -78,47 +78,47 @@ void GPIO_Configuration(void) {
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GSM_RESET, &GPIO_InitStructure);
 
-	/* Configure GSM TERM ON   							1 GSMÂºÄÂÖ≥Êú∫ÊéßÂà∂*/
+	/* Configure GSM TERM ON   							1 GSMø™πÿª˙øÿ÷∆*/
 	GPIO_InitStructure.GPIO_Pin = GSM_PWUP_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GSM_PWUP, &GPIO_InitStructure);
 
-	/* Configure UART RTS   							2 GSMËØ∑Ê±ÇÂèëÈÄÅ*/
+	/* Configure UART RTS   							2 GSM«Î«Û∑¢ÀÕ*/
 	GPIO_InitStructure.GPIO_Pin = GSM_UART_RTS_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GSM_UART_RTS, &GPIO_InitStructure);
 
-	/* Configure UART CTS    						3 GSMÊ∏ÖÈô§ÂèëÈÄÅ*/
+	/* Configure UART CTS    						3 GSM«Â≥˝∑¢ÀÕ*/
 	GPIO_InitStructure.GPIO_Pin = GSM_UART_CTS_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GSM_UART_CTS, &GPIO_InitStructure);
 
-	/* Configure UART DTR    						4 GSMÊï∞ÊçÆÁªàÁ´ØÂ∞±Áª™ÊåáÁ§∫*/
+	/* Configure UART DTR    						4 GSM ˝æ›÷’∂ÀæÕ–˜÷∏ æ*/
 	GPIO_InitStructure.GPIO_Pin = GSM_UART_DTR_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GSM_UART_DTR, &GPIO_InitStructure);
 
-	/* Configure UART DCD    						5 GSMËΩΩÊ≥¢Ê£ÄÊµã*/
+	/* Configure UART DCD    						5 GSM‘ÿ≤®ºÏ≤‚*/
 	GPIO_InitStructure.GPIO_Pin = GSM_UART_DCD_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GSM_UART_DCD, &GPIO_InitStructure);
 
-	/* Configure UART DSR    						6 GSMÊï∞ÊçÆËÆæÂ§áÂ∞±Áª™*/
+	/* Configure UART DSR    						6 GSM ˝æ›…Ë±∏æÕ–˜*/
 	GPIO_InitStructure.GPIO_Pin = GSM_UART_DSR_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GSM_UART_DSR, &GPIO_InitStructure);
 
-	/* Configure UART RI    							7 GSMÊ®°ÂùóÊåØÈìÉÊåáÁ§∫*/
+	/* Configure UART RI    							7 GSMƒ£øÈ’Ò¡Â÷∏ æ*/
 	GPIO_InitStructure.GPIO_Pin = GSM_UART_RI_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GSM_UART_RI, &GPIO_InitStructure);
 	/************************************************************************
-	Configure ARM RUN PIN  						ÊåáÁ§∫LED
+	Configure ARM RUN PIN  						÷∏ æLED
 	*************************************************************************/
 	GPIO_InitStructure.GPIO_Pin = ARM_RUN_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -134,11 +134,11 @@ void GPIO_Configuration(void) {
 
 
 	************************************************************************/
-	/*I2C INIT  DS3231 Â§ç‰Ωç*/
+	/*I2C INIT  DS3231 ∏¥Œª*/
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; //RST
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
-	/*I2C INT  DS3231 ËæìÂá∫ËÑâÂÜ≤ ‰∏≠Êñ≠*/
+	/*I2C INT  DS3231  ‰≥ˆ¬ˆ≥Â ÷–∂œ*/
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11; //INT
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);

@@ -9,25 +9,25 @@
 
 void InitAllPara(void);
 
-char const up_test_prt_data[] = "---è®¾ç½®ä¿¡æ¯---";
-const char up_test_sn_data[] = "åºåˆ—å·:";
-const char up_test_time_data[] = "ç³»ç»Ÿæ—¶é—´:";
-const char up_test_ip_data[] = "IPåœ°å€:";
-const char up_test_port_data[] = "ç«¯å£å·:";
-const char up_test_addr_data[] = "101è§„çº¦åœ°å€:";
+char const up_test_prt_data[] = "---ÉèÖÃĞÅÏ¢---";
+const char up_test_sn_data[] = "ĞòÁĞºÅ:";
+const char up_test_time_data[] = "ÏµÍ³Ê±¼ä:";
+const char up_test_ip_data[] = "IPµØÖ·:";
+const char up_test_port_data[] = "¶Ë¿ÚºÅ:";
+const char up_test_addr_data[] = "101¹æÔ¼µØÖ·:";
 const char up_test_apn_data[] = "APN:";
-const char up_test_user_data[] = "ç”¨æˆ·å:";
-const char up_test_password_data[] = "å¯†ç :";
-const char up_test_heartpackage_data[] = "å¿ƒè·³åŒ…æ•°æ®:";
-const char up_test_hearttime_data[] = "å¿ƒè·³åŒ…é—´éš”æ—¶é—´:";
+const char up_test_user_data[] = "ÓÃ»§Ãû:";
+const char up_test_password_data[] = "ÃÜÂë:";
+const char up_test_heartpackage_data[] = "ĞÄÌø°üÊı¾İ:";
+const char up_test_hearttime_data[] = "ĞÄÌø°ü¼ä¸ôÊ±¼ä:";
 
 extern unsigned char RTC_Read_data[6];
-extern uint32_t HeartTime; //å®šä¹‰å¿ƒè·³åŒ…æ—¶é—´é»˜è®¤å€¼ä¸º30s
+extern uint32_t HeartTime; //¶¨ÒåĞÄÌø°üÊ±¼äÄ¬ÈÏÖµÎª30s
 extern uint16_t ReqGPRSConfigflg;
 extern unsigned char RS232_REC_Flag;
-extern unsigned char RS232_buff[RS232_REC_BUFF_SIZE]; //ç”¨äºæ¥æ”¶æ•°æ®
+extern unsigned char RS232_buff[RS232_REC_BUFF_SIZE]; //ÓÃÓÚ½ÓÊÕÊı¾İ
 
-extern uint16_t LINK_ADDRESS; //å®šä¹‰é“¾è·¯åœ°å€
+extern uint16_t LINK_ADDRESS; //¶¨ÒåÁ´Â·µØÖ·
 extern DEVICE_SET user_Set;
 
 void rs232_set_process(void) {
@@ -95,7 +95,7 @@ void rs232_set_process(void) {
 					SNtemp[0] = RS232_buff[11] - 55;
 				}
 				else {
-					SNtemp[0] = RS232_buff[8] - 87; //æ•°ç»„è¶Šç•Œ
+					SNtemp[0] = RS232_buff[8] - 87; //Êı×éÔ½½ç
 				}
 				if (RS232_buff[12] <= 0x39) {
 					SNtemp[1] = RS232_buff[12] - 0x30;
@@ -143,7 +143,7 @@ void rs232_set_process(void) {
 				memcpy(user_Set.ip_info, &RS232_buff[7], user_Set.ip_len);
 				user_Set.ip_info[user_Set.ip_len] = '\0';
 				prog_pare_flag = 1;
-				ReqGPRSConfigflg = 1; //é‡æ–°é…ç½®101
+				ReqGPRSConfigflg = 1; //ÖØĞÂÅäÖÃ101
 				USART1_SendCharToRS232(0x55);
 				USART1_SendCharToRS232(0xf1);
 			}
@@ -159,7 +159,7 @@ void rs232_set_process(void) {
 				memset(user_Set.port_info, 0, 5);
 				memcpy(user_Set.port_info, &RS232_buff[7], user_Set.port_len);
 				prog_pare_flag = 1;
-				ReqGPRSConfigflg = 1; //é‡æ–°é…ç½®101
+				ReqGPRSConfigflg = 1; //ÖØĞÂÅäÖÃ101
 				USART1_SendCharToRS232(0x55);
 				USART1_SendCharToRS232(0xf1);
 			}
@@ -178,7 +178,7 @@ void rs232_set_process(void) {
 				USART1_SendCharToRS232(0x55);
 				USART1_SendCharToRS232(0xf1);
 
-				//å°†101åœ°å€è½¬æ¢ä¸ºæ•´å‹
+				//½«101µØÖ·×ª»»ÎªÕûĞÍ
 				memcpy(Temp, user_Set.addr_info, user_Set.addr_len);
 				LINK_ADDRESS = (uint16_t)Str2Int((char*)Temp);
 				memset(Temp, 0x00, 16);
@@ -215,7 +215,7 @@ void rs232_set_process(void) {
 		else if (RS232_buff[0] == 0xff && RS232_buff[1] == 0x56) //Request System Information
 		{
 			if (RS232_buff[2] == 3 && RS232_buff[3] == 'R' && RS232_buff[4] == 'E' && RS232_buff[5] == 'Q') {
-				//DebugDly = 0;	//å…³é—­DEBUGæ¨¡å¼
+				//DebugDly = 0;	//¹Ø±ÕDEBUGÄ£Ê½
 				FLASH_ReadUserSet();
 				USART1_SendCharToRS232(0x55);
 				USART1_SendCharToRS232(0xf1);
@@ -411,9 +411,9 @@ void rs232_set_process(void) {
 			if (RS232_buff[3] == 'A' && RS232_buff[4] == 'P' && RS232_buff[5] == 'S' && RS232_buff[6] == '-') {
 				user_Set.apn_len = RS232_buff[2];
 				memcpy(user_Set.apn_info, &RS232_buff[7], user_Set.apn_len);
-				user_Set.apn_info[user_Set.apn_len] = '\0'; //å­—ç¬¦ä¸²æœ€åä¸€ä¸ªå­—èŠ‚è¦èµ‹ä¸€ä¸ª'\0'
+				user_Set.apn_info[user_Set.apn_len] = '\0'; //×Ö·û´®×îºóÒ»¸ö×Ö½ÚÒª¸³Ò»¸ö'\0'
 				prog_pare_flag = 1;
-				ReqGPRSConfigflg = 1; //é‡æ–°é…ç½®101
+				ReqGPRSConfigflg = 1; //ÖØĞÂÅäÖÃ101
 				USART1_SendCharToRS232(0x55);
 				USART1_SendCharToRS232(0xf1);
 			}
@@ -429,7 +429,7 @@ void rs232_set_process(void) {
 				memcpy(user_Set.user_info, &RS232_buff[7], user_Set.user_len);
 				user_Set.user_info[user_Set.user_len] = '\0';
 				prog_pare_flag = 1;
-				ReqGPRSConfigflg = 1; //é‡æ–°é…ç½®101
+				ReqGPRSConfigflg = 1; //ÖØĞÂÅäÖÃ101
 				USART1_SendCharToRS232(0x55);
 				USART1_SendCharToRS232(0xf1);
 			}
@@ -445,7 +445,7 @@ void rs232_set_process(void) {
 				memcpy(user_Set.password_info, &RS232_buff[7], user_Set.password_len);
 				user_Set.password_info[user_Set.password_len] = '\0';
 				prog_pare_flag = 1;
-				ReqGPRSConfigflg = 1; //é‡æ–°é…ç½®101
+				ReqGPRSConfigflg = 1; //ÖØĞÂÅäÖÃ101
 				USART1_SendCharToRS232(0x55);
 				USART1_SendCharToRS232(0xf1);
 			}
@@ -459,7 +459,7 @@ void rs232_set_process(void) {
 			if (RS232_buff[3] == 'H' && RS232_buff[4] == 'P' && RS232_buff[5] == 'S' && RS232_buff[6] == '-') {
 				user_Set.heart_len = RS232_buff[2];
 
-				//å°†å¿ƒè·³åŒ…çš„å­—ç¬¦å‹æ•°æ®è½¬æ¢æˆ16è¿›åˆ¶æ•°
+				//½«ĞÄÌø°üµÄ×Ö·ûĞÍÊı¾İ×ª»»³É16½øÖÆÊı
 				memcpy(HeartData, &RS232_buff[7], user_Set.heart_len);
 
 				HexDataLength = (user_Set.heart_len / 2);
@@ -512,10 +512,10 @@ void rs232_set_process(void) {
 				USART1_SendCharToRS232(0x55);
 				USART1_SendCharToRS232(0xf1);
 
-				//å°†å¿ƒè·³åŒ…æ—¶é—´ä»å­—ç¬¦ä¸²è½¬ä¸ºæ•´å‹
+				//½«ĞÄÌø°üÊ±¼ä´Ó×Ö·û´®×ªÎªÕûĞÍ
 				memcpy(Temp, user_Set.heart_time_info, user_Set.heart_time_len);
 				HeartTime = Str2Int((char*)Temp);
-				HeartTime *= 100; //æ¢ç®—æˆms
+				HeartTime *= 100; //»»Ëã³Éms
 
 				memset(Temp, 0, 16);
 			}
@@ -532,7 +532,7 @@ void rs232_set_process(void) {
 	}
 
 	if (prog_pare_flag == 1) {
-		//DebugDly = 0;	//é…ç½®å®Œæˆ30Såè¿›å…¥è°ƒè¯•æ¨¡å¼
+		//DebugDly = 0;	//ÅäÖÃÍê³É30Sºó½øÈëµ÷ÊÔÄ£Ê½
 		FLASH_WriteUserSet();
 		InitAllPara();
 		FLASH_ReadUserSet();

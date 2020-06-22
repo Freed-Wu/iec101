@@ -17,13 +17,13 @@ typedef struct {
 	uint8_t user_info[8];
 	uint16_t password_len;
 	uint8_t password_info[8];
-	uint16_t heart_len; //å¿ƒè·³åŒ…æ•°æ®é•¿åº¦
-	uint8_t heart_info[16]; //å¿ƒè·³åŒ…æ•°æ®
-	uint16_t heart_time_len; //å¿ƒè·³åŒ…æ—¶é—´é•¿åº¦ï¼ˆä»¥å­—ç¬¦è¡¨ç¤ºï¼Œæ¯”å¦‚21ç§’åˆ™ä¸º2ï¼‰
-	uint8_t heart_time_info[6]; //å¿ƒè·³åŒ…æ—¶é—´
+	uint16_t heart_len; //ĞÄÌø°üÊı¾İ³¤¶È
+	uint8_t heart_info[16]; //ĞÄÌø°üÊı¾İ
+	uint16_t heart_time_len; //ĞÄÌø°üÊ±¼ä³¤¶È£¨ÒÔ×Ö·û±íÊ¾£¬±ÈÈç21ÃëÔòÎª2£©
+	uint8_t heart_time_info[6]; //ĞÄÌø°üÊ±¼ä
 	uint16_t crc16;
 	uint16_t FirstUsedFlag;
-	uint32_t wordAlign; //æœªä½¿ç”¨,ç”¨äºæ•°æ®å¯¹é½ï¼Œå³å¦‚æœå‰é¢æ•°æ®ä¸æ˜¯æ•´å­—ï¼Œåˆ™ç”±è¿™ä¸ªå­—èŠ‚å‡‘æˆæ•´å­—ï¼Œå¤šä½™çš„éƒ¨åˆ†ä¸å­˜å‚¨ä¸è¯»å–ä¸ä½¿ç”¨ä¸æ£€éªŒ
+	uint32_t wordAlign; //Î´Ê¹ÓÃ,ÓÃÓÚÊı¾İ¶ÔÆë£¬¼´Èç¹ûÇ°ÃæÊı¾İ²»ÊÇÕû×Ö£¬ÔòÓÉÕâ¸ö×Ö½Ú´Õ³ÉÕû×Ö£¬¶àÓàµÄ²¿·Ö²»´æ´¢²»¶ÁÈ¡²»Ê¹ÓÃ²»¼ìÑé
 } DEVICE_SET;
 
 extern void SysDelay(uint16_t DelayMs);

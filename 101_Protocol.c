@@ -6,39 +6,39 @@
 #include "main.h"
 #include "stm32f10x.h"
 
-uint16_t LINK_ADDRESS = 0x0021; //å®šä¹‰é“¾è·¯åœ°å€
-uint8_t ProtocolRxBuffer[64] = {0}; //å­˜å‚¨ä¸»ç«™å‘è¿‡æ¥çš„å‘½ä»¤
+uint16_t LINK_ADDRESS = 0x0021; //¶¨ÒåÁ´Â·µØÖ·
+uint8_t ProtocolRxBuffer[64] = {0}; //´æ´¢Ö÷Õ¾·¢¹ıÀ´µÄÃüÁî
 uint8_t TxBuffer[64] = {0};
 uint8_t TxAppBuffer[64] = {0};
-uint8_t RxControlField = 0; //æ¥æ”¶åˆ°æ•°æ®ä¸­çš„æ§åˆ¶åŸŸ
+uint8_t RxControlField = 0; //½ÓÊÕµ½Êı¾İÖĞµÄ¿ØÖÆÓò
 uint8_t RxDIR, RxPRM, RxFCB, RxFCV, RxFunctionCode;
 uint8_t LastFCB;
 uint8_t TxDIR, TxPRM, TxFCB, TxFCV, TxFunctionCode;
 TimeStructure NowTimeStruct;
 
-extern uint8_t Info[16]; //å¼€å…³é‡æ•°é‡ 0/1/2 è·Œè½ 3è·Œè½çŠ¶æ€ 4æ¸©åº¦çŠ¶æ€ 5 æ¬ å‹ 6/7/8/9 æ¼ä¿
-extern uint8_t InfoTemp[8]; //æ¸©åº¦
+extern uint8_t Info[16]; //¿ª¹ØÁ¿ÊıÁ¿ 0/1/2 µøÂä 3µøÂä×´Ì¬ 4ÎÂ¶È×´Ì¬ 5 Ç·Ñ¹ 6/7/8/9 Â©±£
+extern uint8_t InfoTemp[8]; //ÎÂ¶È
 extern uint8_t DataFromGPRSBuffer[128];
-extern uint8_t moduleMaskEn; // æ¨¡å—æ•…éšœMASK
+extern uint8_t moduleMaskEn; // Ä£¿é¹ÊÕÏMASK
 /*
  ****************************************************************************************************
- * åŠŸèƒ½æè¿°ï¼šåˆå§‹åŒ–é“¾è·¯å±‚å‚æ•°
- * è¾“å…¥å‚æ•°ï¼š
- * è¿”å›å‚æ•°ï¼š
- * è¯´    æ˜ï¼š
+ * ¹¦ÄÜÃèÊö£º³õÊ¼»¯Á´Â·²ã²ÎÊı
+ * ÊäÈë²ÎÊı£º
+ * ·µ»Ø²ÎÊı£º
+ * Ëµ    Ã÷£º
  ****************************************************************************************************
  */
 void LinkInit(void) {
-	RxDIR = M2S_DIR; //å›ºå®šå€¼ï¼Œä»ç«™æ¥æ”¶åˆ°ä¸»ç«™çš„æ•°æ®æ—¶DIRä¸º0ï¼Œ
-	RxPRM = 0; //éå›ºå®šå€¼
-	TxPRM = 0; //éå›ºå®šå€¼
+	RxDIR = M2S_DIR; //¹Ì¶¨Öµ£¬´ÓÕ¾½ÓÊÕµ½Ö÷Õ¾µÄÊı¾İÊ±DIRÎª0£¬
+	RxPRM = 0; //·Ç¹Ì¶¨Öµ
+	TxPRM = 0; //·Ç¹Ì¶¨Öµ
 	RxFCB = 0;
 	RxFCV = 0;
-	TxDIR = S2M_DIR; //å›ºå®šå€¼ä»ç«™å‘å‡ºæ•°æ®æ—¶DIRä¸º1
+	TxDIR = S2M_DIR; //¹Ì¶¨Öµ´ÓÕ¾·¢³öÊı¾İÊ±DIRÎª1
 }
 
-//æ­¤å‡½æ•°ç”¨äºCheckSumå‡½æ•°ä¹‹åï¼Œå³å·²ç»åˆ¤æ–­ä¸ºæœ‰æ•ˆå¸§åå†æ ¡éªŒåœ°å€æ˜¯å¦æ­£ç¡®
-//è¿”å›SUCCESSåœ°å€æ­£ç¡®ï¼Œè¿”å›ERRORåœ°å€ä¸æ­£ç¡®
+//´Ëº¯ÊıÓÃÓÚCheckSumº¯ÊıÖ®ºó£¬¼´ÒÑ¾­ÅĞ¶ÏÎªÓĞĞ§Ö¡ºóÔÙĞ£ÑéµØÖ·ÊÇ·ñÕıÈ·
+//·µ»ØSUCCESSµØÖ·ÕıÈ·£¬·µ»ØERRORµØÖ·²»ÕıÈ·
 uint8_t CheckLinkAddress(uint8_t* pBuffer) {
 	uint16_t LinkAddressLow = 0;
 	uint16_t LinkAddressHigh = 0;
@@ -53,26 +53,26 @@ uint8_t CheckLinkAddress(uint8_t* pBuffer) {
 		LinkAddressHigh = (uint16_t)pBuffer[6];
 	}
 	else {
-		return ERROR; //é“¾è·¯åœ°å€ä¸æ­£ç¡®
+		return ERROR; //Á´Â·µØÖ·²»ÕıÈ·
 	}
 
 	LinkAddress = LinkAddressHigh << 8;
 	LinkAddress += LinkAddressLow;
 
 	if (LinkAddress == LINK_ADDRESS) {
-		return SUCCESS; //é“¾è·¯åœ°å€æ­£ç¡®
+		return SUCCESS; //Á´Â·µØÖ·ÕıÈ·
 	}
 	else {
-		return ERROR; //é“¾è·¯åœ°å€ä¸æ­£ç¡®
+		return ERROR; //Á´Â·µØÖ·²»ÕıÈ·
 	}
 }
 
 /*
  ****************************************************************************************************
- * åŠŸèƒ½æè¿°ï¼š
- * è¾“å…¥å‚æ•°ï¼š
- * è¿”å›å‚æ•°ï¼šæ ¡éªŒå’Œçš„å€¼
- * è¯´    æ˜ï¼š
+ * ¹¦ÄÜÃèÊö£º
+ * ÊäÈë²ÎÊı£º
+ * ·µ»Ø²ÎÊı£ºĞ£ÑéºÍµÄÖµ
+ * Ëµ    Ã÷£º
  ****************************************************************************************************
  */
 uint8_t GetCheckSum(uint8_t* pBuffer) {
@@ -84,7 +84,7 @@ uint8_t GetCheckSum(uint8_t* pBuffer) {
 		TempSum = pBuffer[1] + pBuffer[2] + pBuffer[3];
 
 	else if (pBuffer[0] == 0x68) {
-		DataLength = pBuffer[1]; //è·å–å¯å˜å¸§æ•°æ®é•¿åº¦
+		DataLength = pBuffer[1]; //»ñÈ¡¿É±äÖ¡Êı¾İ³¤¶È
 
 		for (i = 0; i < DataLength; i++)
 			TempSum += pBuffer[i + 4];
@@ -98,27 +98,27 @@ uint8_t GetCheckSum(uint8_t* pBuffer) {
 
 /*
  ****************************************************************************************************
- * åŠŸèƒ½æè¿°ï¼š
- * è¾“å…¥å‚æ•°ï¼š
- * è¿”å›å‚æ•°ï¼š
- * è¯´    æ˜ï¼š
+ * ¹¦ÄÜÃèÊö£º
+ * ÊäÈë²ÎÊı£º
+ * ·µ»Ø²ÎÊı£º
+ * Ëµ    Ã÷£º
  ****************************************************************************************************
  */
 uint8_t CheckError(uint8_t* pBuffer) {
 	uint8_t Length1, Length2;
 
 	if ((pBuffer[0] == 0x68) && (pBuffer[3] == 0x68)) {
-		//å¯å˜å¸§é•¿
+		//¿É±äÖ¡³¤
 		Length1 = pBuffer[1];
 		Length2 = pBuffer[2];
 
 		if (Length1 != Length2) {
-			return ERROR; //ä¸¤ä¸ªé•¿åº¦å­—èŠ‚ä¸ç›¸ç­‰,è¿”å›é”™è¯¯
+			return ERROR; //Á½¸ö³¤¶È×Ö½Ú²»ÏàµÈ,·µ»Ø´íÎó
 		}
 		else {
-			//æ ¡éªŒå’Œç›¸ç­‰ä¸”æœ€åä¸€ä¸ªå­—èŠ‚ä¸º0x16
+			//Ğ£ÑéºÍÏàµÈÇÒ×îºóÒ»¸ö×Ö½ÚÎª0x16
 			if ((GetCheckSum(pBuffer) == pBuffer[4 + Length1]) && (pBuffer[5 + Length1] == 0x16)) {
-				RxControlField = pBuffer[4]; //å¸§æ ¡éªŒæˆåŠŸåå–å¾—æ§åˆ¶åŸŸæ•°æ®
+				RxControlField = pBuffer[4]; //Ö¡Ğ£Ñé³É¹¦ºóÈ¡µÃ¿ØÖÆÓòÊı¾İ
 				return SUCCESS;
 			}
 			else
@@ -126,39 +126,39 @@ uint8_t CheckError(uint8_t* pBuffer) {
 		}
 	}
 
-	/* å›ºå®šå¸§é•¿ç¬¬ä¸€å­—èŠ‚å’Œæœ€åå­—èŠ‚æ ¡éªŒ */
+	/* ¹Ì¶¨Ö¡³¤µÚÒ»×Ö½ÚºÍ×îºó×Ö½ÚĞ£Ñé */
 	else if ((pBuffer[0] == 0x10) && (pBuffer[5] == 0x16)) {
-		//æ£€éªŒå’Œæ˜¯å¦ç›¸ç­‰
+		//¼ìÑéºÍÊÇ·ñÏàµÈ
 		if (GetCheckSum(pBuffer) == pBuffer[4]) {
-			RxControlField = pBuffer[1]; //å–å¾—æ§åˆ¶åŸŸæ•°æ®
+			RxControlField = pBuffer[1]; //È¡µÃ¿ØÖÆÓòÊı¾İ
 			return SUCCESS;
 		}
 		else
 			return ERROR;
 	}
 	else {
-		//æ— æ•ˆå¸§ï¼Œä¸¢å¼ƒ
+		//ÎŞĞ§Ö¡£¬¶ªÆú
 		return ERROR;
 	}
 }
 
 /*
  ****************************************************************************************************
- * åŠŸèƒ½æè¿°ï¼š
- * è¾“å…¥å‚æ•°ï¼š
- * è¿”å›å‚æ•°ï¼š
- * è¯´    æ˜ï¼š
+ * ¹¦ÄÜÃèÊö£º
+ * ÊäÈë²ÎÊı£º
+ * ·µ»Ø²ÎÊı£º
+ * Ëµ    Ã÷£º
  ****************************************************************************************************
  */
 uint8_t Protocol101_RxLink(void) {
-	RxDIR = (RxControlField >> 7) & 0x01; //å–å¾—DIRä½
-	RxPRM = (RxControlField >> 6) & 0x01; //å–å¾—PRMä½
-	RxFCB = (RxControlField >> 5) & 0x01; //å–å¾—FCBä½
-	RxFCV = (RxControlField >> 4) & 0x01; //å–å¾—FCVä½
-	RxFunctionCode = RxControlField & 0x0F; //å–å¾—åŠŸèƒ½ç 
+	RxDIR = (RxControlField >> 7) & 0x01; //È¡µÃDIRÎ»
+	RxPRM = (RxControlField >> 6) & 0x01; //È¡µÃPRMÎ»
+	RxFCB = (RxControlField >> 5) & 0x01; //È¡µÃFCBÎ»
+	RxFCV = (RxControlField >> 4) & 0x01; //È¡µÃFCVÎ»
+	RxFunctionCode = RxControlField & 0x0F; //È¡µÃ¹¦ÄÜÂë
 
 	if ((RxDIR == M2S_DIR) && (RxPRM == 1)) {
-		return SUCCESS; //æ¥æ”¶æ ‡å¿—ä½åˆ¤æ–­
+		return SUCCESS; //½ÓÊÕ±êÖ¾Î»ÅĞ¶Ï
 	}
 	else {
 		// newFrame = 1;
@@ -169,10 +169,10 @@ uint8_t Protocol101_RxLink(void) {
 
 /*
  ****************************************************************************************************
- * åŠŸèƒ½æè¿°ï¼š
- * è¾“å…¥å‚æ•°ï¼š
- * è¿”å›å‚æ•°ï¼š
- * è¯´    æ˜ï¼š
+ * ¹¦ÄÜÃèÊö£º
+ * ÊäÈë²ÎÊı£º
+ * ·µ»Ø²ÎÊı£º
+ * Ëµ    Ã÷£º
  ****************************************************************************************************
  */
 uint8_t SetTxControlField(uint8_t PRM, uint8_t FCB, uint8_t FCV, uint8_t FuncCode) {
@@ -197,7 +197,7 @@ void SendStableData(uint8_t PRM, uint8_t FCB, uint8_t FCV, uint8_t FuncCode) {
 	CheckSum = FrameData[1] + FrameData[2] + FrameData[3];
 	FrameData[4] = CheckSum;
 	FrameData[5] = 0x16;
-	SendDataToGPRSbuf((char*)FrameData, 6); //ä¸²å£å‘é€
+	SendDataToGPRSbuf((char*)FrameData, 6); //´®¿Ú·¢ËÍ
 }
 
 #if 0
@@ -217,12 +217,12 @@ void SendVariableData( uint8_t PRM, uint8_t FCB, uint8_t FCV, uint8_t FuncCode, 
 #if 0
 /*
  ****************************************************************************************************
- * åŠŸèƒ½æè¿°ï¼š
- * è¾“å…¥å‚æ•°ï¼šTxAppLength:åº”ç”¨å±‚æ•°æ®ä¸ä¸º0ï¼ŒæŒ‡çš„æ˜¯ASDUçš„é•¿åº¦ï¼Œå‘é€çš„æ˜¯å¯å˜å¸§é•¿æ•°æ®
- *           pTxBuffer:é“¾è·¯å±‚æ•°æ®ç¼“å­˜ï¼Œæœ€åé€šè¿‡ç‰©ç†é€šé“å‘é€å‡ºå»
- *           pTxAppBuffer:åº”ç”¨å±‚æ•°æ®ç¼“å†²åŒºï¼Œä¼šåœ¨åº”ç”¨å±‚å°†æ•°æ®è½¬ç§»åˆ°pTxBufferä¸­
- * è¿”å›å‚æ•°ï¼šæ— 
- * è¯´    æ˜ï¼š
+ * ¹¦ÄÜÃèÊö£º
+ * ÊäÈë²ÎÊı£ºTxAppLength:Ó¦ÓÃ²ãÊı¾İ²»Îª0£¬Ö¸µÄÊÇASDUµÄ³¤¶È£¬·¢ËÍµÄÊÇ¿É±äÖ¡³¤Êı¾İ
+ *           pTxBuffer:Á´Â·²ãÊı¾İ»º´æ£¬×îºóÍ¨¹ıÎïÀíÍ¨µÀ·¢ËÍ³öÈ¥
+ *           pTxAppBuffer:Ó¦ÓÃ²ãÊı¾İ»º³åÇø£¬»áÔÚÓ¦ÓÃ²ã½«Êı¾İ×ªÒÆµ½pTxBufferÖĞ
+ * ·µ»Ø²ÎÊı£ºÎŞ
+ * Ëµ    Ã÷£º
  ****************************************************************************************************
  */
 void Protocol101_TxLink( uint8_t TxAppLength, uint8_t* pTxBuffer, uint8_t* pTxAppBuffer )
@@ -231,7 +231,7 @@ void Protocol101_TxLink( uint8_t TxAppLength, uint8_t* pTxBuffer, uint8_t* pTxAp
 	uint8_t TempSum = 0;
 	uint8_t TxCounter = 0;
 
-	//å¦‚æœåº”ç”¨å±‚æ•°æ®ä¸ä¸º0ï¼Œåˆ™è¡¨ç¤ºå‘é€çš„æ˜¯å¯å˜å¸§é•¿æ•°æ®
+	//Èç¹ûÓ¦ÓÃ²ãÊı¾İ²»Îª0£¬Ôò±íÊ¾·¢ËÍµÄÊÇ¿É±äÖ¡³¤Êı¾İ
 	if ( TxAppLength != 0 ) {
 		pTxBuffer[0] = 0x68;
 		pTxBuffer[1] = TxAppLength + 3;
@@ -260,7 +260,7 @@ void Protocol101_TxLink( uint8_t TxAppLength, uint8_t* pTxBuffer, uint8_t* pTxAp
 		pTxBuffer[2] = LINK_ADDRESS & 0xff;
 		pTxBuffer[3] = ( LINK_ADDRESS >> 8 ) & 0xff;
 
-		//è®¡ç®—æ ¡éªŒå’Œ
+		//¼ÆËãĞ£ÑéºÍ
 		for ( i = 1; i < 4; i++ )
 			TempSum += pTxBuffer[i];
 
@@ -269,7 +269,7 @@ void Protocol101_TxLink( uint8_t TxAppLength, uint8_t* pTxBuffer, uint8_t* pTxAp
 		TxCounter = 6;
 	}
 
-	USART_SendString( pTxBuffer, TxCounter ); //ä¸²å£å‘é€
+	USART_SendString( pTxBuffer, TxCounter ); //´®¿Ú·¢ËÍ
 }
 
 #endif
@@ -301,14 +301,14 @@ uint8_t ASDU_Init(ASDU_DataStructure* ASDU_Struct, uint8_t NumOfInfo, uint8_t* p
 #if 0
 /*
  ****************************************************************************************************
- * åŠŸèƒ½æè¿°ï¼š
- * è¾“å…¥å‚æ•°ï¼š
+ * ¹¦ÄÜÃèÊö£º
+ * ÊäÈë²ÎÊı£º
  *
  *
 
  *
- * è¿”å›å‚æ•°ï¼š
- * è¯´    æ˜ï¼š
+ * ·µ»Ø²ÎÊı£º
+ * Ëµ    Ã÷£º
  ****************************************************************************************************
  */
 void Protocol101_TxApp( uint8_t TypeID, uint8_t Qual, uint8_t SendReason, uint8_t Func, uint8_t TxAppLength )
@@ -316,11 +316,11 @@ void Protocol101_TxApp( uint8_t TypeID, uint8_t Qual, uint8_t SendReason, uint8_
 	TxFunctionCode = Func & 0x0F;
 
 	if ( TxAppLength != 0 ) {
-		TxAppBuffer[0] = TypeID;                            //ç±»å‹æ ‡è¯†
-		TxAppBuffer[1] = Qual;    //ä¿¡æ¯ä½“æ•°é‡
+		TxAppBuffer[0] = TypeID;                            //ÀàĞÍ±êÊ¶
+		TxAppBuffer[1] = Qual;    //ĞÅÏ¢ÌåÊıÁ¿
 		TxAppBuffer[2] = ( SendReason & 0xff );
-		TxAppBuffer[3] = LINK_ADDRESS & 0xFF;         //å…¬å…±åœ°å€ä½ä½
-		TxAppBuffer[4] = ( LINK_ADDRESS >> 8 ) & 0xFF;  //å…¬å…±åœ°å€é«˜ä½
+		TxAppBuffer[3] = LINK_ADDRESS & 0xFF;         //¹«¹²µØÖ·µÍÎ»
+		TxAppBuffer[4] = ( LINK_ADDRESS >> 8 ) & 0xFF;  //¹«¹²µØÖ·¸ßÎ»
 	}
 
 	Protocol101_TxLink( TxAppLength, TxBuffer, TxAppBuffer );
@@ -337,15 +337,15 @@ uint8_t ResponseLinkStatus(void) {
 	case 11:
 		TxFCB = 0;
 		SendStableData(0, 0, 0, 11);
-		// Protocol101_TxApp(0,0,0,0x0b,0);		/* 0x0b é“¾è·¯çŠ¶æ€å“åº” */
+		// Protocol101_TxApp(0,0,0,0x0b,0);		/* 0x0b Á´Â·×´Ì¬ÏìÓ¦ */
 		break;
 
 	case 14:
-		// Protocol101_TxApp(0,0,0,0x0e,0);		/* 0x0e é“¾è·¯æœåŠ¡æœªå·¥ä½œ */
+		// Protocol101_TxApp(0,0,0,0x0e,0);		/* 0x0e Á´Â··şÎñÎ´¹¤×÷ */
 		break;
 
 	default:
-		// Protocol101_TxApp(0,0,0,0x0f,0);		/* 0x0f é“¾è·¯æœåŠ¡æœªå®Œæˆ */
+		// Protocol101_TxApp(0,0,0,0x0f,0);		/* 0x0f Á´Â··şÎñÎ´Íê³É */
 		break;
 	}
 
@@ -353,23 +353,23 @@ uint8_t ResponseLinkStatus(void) {
 	return 1;
 }
 
-//ä¸»ç«™å¤ä½è¿œæ–¹é“¾è·¯
+//Ö÷Õ¾¸´Î»Ô¶·½Á´Â·
 uint8_t ResponseResetRemoteLink(void) {
 	SendStableData(0, 0, 0, 0);
 	return SUCCESS;
 }
 
-//ç¡®è®¤æ€»å¬å”¤
+//È·ÈÏ×ÜÕÙ»½
 uint8_t ResponseCallAll(void) {
 	uint8_t i = 0;
 	uint8_t TxCtrlField = 0;
 	uint8_t TempCallAllBuf[64] = {0x00};
 	uint8_t TempASDU_Buf[32] = {0x00};
-	uint8_t ASDU_Length = 0; // ASDUçš„é•¿åº¦ï¼Œå¹¶éå¯å˜å¸§é•¿ä¸­çš„Lå€¼
-	// uint8_t SendLength = 0; //å¯å˜å¸§é•¿æ€»é•¿åº¦ï¼Œæœ€åé€šè¿‡ä¸²å£å‘é€
+	uint8_t ASDU_Length = 0; // ASDUµÄ³¤¶È£¬²¢·Ç¿É±äÖ¡³¤ÖĞµÄLÖµ
+	// uint8_t SendLength = 0; //¿É±äÖ¡³¤×Ü³¤¶È£¬×îºóÍ¨¹ı´®¿Ú·¢ËÍ
 	uint8_t CheckSum = 0;
 	ASDU_DataStructure ASDU_DataStruct;
-	//è·å–æ§åˆ¶åŸŸçš„å€¼
+	//»ñÈ¡¿ØÖÆÓòµÄÖµ
 	TxCtrlField = SetTxControlField(0, 0, 0, 0x00);
 	ASDU_DataStruct.TypeID = 0x64;
 	ASDU_DataStruct.Qualifier = 1;
@@ -378,7 +378,7 @@ uint8_t ResponseCallAll(void) {
 	ASDU_DataStruct.InfoAddress = 0x0000;
 	ASDU_DataStruct.InfoData[0] = 0x14;
 	ASDU_Length = ASDU_Init(&ASDU_DataStruct, 1,
-							TempASDU_Buf); //å¡«å……ASDUæ•°æ®å¹¶è¿”å›ASDUçš„é•¿åº¦ï¼ˆæ­¤å€¼å¹¶éLï¼‰
+							TempASDU_Buf); //Ìî³äASDUÊı¾İ²¢·µ»ØASDUµÄ³¤¶È£¨´ËÖµ²¢·ÇL£©
 	TempCallAllBuf[0] = 0x68;
 	TempCallAllBuf[1] = ASDU_Length + 3;
 	TempCallAllBuf[2] = ASDU_Length + 3;
@@ -391,7 +391,7 @@ uint8_t ResponseCallAll(void) {
 		TempCallAllBuf[i + 7] = TempASDU_Buf[i];
 
 	for (i = 0; i < (ASDU_Length + 3); i++) {
-		CheckSum += TempCallAllBuf[i + 4]; //è®¡ç®—æ ¡éªŒå’Œ
+		CheckSum += TempCallAllBuf[i + 4]; //¼ÆËãĞ£ÑéºÍ
 	}
 
 	TempCallAllBuf[ASDU_Length + 7] = CheckSum;
@@ -405,20 +405,20 @@ void UpdateDataForCallAll(void) {
 	uint8_t TxCtrlField = 0;
 	uint8_t TempCallAllBuf[64] = {0x00};
 	uint8_t TempASDU_Buf[32] = {0x00};
-	uint8_t ASDU_Length = 0; // ASDUçš„é•¿åº¦ï¼Œå¹¶éå¯å˜å¸§é•¿ä¸­çš„Lå€¼
-	// uint8_t SendLength = 0; //å¯å˜å¸§é•¿æ€»é•¿åº¦ï¼Œæœ€åé€šè¿‡ä¸²å£å‘é€
+	uint8_t ASDU_Length = 0; // ASDUµÄ³¤¶È£¬²¢·Ç¿É±äÖ¡³¤ÖĞµÄLÖµ
+	// uint8_t SendLength = 0; //¿É±äÖ¡³¤×Ü³¤¶È£¬×îºóÍ¨¹ı´®¿Ú·¢ËÍ
 	uint8_t CheckSum = 0;
 	ASDU_DataStructure ASDU_DataStruct;
-	//è·å–æ§åˆ¶åŸŸçš„å€¼
+	//»ñÈ¡¿ØÖÆÓòµÄÖµ
 	TxCtrlField = SetTxControlField(0, 0, 0, 0x00);
-	ASDU_DataStruct.TypeID = 0x1; //æ— æ—¶æ ‡çš„å•ç‚¹ä¿¡æ¯
-	ASDU_DataStruct.Qualifier = 0x8a; //å•åœ°å€ï¼Œ6ä¸ªæ•°æ®
-	ASDU_DataStruct.Reason = 0x14; //å“åº”æ€»å¬å”¤
+	ASDU_DataStruct.TypeID = 0x1; //ÎŞÊ±±êµÄµ¥µãĞÅÏ¢
+	ASDU_DataStruct.Qualifier = 0x8a; //µ¥µØÖ·£¬6¸öÊı¾İ
+	ASDU_DataStruct.Reason = 0x14; //ÏìÓ¦×ÜÕÙ»½
 	ASDU_DataStruct.ASDU_Address = LINK_ADDRESS;
 	ASDU_DataStruct.InfoAddress = 0x0001;
 
-	if (moduleMaskEn == 0) { //éå±è”½çŠ¶æ€åŠæ—¶å‘é€çŠ¶æ€
-		if (CheckInfoCRCIsOK() == 0) { //è¯»æ•°æ®ä¹‹å‰å…ˆæ£€æµ‹RAMæ•°æ®çš„æœ‰æ ¡æ€§ï¼ŒCRCå¤±è´¥æ—¶åˆ™ä»FLASHä¸­é‡æ–°è¯»å–
+	if (moduleMaskEn == 0) { //·ÇÆÁ±Î×´Ì¬¼°Ê±·¢ËÍ×´Ì¬
+		if (CheckInfoCRCIsOK() == 0) { //¶ÁÊı¾İÖ®Ç°ÏÈ¼ì²âRAMÊı¾İµÄÓĞĞ£ĞÔ£¬CRCÊ§°ÜÊ±Ôò´ÓFLASHÖĞÖØĞÂ¶ÁÈ¡
 			FLASH_RD_Module_Status();
 			RefreshInfoCRC();
 		}
@@ -429,27 +429,27 @@ void UpdateDataForCallAll(void) {
 		ASDU_DataStruct.InfoData[3] = Info[3];
 		ASDU_DataStruct.InfoData[4] = Info[4];
 		ASDU_DataStruct.InfoData[5] = Info[5];
-		ASDU_DataStruct.InfoData[6] = Info[6]; //æ¼ä¿1
-		ASDU_DataStruct.InfoData[7] = Info[7]; //æ¼ä¿2
-		ASDU_DataStruct.InfoData[8] = Info[8]; //æ¼ä¿3
-		ASDU_DataStruct.InfoData[9] = Info[9]; //æ¼ä¿4
+		ASDU_DataStruct.InfoData[6] = Info[6]; //Â©±£1
+		ASDU_DataStruct.InfoData[7] = Info[7]; //Â©±£2
+		ASDU_DataStruct.InfoData[8] = Info[8]; //Â©±£3
+		ASDU_DataStruct.InfoData[9] = Info[9]; //Â©±£4
 	}
 	else {
-		ASDU_DataStruct.InfoData[0] = 0; //å±è”½çŠ¶æ€éƒ½æŒ‰æ­£å¸¸å¤„ç†
-		ASDU_DataStruct.InfoData[1] = 0; //å±è”½çŠ¶æ€éƒ½æŒ‰æ­£å¸¸å¤„ç†
-		ASDU_DataStruct.InfoData[2] = 0; //å±è”½çŠ¶æ€éƒ½æŒ‰æ­£å¸¸å¤„ç†
-		ASDU_DataStruct.InfoData[3] = 0; //å±è”½çŠ¶æ€éƒ½æŒ‰æ­£å¸¸å¤„ç†
-		ASDU_DataStruct.InfoData[4] = 0; //å±è”½çŠ¶æ€éƒ½æŒ‰æ­£å¸¸å¤„ç†
-		ASDU_DataStruct.InfoData[5] = 0; //å±è”½çŠ¶æ€éƒ½æŒ‰æ­£å¸¸å¤„ç†
-		ASDU_DataStruct.InfoData[6] = 0; //æ¼ä¿1
-		ASDU_DataStruct.InfoData[7] = 0; //æ¼ä¿2
-		ASDU_DataStruct.InfoData[8] = 0; //æ¼ä¿3
-		ASDU_DataStruct.InfoData[9] = 0; //æ¼ä¿4
+		ASDU_DataStruct.InfoData[0] = 0; //ÆÁ±Î×´Ì¬¶¼°´Õı³£´¦Àí
+		ASDU_DataStruct.InfoData[1] = 0; //ÆÁ±Î×´Ì¬¶¼°´Õı³£´¦Àí
+		ASDU_DataStruct.InfoData[2] = 0; //ÆÁ±Î×´Ì¬¶¼°´Õı³£´¦Àí
+		ASDU_DataStruct.InfoData[3] = 0; //ÆÁ±Î×´Ì¬¶¼°´Õı³£´¦Àí
+		ASDU_DataStruct.InfoData[4] = 0; //ÆÁ±Î×´Ì¬¶¼°´Õı³£´¦Àí
+		ASDU_DataStruct.InfoData[5] = 0; //ÆÁ±Î×´Ì¬¶¼°´Õı³£´¦Àí
+		ASDU_DataStruct.InfoData[6] = 0; //Â©±£1
+		ASDU_DataStruct.InfoData[7] = 0; //Â©±£2
+		ASDU_DataStruct.InfoData[8] = 0; //Â©±£3
+		ASDU_DataStruct.InfoData[9] = 0; //Â©±£4
 	}
 
 	TxCtrlField = SetTxControlField(0, 0, 0, 0x00);
 	ASDU_Length = ASDU_Init(&ASDU_DataStruct, 10,
-							TempASDU_Buf); //å¡«å……ASDUæ•°æ®å¹¶è¿”å›ASDUçš„é•¿åº¦ï¼ˆæ­¤å€¼å¹¶éLï¼‰
+							TempASDU_Buf); //Ìî³äASDUÊı¾İ²¢·µ»ØASDUµÄ³¤¶È£¨´ËÖµ²¢·ÇL£©
 	TempCallAllBuf[0] = 0x68;
 	TempCallAllBuf[1] = ASDU_Length + 3;
 	TempCallAllBuf[2] = ASDU_Length + 3;
@@ -462,7 +462,7 @@ void UpdateDataForCallAll(void) {
 		TempCallAllBuf[i + 7] = TempASDU_Buf[i];
 
 	for (i = 0; i < (ASDU_Length + 3); i++) {
-		CheckSum += TempCallAllBuf[i + 4]; //è®¡ç®—æ ¡éªŒå’Œ
+		CheckSum += TempCallAllBuf[i + 4]; //¼ÆËãĞ£ÑéºÍ
 	}
 
 	TempCallAllBuf[ASDU_Length + 7] = CheckSum;
@@ -470,37 +470,37 @@ void UpdateDataForCallAll(void) {
 	SendDataToGPRSbuf((char*)TempCallAllBuf, (ASDU_Length + 9));
 }
 
-///é¥æµ‹1:æ¸©åº¦
+///Ò£²â1:ÎÂ¶È
 void UpdateTempForCallAll(void) {
 	uint8_t i = 0;
 	uint8_t TempCallAllBuf[64] = {0x00};
 	uint8_t TxCtrlField = 0;
 	ASDU_DataStructure ASDU_DataStruct;
 	uint8_t TempASDU_Buf[32] = {0x00};
-	uint8_t ASDU_Length = 0; // ASDUçš„é•¿åº¦ï¼Œå¹¶éå¯å˜å¸§é•¿ä¸­çš„Lå€¼
+	uint8_t ASDU_Length = 0; // ASDUµÄ³¤¶È£¬²¢·Ç¿É±äÖ¡³¤ÖĞµÄLÖµ
 	uint8_t CheckSum = 0;
-	//è·å–æ§åˆ¶åŸŸçš„å€¼
+	//»ñÈ¡¿ØÖÆÓòµÄÖµ
 	TxCtrlField = SetTxControlField(0, 0, 0, 0x00);
-	ASDU_DataStruct.TypeID = 0x15; //ç±»å‹æ ‡ç¤ºï¼Œä¸å¸¦å“è´¨å› æ•°çš„é¥æµ‹é‡
-	ASDU_DataStruct.Qualifier = 0x83; //å“è´¨å› æ•°ï¼Œå•åœ°å€3ä¸ªæ•°æ®
-	ASDU_DataStruct.Reason = 0x14; //å“åº”æ€»å¬
+	ASDU_DataStruct.TypeID = 0x15; //ÀàĞÍ±êÊ¾£¬²»´øÆ·ÖÊÒòÊıµÄÒ£²âÁ¿
+	ASDU_DataStruct.Qualifier = 0x83; //Æ·ÖÊÒòÊı£¬µ¥µØÖ·3¸öÊı¾İ
+	ASDU_DataStruct.Reason = 0x14; //ÏìÓ¦×ÜÕÙ
 	ASDU_DataStruct.ASDU_Address = LINK_ADDRESS;
 	ASDU_DataStruct.InfoAddress = 0x0001;
 
-	if (moduleMaskEn == 0) { //éå±è”½çŠ¶æ€åŠæ—¶å‘é€çŠ¶æ€
+	if (moduleMaskEn == 0) { //·ÇÆÁ±Î×´Ì¬¼°Ê±·¢ËÍ×´Ì¬
 		ASDU_DataStruct.InfoData[0] = InfoTemp[0];
 		ASDU_DataStruct.InfoData[1] = InfoTemp[1];
 		ASDU_DataStruct.InfoData[2] = InfoTemp[2];
 	}
 	else {
-		ASDU_DataStruct.InfoData[0] = 20; //å±è”½çŠ¶æ€éƒ½æŒ‰æ­£å¸¸å¤„ç†
-		ASDU_DataStruct.InfoData[1] = 20; //å±è”½çŠ¶æ€éƒ½æŒ‰æ­£å¸¸å¤„ç†
-		ASDU_DataStruct.InfoData[2] = 20; //å±è”½çŠ¶æ€éƒ½æŒ‰æ­£å¸¸å¤„ç†
+		ASDU_DataStruct.InfoData[0] = 20; //ÆÁ±Î×´Ì¬¶¼°´Õı³£´¦Àí
+		ASDU_DataStruct.InfoData[1] = 20; //ÆÁ±Î×´Ì¬¶¼°´Õı³£´¦Àí
+		ASDU_DataStruct.InfoData[2] = 20; //ÆÁ±Î×´Ì¬¶¼°´Õı³£´¦Àí
 	}
 
 	TxCtrlField = SetTxControlField(0, 0, 0, 0x00);
 	ASDU_Length = ASDU_Init(&ASDU_DataStruct, 3,
-							TempASDU_Buf); //å¡«å……ASDUæ•°æ®å¹¶è¿”å›ASDUçš„é•¿åº¦ï¼ˆæ­¤å€¼å¹¶éLï¼‰
+							TempASDU_Buf); //Ìî³äASDUÊı¾İ²¢·µ»ØASDUµÄ³¤¶È£¨´ËÖµ²¢·ÇL£©
 	TempCallAllBuf[0] = 0x68;
 	TempCallAllBuf[1] = ASDU_Length + 3;
 	TempCallAllBuf[2] = ASDU_Length + 3;
@@ -513,7 +513,7 @@ void UpdateTempForCallAll(void) {
 		TempCallAllBuf[i + 7] = TempASDU_Buf[i];
 
 	for (i = 0; i < (ASDU_Length + 3); i++) {
-		CheckSum += TempCallAllBuf[i + 4]; //è®¡ç®—æ ¡éªŒå’Œ
+		CheckSum += TempCallAllBuf[i + 4]; //¼ÆËãĞ£ÑéºÍ
 	}
 
 	TempCallAllBuf[ASDU_Length + 7] = CheckSum;
@@ -526,11 +526,11 @@ void EndOfCallAll(void) {
 	uint8_t TxCtrlField = 0;
 	uint8_t TempCallAllBuf[64] = {0x00};
 	uint8_t TempASDU_Buf[32] = {0x00};
-	uint8_t ASDU_Length = 0; // ASDUçš„é•¿åº¦ï¼Œå¹¶éå¯å˜å¸§é•¿ä¸­çš„Lå€¼
-	// uint8_t SendLength = 0; //å¯å˜å¸§é•¿æ€»é•¿åº¦ï¼Œæœ€åé€šè¿‡ä¸²å£å‘é€
+	uint8_t ASDU_Length = 0; // ASDUµÄ³¤¶È£¬²¢·Ç¿É±äÖ¡³¤ÖĞµÄLÖµ
+	// uint8_t SendLength = 0; //¿É±äÖ¡³¤×Ü³¤¶È£¬×îºóÍ¨¹ı´®¿Ú·¢ËÍ
 	uint8_t CheckSum = 0;
 	ASDU_DataStructure ASDU_DataStruct;
-	//è·å–æ§åˆ¶åŸŸçš„å€¼
+	//»ñÈ¡¿ØÖÆÓòµÄÖµ
 	TxCtrlField = SetTxControlField(0, 0, 0, 0x00);
 	ASDU_DataStruct.TypeID = 0x64;
 	ASDU_DataStruct.Qualifier = 0x01;
@@ -539,7 +539,7 @@ void EndOfCallAll(void) {
 	ASDU_DataStruct.InfoAddress = 0x0000;
 	ASDU_DataStruct.InfoData[0] = 0x14;
 	ASDU_Length = ASDU_Init(&ASDU_DataStruct, 1,
-							TempASDU_Buf); //å¡«å……ASDUæ•°æ®å¹¶è¿”å›ASDUçš„é•¿åº¦ï¼ˆæ­¤å€¼å¹¶éLï¼‰
+							TempASDU_Buf); //Ìî³äASDUÊı¾İ²¢·µ»ØASDUµÄ³¤¶È£¨´ËÖµ²¢·ÇL£©
 	TempCallAllBuf[0] = 0x68;
 	TempCallAllBuf[1] = ASDU_Length + 3;
 	TempCallAllBuf[2] = ASDU_Length + 3;
@@ -552,7 +552,7 @@ void EndOfCallAll(void) {
 		TempCallAllBuf[i + 7] = TempASDU_Buf[i];
 
 	for (i = 0; i < (ASDU_Length + 3); i++) {
-		CheckSum += TempCallAllBuf[i + 4]; //è®¡ç®—æ ¡éªŒå’Œ
+		CheckSum += TempCallAllBuf[i + 4]; //¼ÆËãĞ£ÑéºÍ
 	}
 
 	TempCallAllBuf[ASDU_Length + 7] = CheckSum;
@@ -573,9 +573,9 @@ void GetClockFromServer(TimeStructure* TimeStruct, uint8_t* pBuffer) {
 	TimeStruct->Year = pBuffer[20];
 }
 
-// InfoAdress -- ä¸Šå•å…ƒç¼–å·ï¼š1~6
-// Info -- ä¸Šå•å…ƒçŠ¶æ€ï¼š0-æ­£å¸¸ï¼›1-è·Œè½
-//*Time -- æ—¶é—´ç»“æ„ä½“
+// InfoAdress -- ÉÏµ¥Ôª±àºÅ£º1~6
+// Info -- ÉÏµ¥Ôª×´Ì¬£º0-Õı³££»1-µøÂä
+//*Time -- Ê±¼ä½á¹¹Ìå
 
 void ChangeUpdate(uint16_t InfoAdress, uint8_t Info, TimeStructure* Time) {
 	uint8_t i;
@@ -592,9 +592,9 @@ void ChangeUpdate(uint16_t InfoAdress, uint8_t Info, TimeStructure* Time) {
 	InfoArray[4] = SetTxControlField(1, 0, 0, 3);
 	InfoArray[5] = LINK_ADDRESS & 0xFF;
 	InfoArray[6] = LINK_ADDRESS >> 8;
-	InfoArray[7] = 0x1E; // 0x1E==30,å¸¦CP56Time2aæ—¶æ ‡çš„å•ç‚¹ä¿¡æ¯
+	InfoArray[7] = 0x1E; // 0x1E==30,´øCP56Time2aÊ±±êµÄµ¥µãĞÅÏ¢
 	InfoArray[8] = 0x01;
-	InfoArray[9] = 0x03; //ä¼ é€åŸå› :çªå‘
+	InfoArray[9] = 0x03; //´«ËÍÔ­Òò:Í»·¢
 	InfoArray[10] = LINK_ADDRESS & 0xFF;
 	InfoArray[11] = LINK_ADDRESS >> 8;
 	InfoArray[12] = InfoAdress & 0xFF;
@@ -635,9 +635,9 @@ void TempChangeUpdate(uint16_t InfoAdress, uint8_t Info, TimeStructure* Time) {
 		InfoArray[4] = SetTxControlField(1, 0, 0, 3);
 		InfoArray[5] = LINK_ADDRESS & 0xFF;
 		InfoArray[6] = LINK_ADDRESS >> 8;
-		InfoArray[7] = 0x23; // 0x23==35,å¸¦CP56Time2aæ—¶æ ‡çš„æµ‹é‡æ ‡é‡å€¼
+		InfoArray[7] = 0x23; // 0x23==35,´øCP56Time2aÊ±±êµÄ²âÁ¿±êÁ¿Öµ
 		InfoArray[8] = 0x01;
-		InfoArray[9] = 0x03; //ä¼ é€åŸå› :çªå‘
+		InfoArray[9] = 0x03; //´«ËÍÔ­Òò:Í»·¢
 		InfoArray[10] = LINK_ADDRESS & 0xFF;
 		InfoArray[11] = LINK_ADDRESS >> 8;
 		InfoArray[12] = InfoAdress & 0xFF;
@@ -677,7 +677,7 @@ void ResponseTimeSynchronous(void) {
 	Time[6] = LINK_ADDRESS >> 8;
 	Time[7] = 0x67;
 	Time[8] = 0x01;
-	Time[9] = 0x07; //æ¿€æ´»ç¡®è®¤
+	Time[9] = 0x07; //¼¤»îÈ·ÈÏ
 	Time[10] = LINK_ADDRESS & 0xFF;
 	Time[11] = LINK_ADDRESS >> 8;
 	Time[12] = 0x00;
@@ -698,29 +698,29 @@ void ResponseTimeSynchronous(void) {
 	SendDataToGPRSbuf((char*)Time, 23);
 }
 /*
-   æ›´æ”¹è¿™ä¸ªç»“æ„ï¼Œä»¥å®ç°é€šè¿‡GPRSå‘é€ä¸€ä¸ªæ•°æ®æ—¶
+   ¸ü¸ÄÕâ¸ö½á¹¹£¬ÒÔÊµÏÖÍ¨¹ıGPRS·¢ËÍÒ»¸öÊı¾İÊ±
    */
 uint8_t DataProcess(void) {
 	uint8_t TempRxFunctionCode = 0;
 
 	if (CheckLinkAddress(DataFromGPRSBuffer) == SUCCESS) {
 		if (CheckError(DataFromGPRSBuffer) == SUCCESS) {
-			//æ•°æ®æ ¡éªŒé€šè¿‡ï¼Œå¯ä»¥å¼€å§‹å¤„ç†æ•°æ®
+			//Êı¾İĞ£ÑéÍ¨¹ı£¬¿ÉÒÔ¿ªÊ¼´¦ÀíÊı¾İ
 			if (Protocol101_RxLink() == SUCCESS) {
 				TempRxFunctionCode = RxFunctionCode;
 
 				switch (TempRxFunctionCode) {
-				case 0: //ä¸»ç«™å¤ä½è¿œæ–¹é“¾è·¯
+				case 0: //Ö÷Õ¾¸´Î»Ô¶·½Á´Â·
 					ResponseResetRemoteLink();
 					break;
 
-				case 1: //ä¸»ç«™å¤ä½ç”¨æˆ·è¿›ç¨‹
+				case 1: //Ö÷Õ¾¸´Î»ÓÃ»§½ø³Ì
 					break;
 
-				case 2: //å‘é€\ç¡®è®¤é“¾è·¯æµ‹è¯•åŠŸèƒ½
+				case 2: //·¢ËÍ\È·ÈÏÁ´Â·²âÊÔ¹¦ÄÜ
 					break;
 
-				case 3: //å‘é€\ç¡®è®¤ç”¨æˆ·æ•°æ®
+				case 3: //·¢ËÍ\È·ÈÏÓÃ»§Êı¾İ
 					if ((DataFromGPRSBuffer[7] == 0x64) && ((DataFromGPRSBuffer[14] == 0x14) || (DataFromGPRSBuffer[15] == 0x14))) {
 						ResponseCallAll();
 						// SysDelay(1000);
@@ -730,9 +730,9 @@ uint8_t DataProcess(void) {
 					}
 
 					if ((DataFromGPRSBuffer[7] == 0x67)) {
-						//è·å–æ—¶é—´
+						//»ñÈ¡Ê±¼ä
 						GetClockFromServer(&NowTimeStruct, ProtocolRxBuffer);
-						//å°†æ—¶é—´å†™å…¥æ—¶é’ŸèŠ¯ç‰‡
+						//½«Ê±¼äĞ´ÈëÊ±ÖÓĞ¾Æ¬
 						Time_Data[0] = NowTimeStruct.Year;
 						Time_Data[1] = NowTimeStruct.Month;
 						Time_Data[2] = NowTimeStruct.Day;
@@ -740,16 +740,16 @@ uint8_t DataProcess(void) {
 						Time_Data[4] = NowTimeStruct.Min;
 						Time_Data[5] = NowTimeStruct.Sec;
 						WriteDATATime();
-						//å›å¤ç¡®è®¤å¸§
+						//»Ø¸´È·ÈÏÖ¡
 						ResponseTimeSynchronous();
 					}
 
 					break;
 
-				case 4: //å‘é€\æ— å›ç­”ç”¨æˆ·æ•°æ®
+				case 4: //·¢ËÍ\ÎŞ»Ø´ğÓÃ»§Êı¾İ
 					break;
 
-				case 9: //ä¸»ç«™è¯·æ±‚é“¾è·¯çŠ¶æ€
+				case 9: //Ö÷Õ¾ÇëÇóÁ´Â·×´Ì¬
 					ResponseLinkStatus();
 					break;
 				}
@@ -762,7 +762,7 @@ uint8_t DataProcess(void) {
 	return ERROR;
 }
 
-//åˆ¤æ–­å±äºå“ªæ¡å‘½ä»¤
+//ÅĞ¶ÏÊôÓÚÄÄÌõÃüÁî
 /*
 uint8_t Protocol(uint8_t* pBuffer) {
 	uint8_t pCheckErrorResult;
@@ -775,17 +775,17 @@ uint8_t Protocol(uint8_t* pBuffer) {
 			else if (pBuffer[1] == 0x40) {
 				ResponseResetRemoteLink();
 			}
-			//å›ºå®šå¸§
+			//¹Ì¶¨Ö¡
 			return STABLE_DATA;
 		}
 	}
 	else if (pCheckErrorResult == VARIABLE_DATA) {
 		if (CheckLinkAddress(pBuffer) == 1) {
-			if ((pBuffer[7] == 0x64) && (pBuffer[14] == 0x14)) //æ€»å¬å‘½ä»¤
+			if ((pBuffer[7] == 0x64) && (pBuffer[14] == 0x14)) //×ÜÕÙÃüÁî
 			{
 				ResponseCallAll();
 			}
-			//å¯å˜å¸§é•¿
+			//¿É±äÖ¡³¤
 			return VARIABLE_DATA;
 		}
 	}

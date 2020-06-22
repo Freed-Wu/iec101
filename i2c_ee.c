@@ -1,4 +1,4 @@
-/*********æ–‡ä»¶åï¼ši2c_ee.c**********/
+/*********ÎÄ¼şÃû£ºi2c_ee.c**********/
 
 #include "i2c_ee.h"
 
@@ -19,13 +19,13 @@ void I2C_EE_Init(void) {
 }
 
 void TWI_delay(void) {
-	unsigned char i = 10; //i=10å»¶æ—¶1.5us//è¿™é‡Œå¯ä»¥ä¼˜åŒ–é€Ÿåº¦ ï¼Œç»æµ‹è¯•æœ€ä½åˆ°5è¿˜èƒ½å†™å…¥
+	unsigned char i = 10; //i=10ÑÓÊ±1.5us//ÕâÀï¿ÉÒÔÓÅ»¯ËÙ¶È £¬¾­²âÊÔ×îµÍµ½5»¹ÄÜĞ´Èë
 	while (i--)
 		;
 }
 /**************************************************************************
- å»¶æ—¶
- msï¼šå»¶æ—¶çš„æ¯«ç§’æ•°
+ ÑÓÊ±
+ ms£ºÑÓÊ±µÄºÁÃëÊı
  CYCLECOUNTER / 72000000
 ***************************************************************************/
 void DelayMs(unsigned short ms) {
@@ -42,11 +42,11 @@ unsigned char TWI_Start(void) {
 	SCLH;
 	TWI_delay();
 	if (!SDAread)
-		return TWI_BUS_BUSY; //SDAçº¿ä¸ºä½ç”µå¹³åˆ™æ€»çº¿å¿™,é€€å‡º
+		return TWI_BUS_BUSY; //SDAÏßÎªµÍµçÆ½Ôò×ÜÏßÃ¦,ÍË³ö
 	SDAL;
 	TWI_delay();
 	if (SDAread)
-		return TWI_BUS_ERROR; //SDAçº¿ä¸ºé«˜ç”µå¹³åˆ™æ€»çº¿å‡ºé”™,é€€å‡º
+		return TWI_BUS_ERROR; //SDAÏßÎª¸ßµçÆ½Ôò×ÜÏß³ö´í,ÍË³ö
 	SCLL;
 	TWI_delay();
 	return TWI_READY;
@@ -95,7 +95,7 @@ void TWI_NoAck(void) {
 	TWI_delay();
 }
 
-unsigned char TWI_WaitAck(void) //è¿”å›ä¸º:=1æœ‰ACK,=0æ— ACK
+unsigned char TWI_WaitAck(void) //·µ»ØÎª:=1ÓĞACK,=0ÎŞACK
 {
 	SCLL;
 	TWI_delay();
@@ -111,7 +111,7 @@ unsigned char TWI_WaitAck(void) //è¿”å›ä¸º:=1æœ‰ACK,=0æ— ACK
 	return 1;
 }
 
-void TWI_SendByte(unsigned char SendByte) //æ•°æ®ä»é«˜ä½åˆ°ä½ä½//
+void TWI_SendByte(unsigned char SendByte) //Êı¾İ´Ó¸ßÎ»µ½µÍÎ»//
 {
 	unsigned char i = 8;
 	while (i--) {
@@ -129,7 +129,7 @@ void TWI_SendByte(unsigned char SendByte) //æ•°æ®ä»é«˜ä½åˆ°ä½ä½//
 	SCLL;
 }
 
-unsigned char TWI_ReceiveByte(void) //æ•°æ®ä»é«˜ä½åˆ°ä½ä½//
+unsigned char TWI_ReceiveByte(void) //Êı¾İ´Ó¸ßÎ»µ½µÍÎ»//
 {
 	unsigned char i = 8;
 	unsigned char ReceiveByte = 0;
@@ -149,8 +149,8 @@ unsigned char TWI_ReceiveByte(void) //æ•°æ®ä»é«˜ä½åˆ°ä½ä½//
 	return ReceiveByte;
 }
 
-//è¿”å›ï¼š3å†™å…¥æˆåŠŸï¼›0å†™å™¨ä»¶åœ°å€å‡ºé”™ï¼Œ1æ€»çº¿å¿™ï¼Œ2å‡ºé”™
-//å†™å…¥1å­—èŠ‚æ•°æ®           SendByteï¼šå¾…å†™å…¥æ•°æ®    WriteAddressï¼šå¾…å†™å…¥åœ°å€
+//·µ»Ø£º3Ğ´Èë³É¹¦£»0Ğ´Æ÷¼şµØÖ·³ö´í£¬1×ÜÏßÃ¦£¬2³ö´í
+//Ğ´Èë1×Ö½ÚÊı¾İ           SendByte£º´ıĞ´ÈëÊı¾İ    WriteAddress£º´ıĞ´ÈëµØÖ·
 unsigned char TWI_WriteByte(unsigned char SendByte, unsigned char WriteAddress) {
 	unsigned char i;
 	//unsigned short j;
@@ -158,42 +158,42 @@ unsigned char TWI_WriteByte(unsigned char SendByte, unsigned char WriteAddress) 
 	if (i)
 		return i;
 
-	TWI_SendByte(ADDR_24CXX & 0xFE); //å†™å™¨ä»¶åœ°å€  å†™å…¥ï¼šåœ°å€æœ€ä½ä½æ˜¯0ï¼Œè¯»å–ï¼šåœ°å€æœ€ä½ä½æ˜¯1
+	TWI_SendByte(ADDR_24CXX & 0xFE); //Ğ´Æ÷¼şµØÖ·  Ğ´Èë£ºµØÖ·×îµÍÎ»ÊÇ0£¬¶ÁÈ¡£ºµØÖ·×îµÍÎ»ÊÇ1
 
 	if (!TWI_WaitAck()) {
 		TWI_Stop();
 		return 0;
 	}
 
-	TWI_SendByte(WriteAddress); //è®¾ç½®èµ·å§‹åœ°å€
+	TWI_SendByte(WriteAddress); //ÉèÖÃÆğÊ¼µØÖ·
 	TWI_WaitAck();
-	TWI_SendByte(SendByte); //å†™æ•°æ®
+	TWI_SendByte(SendByte); //Ğ´Êı¾İ
 	TWI_WaitAck();
 	TWI_Stop();
-	//æ³¨æ„ï¼šå› ä¸ºè¿™é‡Œè¦ç­‰å¾…EEPROMå†™å®Œï¼Œå¯ä»¥é‡‡ç”¨æŸ¥è¯¢æˆ–å»¶æ—¶æ–¹å¼(10ms)
-	DelayMs(12); //å†™å…¥å»¶æ—¶ 12ms  å†™å‘¨æœŸå¤§äº10mså³å¯
+	//×¢Òâ£ºÒòÎªÕâÀïÒªµÈ´ıEEPROMĞ´Íê£¬¿ÉÒÔ²ÉÓÃ²éÑ¯»òÑÓÊ±·½Ê½(10ms)
+	DelayMs(12); //Ğ´ÈëÑÓÊ± 12ms  Ğ´ÖÜÆÚ´óÓÚ10ms¼´¿É
 	return 3;
 }
 
-//è¿”å›ï¼š0å†™å™¨ä»¶åœ°å€å‡ºé”™ï¼Œ1æ€»çº¿å¿™ï¼Œ2å‡ºé”™,
-//è¯»å‡º1å­—èŠ‚æ•°æ®
-//ReadAddressï¼šå¾…è¯»å‡ºåœ°å€
+//·µ»Ø£º0Ğ´Æ÷¼şµØÖ·³ö´í£¬1×ÜÏßÃ¦£¬2³ö´í,
+//¶Á³ö1×Ö½ÚÊı¾İ
+//ReadAddress£º´ı¶Á³öµØÖ·
 unsigned char TWI_ReadByte(unsigned char ReadAddress) {
 	unsigned char i, temp;
 	i = TWI_Start();
 	if (i)
 		return i;
 
-	TWI_SendByte((ADDR_24CXX & 0xFE)); //å†™å™¨ä»¶åœ°å€ï¼Œå…ˆæ‰§è¡Œä¸€æ¬¡ä¼ªå†™æ“ä½œ
+	TWI_SendByte((ADDR_24CXX & 0xFE)); //Ğ´Æ÷¼şµØÖ·£¬ÏÈÖ´ĞĞÒ»´ÎÎ±Ğ´²Ù×÷
 	if (!TWI_WaitAck()) {
 		TWI_Stop();
 		return 0;
 	}
 
-	TWI_SendByte(ReadAddress); //è®¾ç½®èµ·å§‹åœ°å€
+	TWI_SendByte(ReadAddress); //ÉèÖÃÆğÊ¼µØÖ·
 	TWI_WaitAck();
 	TWI_Start();
-	TWI_SendByte((ADDR_24CXX & 0xFE) | 0x01); //è¯»å™¨ä»¶åœ°å€    å†™å…¥ï¼šåœ°å€æœ€ä½ä½æ˜¯0ï¼Œè¯»å–ï¼šåœ°å€æœ€ä½ä½æ˜¯1
+	TWI_SendByte((ADDR_24CXX & 0xFE) | 0x01); //¶ÁÆ÷¼şµØÖ·    Ğ´Èë£ºµØÖ·×îµÍÎ»ÊÇ0£¬¶ÁÈ¡£ºµØÖ·×îµÍÎ»ÊÇ1
 	TWI_WaitAck();
 
 	//*pDat = TWI_ReceiveByte();
@@ -202,16 +202,16 @@ unsigned char TWI_ReadByte(unsigned char ReadAddress) {
 	TWI_NoAck();
 
 	TWI_Stop();
-	return temp; //è¿”å›çš„å¦‚æœæ˜¯0ï¼Œ1ï¼Œ2åˆ™ä¸é”™è¯¯ä»£ç ç›¸åŒäº†ï¼Œå†è€ƒè™‘ä¸€ä¸‹
+	return temp; //·µ»ØµÄÈç¹ûÊÇ0£¬1£¬2ÔòÓë´íÎó´úÂëÏàÍ¬ÁË£¬ÔÙ¿¼ÂÇÒ»ÏÂ
 }
 
 /***************************************************************************
- å‘24c256ä¸­å†™å¤šä¸ªå­—èŠ‚
- psrc_dataï¼šæŒ‡å‘è¦å†™å…¥æ•°æ®æ•°ç»„çš„æŒ‡é’ˆ
- adrï¼š24c256ä¸­è¦å†™å…¥æ•°æ®çš„é¦–åœ°å€
- nbyteï¼šå†™å…¥çš„å­—èŠ‚æ•°
- è¿”å›å€¼:  0ï¼šæ‰§è¡Œå®Œæ¯•ï¼›1ï¼šæ‰§è¡Œå‡ºç°é”™è¯¯
- å½¢å‚ä¸­ï¼šC02åªæœ‰ä¸€ä¸ªåœ°å€adrï¼›C256ä¸­æœ‰é«˜ä½åœ°å€hadrå’Œä½ä½åœ°å€ladr
+ Ïò24c256ÖĞĞ´¶à¸ö×Ö½Ú
+ psrc_data£ºÖ¸ÏòÒªĞ´ÈëÊı¾İÊı×éµÄÖ¸Õë
+ adr£º24c256ÖĞÒªĞ´ÈëÊı¾İµÄÊ×µØÖ·
+ nbyte£ºĞ´ÈëµÄ×Ö½ÚÊı
+ ·µ»ØÖµ:  0£ºÖ´ĞĞÍê±Ï£»1£ºÖ´ĞĞ³öÏÖ´íÎó
+ ĞÎ²ÎÖĞ£ºC02Ö»ÓĞÒ»¸öµØÖ·adr£»C256ÖĞÓĞ¸ßÎ»µØÖ·hadrºÍµÍÎ»µØÖ·ladr
  ***************************************************************************/
 unsigned char I2C_EE_BufferWrite(unsigned char* psrc_data, unsigned char adr, unsigned char nbyte) {
 	unsigned char i;
@@ -221,32 +221,32 @@ unsigned char I2C_EE_BufferWrite(unsigned char* psrc_data, unsigned char adr, un
 		if (i)
 			return i;
 
-		TWI_SendByte(ADDR_24CXX & 0xFE); //å†™å™¨ä»¶åœ°å€
+		TWI_SendByte(ADDR_24CXX & 0xFE); //Ğ´Æ÷¼şµØÖ·
 
 		if (!TWI_WaitAck()) {
 			TWI_Stop();
 			return 0;
 		}
 
-		TWI_SendByte(adr); //è®¾ç½®èµ·å§‹åœ°å€
+		TWI_SendByte(adr); //ÉèÖÃÆğÊ¼µØÖ·
 		TWI_WaitAck();
-		TWI_SendByte(*psrc_data); //å†™æ•°æ®
+		TWI_SendByte(*psrc_data); //Ğ´Êı¾İ
 		TWI_WaitAck();
-		psrc_data++; //æŒ‡å‘å¾…å†™æ•°æ®çš„æŒ‡é’ˆåŠ 1
-		adr++; //å¯¹24C08çš„æ“ä½œåœ°å€åŠ 1
+		psrc_data++; //Ö¸Ïò´ıĞ´Êı¾İµÄÖ¸Õë¼Ó1
+		adr++; //¶Ô24C08µÄ²Ù×÷µØÖ·¼Ó1
 		TWI_Stop();
-		//æ³¨æ„ï¼šå› ä¸ºè¿™é‡Œè¦ç­‰å¾…EEPROMå†™å®Œï¼Œå¯ä»¥é‡‡ç”¨æŸ¥è¯¢æˆ–å»¶æ—¶æ–¹å¼(10ms)
-		DelayMs(12); //å†™å…¥å»¶æ—¶ 12ms  å†™å‘¨æœŸå¤§äº10mså³å¯
+		//×¢Òâ£ºÒòÎªÕâÀïÒªµÈ´ıEEPROMĞ´Íê£¬¿ÉÒÔ²ÉÓÃ²éÑ¯»òÑÓÊ±·½Ê½(10ms)
+		DelayMs(12); //Ğ´ÈëÑÓÊ± 12ms  Ğ´ÖÜÆÚ´óÓÚ10ms¼´¿É
 	}
 	return 0;
 }
 
 /***************************************************************************
- ä»24c02è¯»å¤šä¸ªå­—èŠ‚
- pdin_dataï¼šæŒ‡å‘è¦ä¿å­˜è¯»å‡ºæ•°æ®çš„æ•°ç»„çš„æŒ‡é’ˆ
- adrï¼š24c02ä¸­è¦è¯»å‡ºæ•°æ®çš„é¦–åœ°å€
- nbyteï¼šè¯»å‡ºçš„å­—èŠ‚æ•°
- è¿”å›å€¼:  0ï¼šæ‰§è¡Œå®Œæ¯•ï¼›1ï¼šæ‰§è¡Œå‡ºç°é”™è¯¯
+ ´Ó24c02¶Á¶à¸ö×Ö½Ú
+ pdin_data£ºÖ¸ÏòÒª±£´æ¶Á³öÊı¾İµÄÊı×éµÄÖ¸Õë
+ adr£º24c02ÖĞÒª¶Á³öÊı¾İµÄÊ×µØÖ·
+ nbyte£º¶Á³öµÄ×Ö½ÚÊı
+ ·µ»ØÖµ:  0£ºÖ´ĞĞÍê±Ï£»1£ºÖ´ĞĞ³öÏÖ´íÎó
  ***************************************************************************/
 unsigned char I2C_EE_BufferRead(unsigned char* pdin_data, unsigned char adr, unsigned char nbyte) {
 	unsigned char i;
@@ -254,28 +254,28 @@ unsigned char I2C_EE_BufferRead(unsigned char* pdin_data, unsigned char adr, uns
 	if (i)
 		return i;
 
-	TWI_SendByte((ADDR_24CXX & 0xFE)); //å†™å™¨ä»¶åœ°å€ï¼Œå…ˆæ‰§è¡Œä¸€æ¬¡ä¼ªå†™æ“ä½œ
+	TWI_SendByte((ADDR_24CXX & 0xFE)); //Ğ´Æ÷¼şµØÖ·£¬ÏÈÖ´ĞĞÒ»´ÎÎ±Ğ´²Ù×÷
 	if (!TWI_WaitAck()) {
 		TWI_Stop();
 		return 0;
 	}
 
-	TWI_SendByte(adr); //è®¾ç½®èµ·å§‹åœ°å€
+	TWI_SendByte(adr); //ÉèÖÃÆğÊ¼µØÖ·
 	TWI_WaitAck();
 	TWI_Start();
-	TWI_SendByte((ADDR_24CXX & 0xFE) | 0x01); //è¯»å™¨ä»¶åœ°å€    å†™å…¥ï¼šåœ°å€æœ€ä½ä½æ˜¯0ï¼Œè¯»å–ï¼šåœ°å€æœ€ä½ä½æ˜¯1
+	TWI_SendByte((ADDR_24CXX & 0xFE) | 0x01); //¶ÁÆ÷¼şµØÖ·    Ğ´Èë£ºµØÖ·×îµÍÎ»ÊÇ0£¬¶ÁÈ¡£ºµØÖ·×îµÍÎ»ÊÇ1
 	TWI_WaitAck();
 
-	while (nbyte != 1) //è¯»å…¥å‰(nbyte-1)ä¸ªå­—èŠ‚
+	while (nbyte != 1) //¶ÁÈëÇ°(nbyte-1)¸ö×Ö½Ú
 	{
-		*pdin_data = TWI_ReceiveByte(); //å¾ªç¯ä»24C02ä¸­è¯»æ•°æ®ï¼Œå­˜å…¥pdin_dataæ‰€æŒ‡çš„å­˜å‚¨å™¨ä¸­
-		TWI_Ack(); //IICåº”ç­”
-		pdin_data++; //æŒ‡å‘å­˜å‚¨è¯»å…¥æ•°æ®çš„å­˜å‚¨å™¨æŒ‡é’ˆåŠ 1
-		nbyte--; //å‰©ä½™è¦è¯»å…¥çš„å­—èŠ‚å‡1
+		*pdin_data = TWI_ReceiveByte(); //Ñ­»·´Ó24C02ÖĞ¶ÁÊı¾İ£¬´æÈëpdin_dataËùÖ¸µÄ´æ´¢Æ÷ÖĞ
+		TWI_Ack(); //IICÓ¦´ğ
+		pdin_data++; //Ö¸Ïò´æ´¢¶ÁÈëÊı¾İµÄ´æ´¢Æ÷Ö¸Õë¼Ó1
+		nbyte--; //Ê£ÓàÒª¶ÁÈëµÄ×Ö½Ú¼õ1
 	};
 
-	*pdin_data = TWI_ReceiveByte(); //è¯»å…¥æœ€åä¸€ä¸ªå­—èŠ‚
-	TWI_NoAck(); //IICæ— åº”ç­”æ“ä½œ
+	*pdin_data = TWI_ReceiveByte(); //¶ÁÈë×îºóÒ»¸ö×Ö½Ú
+	TWI_NoAck(); //IICÎŞÓ¦´ğ²Ù×÷
 
 	TWI_Stop();
 
