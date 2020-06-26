@@ -1,5 +1,6 @@
 #define _main_c
 #define THIS_VERSION ("GPRS V2.90(T) 20190703")
+//#define DEBUG_MODE
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "101_Protocol.h"
@@ -39,6 +40,8 @@ uint16_t DebugNRF905Dly;
 uint16_t nrf905ReaddRegDly;
 uint32_t nrf905InitDly;
 
+uint16_t ReceiveLength;
+
 uint8_t Info[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; //开关量数量 0/1/2 跌落 3跌落状态 4温度状态 5 欠压 6/7/8/9 漏保
 uint16_t InfoCRC16; //每次数据读写之前都要校验数据的有效性，无效时要重新从FLASH中读取
 uint8_t InfoTemp[8]; //温度
@@ -50,6 +53,7 @@ uint32_t PowerOKDly;
 
 uint32_t InfoDisConnectDelay[3];
 uint32_t TempDisConnectDelay[3];
+uint8_t ReceiveData[100];
 
 unsigned int nrf905DR;
 extern uint16_t reqVersionflg;
@@ -77,7 +81,7 @@ void InitAllPara(void) {
 #ifdef DEBUG_MODE
 
 	user_Set.ip_len = 13;
-	memcpy(user_Set.ip_info, "123.57.76.211", 13);
+	memcpy(user_Set.ip_info, "218.29.54.111", 13);
 	user_Set.port_len = 5;
 	memcpy(user_Set.port_info, "20001", 5);
 
@@ -93,7 +97,7 @@ void InitAllPara(void) {
 	//memcpy(user_Set.port_info,"4002",4);
 	//实际服务器地址
 	user_Set.ip_len = 13;
-	memcpy(user_Set.ip_info, "123.57.76.211", 13);
+	memcpy(user_Set.ip_info, "218.29.54.111", 13);
 	user_Set.port_len = 5;
 	memcpy(user_Set.port_info, "20001", 5);
 #endif
@@ -111,7 +115,7 @@ void InitAllPara(void) {
 	memset(DataFromGPRSBuffer, 0, 64);
 
 	user_Set.apn_len = 5;
-	memcpy(user_Set.apn_info, "cmnet", 5);
+	memcpy(user_Set.apn_info, "ctnet", 5);
 	user_Set.user_len = 2;
 	memcpy(user_Set.user_info, "cm", 2);
 	user_Set.password_len = 4;
@@ -216,27 +220,38 @@ int main(void) {
 	while (1) {
 
 #ifdef DEBUG_MODE
+			GPIO_SetBits(GPIOB, GPIO_Pin_15); //拉低GPRS模块开机引脚电平
+			DelayMs(500);
+			GPIO_ResetBits(GPIOB, GPIO_Pin_15);
 		USART3_InitRXbuf();
-		USART3_SendDataToGPRS("AT+CGDCONT=1,\"IP\",\"CMNET\"", strlen("AT+CGDCONT=1,\"IP\",\"CMNET\""));
-		DelayMs(500);
+		USART3_SendDataToGPRS("AT+CSQ\r", strlen("AT+CSQ\r"));
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData); 
+		USART3_SendDataToGPRS("AT+CGDCONT=1,\"IP\",\"CTNET\"", strlen("AT+CGDCONT=1,\"IP\",\"CTNET\""));
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData); 
 		USART3_SendDataToGPRS("AT+CIPMODE=1", strlen("AT+CIPMODE=1"));
-		DelayMs(500);
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData);
 		USART3_SendDataToGPRS("AT+NETOPEN", strlen("AT+NETOPEN"));
-		DelayMs(500);
-		USART3_SendDataToGPRS("AT+CIPOPEN=0,\"TCP\",\"123.57.76.211\",20001", strlen("AT+CIPOPEN=0,\"TCP\",\"123.57.76.211\",20001"));
-		DelayMs(500);
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData);
+		USART3_SendDataToGPRS("AT+CIPOPEN=0,\"TCP\",\"218.29.54.111\",20001", strlen("AT+CIPOPEN=0,\"TCP\",\"218.29.54.111\",20001"));
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData);
 		USART3_SendDataToGPRS("Hello, TCP", strlen("Hello, TCP"));
 		USART3_SendDataToGPRS("+++", strlen("+++"));
-		DelayMs(500);
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData);
 		USART3_SendDataToGPRS("ATO", strlen("ATO"));
-		DelayMs(500);
+		DelayMs(20);
 		USART3_SendDataToGPRS("Hello, IP", strlen("Hello, IP"));
 		USART3_SendDataToGPRS("+++", strlen("+++"));
-		DelayMs(500);
+		DelayMs(20);
 		USART3_SendDataToGPRS("AT+CIPCLOSE=0", strlen("AT+CIPCLOSE=0"));
-		DelayMs(500);
+		DelayMs(20);
 		USART3_SendDataToGPRS("AT+NETCLOSE", strlen("AT+NETCLOSE"));
-		DelayMs(500);
+		DelayMs(20);
 #else
 		if (SysTick_10msflg) {
 			SysTick_10msflg = 0;

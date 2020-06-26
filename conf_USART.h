@@ -10,6 +10,7 @@ void USART3_Configuration(void);
 void USART3_SendDataToGPRS(uint8_t* pString, uint16_t DataLength);
 void USART1_SendCharToRS232(uint8_t CharData);
 void USART1_SendDataToRS232(uint8_t* pString, uint16_t DataLength);
+void USART1_SendData(uint8_t* pString, uint16_t DataLength);
 
 void USART1_IRQHandler(void);
 void USART3_IRQHandler(void);

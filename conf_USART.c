@@ -115,11 +115,32 @@ void USART3_SendDataToGPRS(uint8_t* pString, uint16_t DataLength) {
 	unsigned int i = 0;
 	USART3_InitRXbuf();
 	for (i = 0; i < DataLength; i++) {
-		if (DebugDly > 0) {
+//		if (DebugDly > 0) {
 			USART_SendData(DEBUG_COM, pString[i]); //用于调试信号
-		}
+//		}
 		USART_SendData(GPRS_COM, pString[i]);
 		while (USART_GetFlagStatus(GPRS_COM, USART_FLAG_TXE) == RESET)
+			;
+	}
+	USART3_RxFlag = 0; //重新启动一次接收
+}
+/*
+****************************************************************************************************
+* 功能描述：
+* 输入参数：
+* 返回参数：
+* 说    明：
+****************************************************************************************************
+*/
+void USART1_SendData(uint8_t* pString, uint16_t DataLength) {
+	unsigned int i = 0;
+	//USART3_InitRXbuf();
+	for (i = 0; i < DataLength; i++) {
+//		if (DebugDly > 0) {
+			USART_SendData(DEBUG_COM, pString[i]); //用于调试信号
+//		}
+		//USART_SendData(DEBUG_COM, pString[i]);
+		while (USART_GetFlagStatus(DEBUG_COM, USART_FLAG_TXE) == RESET)
 			;
 	}
 	USART3_RxFlag = 0; //重新启动一次接收

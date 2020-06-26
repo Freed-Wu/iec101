@@ -193,6 +193,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_POWER_RST_ACK:
+		USART1_SendData(GPRS_ReceiveData,GPRS_ReceiveLength);    //显示收到的数据
 		if (GPRS_ReceiveLength != 0) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //开机状态
 			{
@@ -212,12 +213,13 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	//设置APN
 	case GPRS_APN_CMD_SEND:
 		if (sGPRSTimeDelay == 0) {
-			USART3_SendDataToGPRS("AT+CGDCONT=1,\"IP\",\"CMNET\"\r", SIZEOF("AT+CGDCONT=1,\"IP\",\"CMNET\"\r"));
+			USART3_SendDataToGPRS("AT+CGDCONT=1,\"IP\",\"CTNET\"\r", SIZEOF("AT+CGDCONT=1,\"IP\",\"CTNET\"\r"));
 			GPRSStat = GPRS_APN_CMD_ACK;
 			sGPRSTimeDelay = WAIT_ACK; //5S
 		}
 		break;
 	case GPRS_APN_CMD_ACK:
+		USART1_SendData(GPRS_ReceiveData,GPRS_ReceiveLength);    //显示收到的数据
 		if (GPRS_ReceiveLength != 0) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //开机状态
 			{
@@ -243,6 +245,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_CHECK_CSQ_ACK_A:
+		USART1_SendData(GPRS_ReceiveData,GPRS_ReceiveLength);    //显示收到的数据
 		if (GPRS_ReceiveLength != 0) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //开机状态
 			{
@@ -267,6 +270,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_CHECK_CREG_ACK:
+		USART1_SendData(GPRS_ReceiveData,GPRS_ReceiveLength);    //显示收到的数据
 		if (GPRS_ReceiveLength != 0) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //开机状态
 			{
@@ -291,6 +295,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_CHECK_CPSI_ACK:
+		USART1_SendData(GPRS_ReceiveData,GPRS_ReceiveLength);    //显示收到的数据
 		if (GPRS_ReceiveLength != 0) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //开机状态
 			{
@@ -314,6 +319,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_CHECK_CMD_ACK: //
+		USART1_SendData(GPRS_ReceiveData,GPRS_ReceiveLength);    //显示收到的数据
 		if (GPRS_ReceiveLength != 0) { //接收到一帧数据
 			if ((strstr((const char*)GPRS_ReceiveData, "CGREG: 0,1\r\n\r\nOK") != NULL) || (strstr((const char*)GPRS_ReceiveData, "CGREG: 0,5\r\n\r\nOK") != NULL)) //开机状态
 			{
@@ -350,6 +356,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_TCP_conType_ACK:
+		USART1_SendData(GPRS_ReceiveData,GPRS_ReceiveLength);    //显示收到的数据
 		if (GPRS_ReceiveLength != 0) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //开机状态
 			{
@@ -374,6 +381,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_TCP_NETOPEN_ACK:
+		USART1_SendData(GPRS_ReceiveData,GPRS_ReceiveLength);    //显示收到的数据
 		if (GPRS_ReceiveLength != 0) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //开机状态
 			{
@@ -399,6 +407,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_TCP_BUFFERMODE_ACK:
+		USART1_SendData(GPRS_ReceiveData,GPRS_ReceiveLength);    //显示收到的数据
 		if (GPRS_ReceiveLength != 0) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //开机状态
 			{
@@ -418,13 +427,13 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	//----------------------TCP--------------------------------
 	case GPRS_TCP_Name_SEND: //APN
 		if (sGPRSTimeDelay == 0) {
-			uint8_t i = 0;
-			uint8_t APN_Name[64] = "AT+CIPOPEN=0,\"TCP\",";
+			uint8_t i,j = 0;
+			uint8_t APN_Name[100] = "AT+CIPOPEN=0,\"TCP\",";
 			uint8_t Len1 = 0;
 			uint8_t Len2 = 0;
 			uint8_t Length = 0;
 
-			i = 0;
+			i = 0;j=0;
 			Len1 = user_Set.ip_len;
 			Len2 = user_Set.port_len;
 			Length = strlen("AT+CIPOPEN=0,\"TCP\",");
@@ -435,8 +444,9 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			APN_Name[i + Length] = ',';
 			i++;
 			while (Len2--) {
-				APN_Name[i + Length] = user_Set.port_info[i];
+				APN_Name[i + Length] = user_Set.port_info[j];
 				i++;
+				j++;
 			}
 			APN_Name[i + Length] = '\r';
 			i++;
@@ -447,6 +457,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_TCP_Name_ACK:
+		USART1_SendData(GPRS_ReceiveData,GPRS_ReceiveLength);    //显示收到的数据
 		if (GPRS_ReceiveLength != 0) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "OK") != NULL) //开机状态
 			{
