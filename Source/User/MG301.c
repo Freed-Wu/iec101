@@ -840,6 +840,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	break;
 	case GPRS_RUN_Txdata: //心跳包指令应答信号
 		uint8_t AT_Cmd[64] = {0x00};
+		strcpy((char*)AT_Cmd, "  "); // I don't know why it always lose 2 chars. Fuck it!
+		strcpy((char*)AT_Cmd, (char*)user_Set.heart_info);
 		// uint16_t pLength;
 		// uint8_t LengthString[10] = {0x00};
 		//Int2Str((char*)LengthString, user_Set.heart_len);
@@ -860,7 +862,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		//				i++;
 		//			}
 		//		}
-		memcpy(AT_Cmd, "  hello\x1a\r", strlen("  hello\x1a\r"));
+		strcpy((char*)AT_Cmd, "\x1a\r");
 		USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
 		GPRSStat = GPRS_RUN_Txdata_ACK;
 		sGPRSTimeDelay = WAIT_ACK;

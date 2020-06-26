@@ -1,5 +1,13 @@
 #define _main_c
 #define DEBUG_MODE
+#define USER_IP "\"218.29.54.111\""
+#define USER_PORT "20001"
+#define USER_ADDR "1"
+#define USER_APN "ctnet"
+#define USER_USER "cm"
+#define USER_PASSWORD "gprs"
+#define USER_HEART_TIME "40"
+#define USER_FIRST_USED_FLAG 0x3378
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "101_Protocol.h"
@@ -62,12 +70,7 @@ extern TimeStructure Tx_Time;
 //正常返回1，错误返回0
 //每次读写都要重新校验CRC，有错时则重新从FLASH中读取数据
 uint16_t CheckInfoCRCIsOK(void) {
-	if (CRC16(Info, 16) == InfoCRC16) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
+	return CRC16(Info, 16) == InfoCRC16;
 }
 
 //数据改变后更新CRC
@@ -76,30 +79,30 @@ void RefreshInfoCRC(void) {
 }
 
 void InitAllPara(void) {
-	user_Set.ip_len = 15;
-	memcpy(user_Set.ip_info, "\"218.29.54.111\"", 15);
-	user_Set.port_len = 5;
-	memcpy(user_Set.port_info, "20001", 5);
-	user_Set.addr_len = 1;
-	memcpy(user_Set.addr_info, "1", 1);
+	user_Set.ip_len = strlen(USER_IP);
+	strcpy((char*)user_Set.ip_info, USER_IP);
+	user_Set.port_len = strlen(USER_PORT);
+	strcpy((char*)user_Set.port_info, USER_PORT);
+	user_Set.addr_len = strlen(USER_ADDR);
+	strcpy((char*)user_Set.addr_info, USER_ADDR);
 	user_Set.ModuleID[0] = 0x2f;
 	user_Set.ModuleID[1] = 0x18;
 	user_Set.ModuleID[2] = 0xff;
 	user_Set.ModuleID[3] = 0xf1;
 	ReceiveDataFromGPRSflg = 0;
 	memset(DataFromGPRSBuffer, 0, 64);
-	user_Set.apn_len = 5;
-	memcpy(user_Set.apn_info, "ctnet", 5);
-	user_Set.user_len = 2;
-	memcpy(user_Set.user_info, "cm", 2);
-	user_Set.password_len = 4;
-	memcpy(user_Set.password_info, "gprs", 4);
+	user_Set.apn_len = strlen(USER_APN);
+	strcpy((char*)user_Set.apn_info, USER_APN);
+	user_Set.user_len = strlen(USER_USER);
+	strcpy((char*)user_Set.user_info, USER_USER);
+	user_Set.password_len = strlen(USER_PASSWORD);
+	strcpy((char*)user_Set.password_info, USER_PASSWORD);
 	user_Set.heart_len = 7;
 	unsigned char heart[9] = {0x20, 0x18, 0x11, 0x01, 0x00, 0x67, 0x00};
-	memcpy(user_Set.heart_info, (char*)heart, 9);
-	user_Set.heart_time_len = 2;
-	memcpy(user_Set.heart_time_info, "40", 2);
-	user_Set.FirstUsedFlag = 0x3378;
+	strcpy((char*)user_Set.heart_info, (char*)heart);
+	user_Set.heart_time_len = strlen(USER_HEART_TIME);
+	strcpy((char*)user_Set.heart_time_info, USER_HEART_TIME);
+	user_Set.FirstUsedFlag = USER_FIRST_USED_FLAG;
 }
 
 static uint16_t run_loop_cnt;
@@ -132,14 +135,11 @@ int main(void) {
 		InitAllPara(); //初始化参数
 		FLASH_WriteUserSet();
 	}
-
-	{
-		uint8_t Temp[16];
-		memset(Temp, 0x00, 16);
-		memcpy(Temp, user_Set.addr_info, user_Set.addr_len);
-		LINK_ADDRESS = Str2Int((char*)Temp);
-		memset(Temp, 0x00, 16);
-	}
+	uint8_t Temp[16];
+	memset(Temp, 0x00, 16);
+	memcpy(Temp, user_Set.addr_info, user_Set.addr_len);
+	LINK_ADDRESS = Str2Int((char*)Temp);
+	memset(Temp, 0x00, 16);
 
 	FLASH_RD_Module_Status();
 
@@ -218,9 +218,8 @@ int main(void) {
 			if ((InfoDisConnectDelay[0] == 0) || (InfoDisConnectDelay[1] == 0) || (InfoDisConnectDelay[2] == 0)) {
 				if (Info[3] == 0) { //状态改变保存一次
 					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) { //每次改变Info数据之前都要重新
+					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
 						FLASH_RD_Module_Status();
-					}
 					Info[3] = 0x01;
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
@@ -230,9 +229,8 @@ int main(void) {
 			else {
 				if (Info[3] == 1) { //状态改变保存一次
 					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) { //每次改变Info数据之前都要重新
+					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
 						FLASH_RD_Module_Status();
-					}
 					Info[3] = 0x00;
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
@@ -243,9 +241,8 @@ int main(void) {
 			if ((TempDisConnectDelay[0] == 0) || (TempDisConnectDelay[1] == 0) || (TempDisConnectDelay[2] == 0)) {
 				if (Info[4] == 0) { //状态改变保存一次
 					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) { //每次改变Info数据之前都要重新
+					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
 						FLASH_RD_Module_Status();
-					}
 					Info[4] = 0x01;
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
@@ -255,9 +252,8 @@ int main(void) {
 			else {
 				if (Info[4] == 1) { //状态改变保存一次
 					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) { //每次改变Info数据之前都要重新
+					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
 						FLASH_RD_Module_Status();
-					}
 					Info[4] = 0x00;
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
@@ -276,21 +272,18 @@ int main(void) {
 			}
 
 			/*检测NRF905的有效性*/
-			if (nrf905ReaddRegDly > 0) {
+			if (nrf905ReaddRegDly > 0)
 				nrf905ReaddRegDly--;
-			}
 			else {
 				uint16_t nrf905errorflg;
 
 				nrf905errorflg = 0;
 				nrf905ReaddRegDly = 50 * 20; //20S读一次寄存器值
 				DisableExtINT();
-				if (checknrf905_conf() == 0) { //错误
+				if (checknrf905_conf() == 0) //错误
 					nrf905errorflg = 1;
-				}
-				if (checknrf905_addr() == 0) { //错误
+				if (checknrf905_addr() == 0) //错误
 					nrf905errorflg = 1;
-				}
 				if (nrf905errorflg == 1 || (nrf905InitDly == 0)) {
 					nrf905errorflg = 0;
 					nrf905InitDly = 50 * 60 * 60 * 47; //48个小时强制初始化一次
@@ -304,9 +297,8 @@ int main(void) {
 #endif
 			//一旦检测到TCP通道断开，立即启动连接
 			ReceiveDataFromGPRSflg = SuperviseTCP(DataFromGPRSBuffer);
-			if (ReceiveDataFromGPRSflg) {
+			if (ReceiveDataFromGPRSflg)
 				DataProcess();
-			}
 
 			//配置串口处理程序
 			rs232_set_process();
@@ -315,23 +307,20 @@ int main(void) {
 			if (!BVL) //电压低
 			{
 				PowerOKDly = 0;
-				if (CheckInfoCRCIsOK() == 0) {
+				if (CheckInfoCRCIsOK() == 0)
 					FLASH_RD_Module_Status();
-				}
 
 				if (Info[5] == 0) //当前状态为高电压状态
 				{
-					if (PowerLowDly < 50 * 60 * 10) { //延时10分钟报电压低
+					if (PowerLowDly < 50 * 60 * 10) //延时10分钟报电压低
 						PowerLowDly++;
-					}
 					else {
 						GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET);
 						//read time
 						ReadDATATime();
 						ChangeUpdate(0x06, 0x01, &Tx_Time);
-						if (CheckInfoCRCIsOK() == 0) { //每次改变Info数据之前都要重新
+						if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
 							FLASH_RD_Module_Status();
-						}
 						Info[5] = 0x01;
 						RefreshInfoCRC();
 						info_wr_flash_flag = 1;
@@ -342,23 +331,19 @@ int main(void) {
 				}
 			}
 			else { //Power is ok
-
 				PowerLowDly = 0;
-				if (CheckInfoCRCIsOK() == 0) {
+				if (CheckInfoCRCIsOK() == 0)
 					FLASH_RD_Module_Status();
-				}
 				if (Info[5] != 0) {
-					if (PowerOKDly < 50 * 60 * 30) { //30分钟报正常
+					if (PowerOKDly < 50 * 60 * 30) //30分钟报正常
 						PowerOKDly++;
-					}
 					else {
 						GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET);
 						//read time
 						ReadDATATime();
 						ChangeUpdate(0x06, 0x00, &Tx_Time);
-						if (CheckInfoCRCIsOK() == 0) {
+						if (CheckInfoCRCIsOK() == 0)
 							FLASH_RD_Module_Status();
-						}
 						Info[5] = 0x00;
 						RefreshInfoCRC();
 						info_wr_flash_flag = 1;
@@ -385,68 +370,51 @@ int main(void) {
 			case GPRS_LED_IDLE:
 				if (GPRSStat < 0x700) { //配置状态
 					if (((run_loop_cnt) == 14)) //半秒钟闪一次
-					{
 						GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-					}
-					else if (run_loop_cnt == 12) {
+					else if (run_loop_cnt == 12)
 						GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-					}
-					else {
-						if (run_loop_cnt == 0)
+					else if (run_loop_cnt == 0)
 							run_loop_cnt = 15;
-					}
 				}
 				else {
 					GPRSLEDStat = GPRSGetStatBuf();
 					if (GPRSLEDStat == GPRS_LED_IDLE) { //非配置的等待状态4s钟闪4mS
 						if (GPRSStat == GPRS_RUN_Txdata) { //等待指令返回及发送数据
-							if (run_loop_cnt == 49) {
+							if (run_loop_cnt == 49)
 								GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-							}
-							else if (run_loop_cnt == 47) {
+							else if (run_loop_cnt == 47)
 								GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-							}
-							else if (run_loop_cnt == 0) { //2S亮一次
+							else if (run_loop_cnt == 0) //2S亮一次
 								run_loop_cnt = 50;
-							}
 						}
 						else if (GPRSStat == GPRS_RUN_Txdata_ACK) { //等待数据返回正确
-							if (run_loop_cnt == 49) {
+							if (run_loop_cnt == 49)
 								GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-							}
-							else if (run_loop_cnt == 47) {
+							else if (run_loop_cnt == 47)
 								GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-							}
-							else if (run_loop_cnt == 0) {
+							else if (run_loop_cnt == 0)
 								run_loop_cnt = 50;
-							}
 						}
 						else { //正常运行的空闲状态4S闪一次
-
-							if (run_loop_cnt == 199) {
+							if (run_loop_cnt == 199)
 								GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-							}
-							else if (run_loop_cnt == 194) {
+							else if (run_loop_cnt == 194)
 								GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-							}
 							else if (run_loop_cnt == 0) { //4S亮一次
 								GPRSLEDStat = GPRSGetStatBuf();
 								run_loop_cnt = 200;
 							}
 						}
 					}
-					else { //进入发送状态
+					else //进入发送状态
 						run_loop_cnt = 50;
-					}
 				}
 				break;
 			case GPRS_LED_START: //一长
-				if (run_loop_cnt == 49) {
+				if (run_loop_cnt == 49)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-				}
-				else if (run_loop_cnt == 35) {
+				else if (run_loop_cnt == 35)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				}
 				else if (run_loop_cnt == 0) { //4S亮一次
 					GPRSLEDStat = GPRSGetStatBuf();
 					run_loop_cnt = 50;
@@ -454,43 +422,32 @@ int main(void) {
 				break;
 				//case GPRS_LED_CMD_OK:	//一长一短
 			case GPRS_LED_DATA_OK: //
-				if (run_loop_cnt == 49) {
+				if (run_loop_cnt == 49)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-				}
-				else if (run_loop_cnt == 35) {
+				else if (run_loop_cnt == 35)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				}
-				else if (run_loop_cnt == 30) {
+				else if (run_loop_cnt == 30)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-				}
-				else if (run_loop_cnt == 28) {
+				else if (run_loop_cnt == 28)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				}
-				else if (run_loop_cnt == 0) {
+				else if (run_loop_cnt == 0)
 					GPRSLEDStat = GPRSGetStatBuf();
 					run_loop_cnt = 50;
-				}
 				break;
 			case GPRS_LED_CMD_ERROR: //一长两短
 			case GPRS_LED_DATA_ERROR:
-				if (run_loop_cnt == 49) {
+				if (run_loop_cnt == 49)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-				}
-				else if (run_loop_cnt == 35) {
+				else if (run_loop_cnt == 35)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				}
-				else if (run_loop_cnt == 30) { //1短
+				else if (run_loop_cnt == 30) //1短
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-				}
-				else if (run_loop_cnt == 28) {
+				else if (run_loop_cnt == 28)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				}
-				else if (run_loop_cnt == 20) {
+				else if (run_loop_cnt == 20)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-				}
-				else if (run_loop_cnt == 18) {
+				else if (run_loop_cnt == 18)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				}
 				else if (run_loop_cnt == 0) {
 					GPRSLEDStat = GPRSGetStatBuf();
 					run_loop_cnt = 50;
@@ -498,42 +455,32 @@ int main(void) {
 				break;
 			case GPRS_LED_CMD_TO: //一长三短
 			case GPRS_LED_DATA_TO:
-				if (run_loop_cnt == 49) {
+				if (run_loop_cnt == 49)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-				}
-				else if (run_loop_cnt == 38) {
+				else if (run_loop_cnt == 38)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				}
-				else if (run_loop_cnt == 30) { //1短
+				else if (run_loop_cnt == 30) //1短
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-				}
-				else if (run_loop_cnt == 28) {
+				else if (run_loop_cnt == 28)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				}
-				else if (run_loop_cnt == 20) {
+				else if (run_loop_cnt == 20)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-				}
-				else if (run_loop_cnt == 18) {
+				else if (run_loop_cnt == 18)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				}
-				else if (run_loop_cnt == 10) {
+				else if (run_loop_cnt == 10)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-				}
-				else if (run_loop_cnt == 8) {
+				else if (run_loop_cnt == 8)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				}
 				else if (run_loop_cnt == 0) {
 					GPRSLEDStat = GPRSGetStatBuf();
 					run_loop_cnt = 100;
 				}
 				break;
 			case GPRS_LED_DATA: //频闪
-				if ((run_loop_cnt & 0x2) != 0) {
+				if ((run_loop_cnt & 0x2) != 0)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
-				}
-				else {
+				else
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				}
 				if (run_loop_cnt == 0) {
 					GPRSLEDStat = GPRSGetStatBuf();
 					run_loop_cnt = 100;
