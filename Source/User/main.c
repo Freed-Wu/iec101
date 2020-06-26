@@ -1,6 +1,5 @@
 #define _main_c
-#define THIS_VERSION ("GPRS V2.90(T) 20190703")
-//#define DEBUG_MODE
+#define DEBUG_MODE
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "101_Protocol.h"
@@ -77,43 +76,18 @@ void RefreshInfoCRC(void) {
 }
 
 void InitAllPara(void) {
-	//阿里测试服务器地址
-#ifdef DEBUG_MODE
-
 	user_Set.ip_len = 15;
 	memcpy(user_Set.ip_info, "\"218.29.54.111\"", 15);
 	user_Set.port_len = 5;
 	memcpy(user_Set.port_info, "20001", 5);
-
-	//user_Set.ip_len = 13;
-	//memcpy(user_Set.ip_info,"180.97.237.80",13);
-	//user_Set.port_len = 4;
-	//memcpy(user_Set.port_info,"5005",4);
-#else
-
-	//user_Set.ip_len = 13;
-	//memcpy(user_Set.ip_info,"120.25.73.254",13);
-	//user_Set.port_len = 4;
-	//memcpy(user_Set.port_info,"4002",4);
-	//实际服务器地址
-	user_Set.ip_len = 15;
-	memcpy(user_Set.ip_info, "\"218.29.54.111\"", 15);
-	user_Set.port_len = 5;
-	memcpy(user_Set.port_info, "20001", 5);
-#endif
 	user_Set.addr_len = 1;
 	memcpy(user_Set.addr_info, "1", 1);
 	user_Set.ModuleID[0] = 0x2f;
 	user_Set.ModuleID[1] = 0x18;
 	user_Set.ModuleID[2] = 0xff;
 	user_Set.ModuleID[3] = 0xf1;
-	//user_Set.ModuleID[0] = 0xFF;
-	//user_Set.ModuleID[1] = 0xFF;
-	//user_Set.ModuleID[2] = 0xFF;
-	//user_Set.ModuleID[3] = 0xFF;
 	ReceiveDataFromGPRSflg = 0;
 	memset(DataFromGPRSBuffer, 0, 64);
-
 	user_Set.apn_len = 5;
 	memcpy(user_Set.apn_info, "ctnet", 5);
 	user_Set.user_len = 2;
@@ -121,21 +95,11 @@ void InitAllPara(void) {
 	user_Set.password_len = 4;
 	memcpy(user_Set.password_info, "gprs", 4);
 	user_Set.heart_len = 7;
-	{
-		unsigned char heart[9] = {0x20, 0x18, 0x11, 0x01, 0x00, 0x67, 0x00};
-		memcpy(user_Set.heart_info, (char*)heart, 9);
-	}
-	//真实120S发一次
-#ifdef DEBUG_MODE
-	//测试用10S钟发一次
+	unsigned char heart[9] = {0x20, 0x18, 0x11, 0x01, 0x00, 0x67, 0x00};
+	memcpy(user_Set.heart_info, (char*)heart, 9);
 	user_Set.heart_time_len = 2;
 	memcpy(user_Set.heart_time_info, "40", 2);
 	user_Set.FirstUsedFlag = 0x3378;
-#else
-	user_Set.heart_time_len = 2;
-	memcpy(user_Set.heart_time_info, "40", 2);
-	user_Set.FirstUsedFlag = 0x3378;
-#endif
 }
 
 static uint16_t run_loop_cnt;
@@ -218,40 +182,6 @@ int main(void) {
 	moduleMaskEn = 0;
 	moduleMaskDly = 0;
 	while (1) {
-#ifdef DEBUG_MODE
-		GPIO_SetBits(GPIOB, GPIO_Pin_15); //拉低GPRS模块开机引脚电平
-		DelayMs(500);
-		GPIO_ResetBits(GPIOB, GPIO_Pin_15);
-		USART3_InitRXbuf();
-		USART3_SendDataToGPRS("AT+CSQ\r", strlen("AT+CSQ\r"));
-		DelayMs(20);
-		ReceiveLength = Supervise_USART3(ReceiveData);
-		USART3_SendDataToGPRS("AT+CGDCONT=1,\"IP\",\"CTNET\"", strlen("AT+CGDCONT=1,\"IP\",\"CTNET\""));
-		DelayMs(20);
-		ReceiveLength = Supervise_USART3(ReceiveData);
-		USART3_SendDataToGPRS("AT+CIPMODE=1", strlen("AT+CIPMODE=1"));
-		DelayMs(20);
-		ReceiveLength = Supervise_USART3(ReceiveData);
-		USART3_SendDataToGPRS("AT+NETOPEN", strlen("AT+NETOPEN"));
-		DelayMs(20);
-		ReceiveLength = Supervise_USART3(ReceiveData);
-		USART3_SendDataToGPRS("AT+CIPOPEN=0,\"TCP\",\"218.29.54.111\",20001", strlen("AT+CIPOPEN=0,\"TCP\",\"218.29.54.111\",20001"));
-		DelayMs(20);
-		ReceiveLength = Supervise_USART3(ReceiveData);
-		USART3_SendDataToGPRS("Hello, TCP", strlen("Hello, TCP"));
-		USART3_SendDataToGPRS("+++", strlen("+++"));
-		DelayMs(20);
-		ReceiveLength = Supervise_USART3(ReceiveData);
-		USART3_SendDataToGPRS("ATO", strlen("ATO"));
-		DelayMs(20);
-		USART3_SendDataToGPRS("Hello, IP", strlen("Hello, IP"));
-		USART3_SendDataToGPRS("+++", strlen("+++"));
-		DelayMs(20);
-		USART3_SendDataToGPRS("AT+CIPCLOSE=0", strlen("AT+CIPCLOSE=0"));
-		DelayMs(20);
-		USART3_SendDataToGPRS("AT+NETCLOSE", strlen("AT+NETCLOSE"));
-		DelayMs(20);
-#else
 		if (SysTick_10msflg) {
 			SysTick_10msflg = 0;
 			if (DebugDly > 0)
@@ -615,7 +545,6 @@ int main(void) {
 			}
 
 		} //if()
-#endif
 #ifndef DEBUG_MODE
 		__WFI(); //进入睡眠模式
 #endif
@@ -641,13 +570,3 @@ ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
 }
 
 #endif
-
-/**
- * @}
- */
-
-/**
- * @}
- */
-
-/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

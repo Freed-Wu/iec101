@@ -115,9 +115,8 @@ void USART3_SendDataToGPRS(uint8_t* pString, uint16_t DataLength) {
 	unsigned int i = 0;
 	USART3_InitRXbuf();
 	for (i = 0; i < DataLength; i++) {
-		//		if (DebugDly > 0) {
+		//if (DebugDly > 0)
 		USART_SendData(DEBUG_COM, pString[i]); //用于调试信号
-		//		}
 		USART_SendData(GPRS_COM, pString[i]);
 		while (USART_GetFlagStatus(GPRS_COM, USART_FLAG_TXE) == RESET)
 			;
@@ -136,9 +135,8 @@ void USART1_SendData(uint8_t* pString, uint16_t DataLength) {
 	unsigned int i = 0;
 	//USART3_InitRXbuf();
 	for (i = 0; i < DataLength; i++) {
-		//		if (DebugDly > 0) {
+		//if (DebugDly > 0)
 		USART_SendData(DEBUG_COM, pString[i]); //用于调试信号
-		//		}
 		//USART_SendData(GPRS_COM, pString[i]);
 		while (USART_GetFlagStatus(DEBUG_COM, USART_FLAG_TXE) == RESET)
 			;
@@ -181,15 +179,12 @@ void USART1_IRQHandler(void) {
 					DebugDly = 0;
 					RS232_rec_counter = 0;
 				}
-				else if (strstr((char*)&RS232_buff[RS232_rec_counter - 7], "version") || strstr((char*)&RS232_buff[RS232_rec_counter - 7], "VERSION")) { //debug允许信号
+				else if (strstr((char*)&RS232_buff[RS232_rec_counter - 7], "version") || strstr((char*)&RS232_buff[RS232_rec_counter - 7], "VERSION")) //debug允许信号
 					reqVersionflg = 1; //输出5分钟数?
-				}
 			}
 		}
 		if (RS232_rec_counter > RS232_REC_BUFF_SIZE) //超过接收缓冲区大小
-		{
 			RS232_rec_counter = 0;
-		}
 	}
 }
 
@@ -210,9 +205,8 @@ void USART3_IRQHandler(void) {
 		USART3_RxFlag = 1; //启动中断的超时记数，每接收一组数据，这个都要置位一次
 		USART3_RxTimeoutCnt = 0; //一直接收时清除延时
 		USART3_RxBuf[USART3_RxLength] = USART_ReceiveData(GPRS_COM);
-		if (DebugDly > 0) { //接收到的信号通过调试串口发出
+		if (DebugDly > 0) //接收到的信号通过调试串口发出
 			DEBUG_COM->DR = USART3_RxBuf[USART3_RxLength];
-		}
 		if (USART3_RxLength < 61)
 			USART3_RxLength++;
 	}
@@ -264,21 +258,16 @@ uint16_t Supervise_USART3(uint8_t* pReceiveData) {
 
 	pReceiveLength = 0;
 	if (USART3_RxFlag == 1) //GPRS通过串口下发数据时就会置此位
-	{
 		USART3_RxTimeoutCnt++; //每接收到一个数据，这个都会被清零
-	}
-	else {
+	else
 		USART3_RxTimeoutCnt = 0;
-	}
 	if (USART3_RxTimeoutCnt > 3) //接收数据后30ms
 	{
 		USART3_RxFlag = 0;
 		USART3_RxTimeoutCnt = 0;
 		memset(pReceiveData, 0, GPRS_RCV_BUF);
 		for (i = 0; i < USART3_RxLength; i++) //最长63个，最后一个字节为字符串结束符
-		{
 			pReceiveData[i] = USART3_RxBuf[i];
-		}
 		pReceiveData[i] = '\0'; //字符串结束符，在一些字符串处理中需要通过这个识别结束条件
 		pReceiveLength = USART3_RxLength;
 		USART3_RxLength = 0;
