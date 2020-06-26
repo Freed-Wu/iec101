@@ -1,3 +1,6 @@
 [submodule "STM32F10x_StdPeriph_Lib_V3.5.0"]
 	path = Source/STM32F10x_StdPeriph_Lib_V3.5.0
 	url = https://github.com/shenyiqun/STM32F10x_StdPeriph_Lib_V3.5.0
+[submodule "Source/STM32F10x_StdPeriph_Lib_V3.5.0"]
+	path = Source/STM32F10x_StdPeriph_Lib_V3.5.0
+	url = https://github.com/shenyiqun/STM32F10x_StdPeriph_Lib_V3.5.0
