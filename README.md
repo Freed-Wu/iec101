@@ -28,7 +28,41 @@
 
 ![2-1](images/2-1.png "2-1")
 
-![2-2](images/2-2.png "2-2")
+```{main.c}
+#ifdef DEBUG_MODE
+		GPIO_SetBits(GPIOB, GPIO_Pin_15); //拉低GPRS模块开机引脚电平
+		DelayMs(500);
+		GPIO_ResetBits(GPIOB, GPIO_Pin_15);
+		USART3_InitRXbuf();
+		USART3_SendDataToGPRS("AT+CSQ\r", strlen("AT+CSQ\r"));
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData);
+		USART3_SendDataToGPRS("AT+CGDCONT=1,\"IP\",\"CTNET\"", strlen("AT+CGDCONT=1,\"IP\",\"CTNET\""));
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData);
+		USART3_SendDataToGPRS("AT+CIPMODE=1", strlen("AT+CIPMODE=1"));
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData);
+		USART3_SendDataToGPRS("AT+NETOPEN", strlen("AT+NETOPEN"));
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData);
+		USART3_SendDataToGPRS("AT+CIPOPEN=0,\"TCP\",\"218.29.54.111\",20001", strlen("AT+CIPOPEN=0,\"TCP\",\"218.29.54.111\",20001"));
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData);
+		USART3_SendDataToGPRS("Hello, TCP", strlen("Hello, TCP"));
+		USART3_SendDataToGPRS("+++", strlen("+++"));
+		DelayMs(20);
+		ReceiveLength = Supervise_USART3(ReceiveData);
+		USART3_SendDataToGPRS("ATO", strlen("ATO"));
+		DelayMs(20);
+		USART3_SendDataToGPRS("Hello, IP", strlen("Hello, IP"));
+		USART3_SendDataToGPRS("+++", strlen("+++"));
+		DelayMs(20);
+		USART3_SendDataToGPRS("AT+CIPCLOSE=0", strlen("AT+CIPCLOSE=0"));
+		DelayMs(20);
+		USART3_SendDataToGPRS("AT+NETCLOSE", strlen("AT+NETCLOSE"));
+		DelayMs(20);
+```
 
 测试模式采用透传模式，设置完模式以及网络连接之后，用UART通信直接发送读取数据，作为硬件通讯测试。
 

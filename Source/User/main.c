@@ -218,18 +218,17 @@ int main(void) {
 	moduleMaskEn = 0;
 	moduleMaskDly = 0;
 	while (1) {
-
 #ifdef DEBUG_MODE
-			GPIO_SetBits(GPIOB, GPIO_Pin_15); //拉低GPRS模块开机引脚电平
-			DelayMs(500);
-			GPIO_ResetBits(GPIOB, GPIO_Pin_15);
+		GPIO_SetBits(GPIOB, GPIO_Pin_15); //拉低GPRS模块开机引脚电平
+		DelayMs(500);
+		GPIO_ResetBits(GPIOB, GPIO_Pin_15);
 		USART3_InitRXbuf();
 		USART3_SendDataToGPRS("AT+CSQ\r", strlen("AT+CSQ\r"));
 		DelayMs(20);
-		ReceiveLength = Supervise_USART3(ReceiveData); 
+		ReceiveLength = Supervise_USART3(ReceiveData);
 		USART3_SendDataToGPRS("AT+CGDCONT=1,\"IP\",\"CTNET\"", strlen("AT+CGDCONT=1,\"IP\",\"CTNET\""));
 		DelayMs(20);
-		ReceiveLength = Supervise_USART3(ReceiveData); 
+		ReceiveLength = Supervise_USART3(ReceiveData);
 		USART3_SendDataToGPRS("AT+CIPMODE=1", strlen("AT+CIPMODE=1"));
 		DelayMs(20);
 		ReceiveLength = Supervise_USART3(ReceiveData);
