@@ -58,6 +58,7 @@
 #define GPRS_RUN_Rxdata_CMD (uint16_t)0x0702
 #define GPRS_RUN_Rxdata (uint16_t)0x0703
 #define GPRS_RUN_Txdata_CMD (uint16_t)0x0704
+#define GPRS_RUN_Txdata_CMD_ACK (uint16_t)0x0707
 #define GPRS_RUN_Txdata (uint16_t)0x0705
 #define GPRS_RUN_Txdata_ACK (uint16_t)0x0706
 #define WAIT_ACK (uint16_t)150 //3S

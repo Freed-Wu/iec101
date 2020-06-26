@@ -80,8 +80,8 @@ void InitAllPara(void) {
 	//阿里测试服务器地址
 #ifdef DEBUG_MODE
 
-	user_Set.ip_len = 13;
-	memcpy(user_Set.ip_info, "218.29.54.111", 13);
+	user_Set.ip_len = 15;
+	memcpy(user_Set.ip_info, "\"218.29.54.111\"", 15);
 	user_Set.port_len = 5;
 	memcpy(user_Set.port_info, "20001", 5);
 
@@ -96,8 +96,8 @@ void InitAllPara(void) {
 	//user_Set.port_len = 4;
 	//memcpy(user_Set.port_info,"4002",4);
 	//实际服务器地址
-	user_Set.ip_len = 13;
-	memcpy(user_Set.ip_info, "218.29.54.111", 13);
+	user_Set.ip_len = 15;
+	memcpy(user_Set.ip_info, "\"218.29.54.111\"", 15);
 	user_Set.port_len = 5;
 	memcpy(user_Set.port_info, "20001", 5);
 #endif

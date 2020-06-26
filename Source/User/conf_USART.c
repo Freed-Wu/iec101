@@ -139,11 +139,11 @@ void USART1_SendData(uint8_t* pString, uint16_t DataLength) {
 //		if (DebugDly > 0) {
 			USART_SendData(DEBUG_COM, pString[i]); //用于调试信号
 //		}
-		//USART_SendData(DEBUG_COM, pString[i]);
+		//USART_SendData(GPRS_COM, pString[i]);
 		while (USART_GetFlagStatus(DEBUG_COM, USART_FLAG_TXE) == RESET)
 			;
 	}
-	USART3_RxFlag = 0; //重新启动一次接收
+	//USART3_RxFlag = 0; //重新启动一次接收
 }
 
 /***********************************************************************
