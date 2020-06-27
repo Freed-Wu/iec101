@@ -841,19 +841,20 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	case GPRS_RUN_Txdata: //心跳包指令应答信号
 		uint8_t AT_Cmd[64] = {0x00};
 		strcpy((char*)AT_Cmd, "  "); // I don't know why it always lose 2 chars. Fuck it!
-		strcpy((char*)AT_Cmd, (char*)user_Set.heart_info);
 		// uint16_t pLength;
 		// uint8_t LengthString[10] = {0x00};
 		//Int2Str((char*)LengthString, user_Set.heart_len);
 		// uint8_t i = 0;
-		//	if (GPRSSendBeatDataflg) { //发送心跳数据
+		if (GPRSSendBeatDataflg) //发送心跳数据
+			strcpy((char*)AT_Cmd, (char*)user_Set.heart_info);
 		//			Int2Str((char*)LengthString, user_Set.heart_len);
 		//			while (LengthString[i]) {
 		//				AT_Cmd[i] = LengthString[i];
 		//				i++;
 		//			}
-		//		}
-		//		else { //否则发送数据
+		else //否则发送数据
+			strcpy((char*)AT_Cmd, (char*)GPRS_Tx0.TxBuf[GPRS_Tx0.TxPtrOut]);
+		//				USART3_SendDataToGPRS("\r", 1);
 		//			BeatCnt = 0;
 		//			pLength = GPRS_Tx0.TxLength[GPRS_Tx0.TxPtrOut];
 		//			Int2Str((char*)LengthString, pLength);
@@ -862,10 +863,6 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		//				i++;
 		//			}
 		//		}
-		strcpy((char*)AT_Cmd, "\x1a\r");
-		USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
-		GPRSStat = GPRS_RUN_Txdata_ACK;
-		sGPRSTimeDelay = WAIT_ACK;
 		//		if (GPRS_ReceiveLength) {
 		//			//接收到数据就开始发送数据，并不管是否正确
 		//			if (GPRSSendBeatDataflg) {
@@ -908,6 +905,10 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		//			GPRSLoadStatBuf(GPRS_LED_CMD_TO);
 		//			;
 		//		}
+		strcpy((char*)AT_Cmd, "\x1a\r");
+		USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
+		GPRSStat = GPRS_RUN_Txdata_ACK;
+		sGPRSTimeDelay = WAIT_ACK;
 	break;
 	case GPRS_RUN_Txdata_ACK:
 		USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
