@@ -1,7 +1,7 @@
 #define _main_c
 #define THIS_VERSION ("GPRS V2.95(T) 20200701")
 #define DEBUG_MODE
-#define USER_IP "\"218.29.54.111\""
+#define USER_IP "218.29.54.111"
 #define USER_PORT "20001"
 #define USER_ADDR "1"
 #define USER_APN "ctnet"
@@ -9,6 +9,7 @@
 #define USER_PASSWORD "gprs"
 #define USER_HEART_TIME "40"
 #define USER_FIRST_USED_FLAG 0x3378
+#define USER_HEART "0123"
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "101_Protocol.h"
@@ -80,7 +81,7 @@ void RefreshInfoCRC(void) {
 }
 
 void InitAllPara(void) {
-	unsigned char heart[9] = {0x20, 0x18, 0x11, 0x01, 0x00, 0x67, 0x00};
+	unsigned char heart[9] = USER_HEART;
 	user_Set.ip_len = strlen(USER_IP);
 	strcpy((char*)user_Set.ip_info, USER_IP);
 	user_Set.port_len = strlen(USER_PORT);
@@ -88,7 +89,7 @@ void InitAllPara(void) {
 	user_Set.addr_len = strlen(USER_ADDR);
 	strcpy((char*)user_Set.addr_info, USER_ADDR);
 	user_Set.ModuleID[0] = 0x2f;
-	user_Set.ModuleID[1] = 0x18;
+	user_Set.ModuleID[1] = 0x2f;
 	user_Set.ModuleID[2] = 0xff;
 	user_Set.ModuleID[3] = 0xf1;
 	ReceiveDataFromGPRSflg = 0;
@@ -100,7 +101,7 @@ void InitAllPara(void) {
 	user_Set.password_len = strlen(USER_PASSWORD);
 	strcpy((char*)user_Set.password_info, USER_PASSWORD);
 	user_Set.heart_len = 7;
-	strcpy((char*)user_Set.heart_info, (char*)heart);
+	memcpy((char*)user_Set.heart_info, (char*)heart, 9);
 	user_Set.heart_time_len = strlen(USER_HEART_TIME);
 	strcpy((char*)user_Set.heart_time_info, USER_HEART_TIME);
 	user_Set.FirstUsedFlag = USER_FIRST_USED_FLAG;
@@ -375,7 +376,7 @@ int main(void) {
 					else if (run_loop_cnt == 12)
 						GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
 					else if (run_loop_cnt == 0)
-							run_loop_cnt = 15;
+						run_loop_cnt = 15;
 				}
 				else {
 					GPRSLEDStat = GPRSGetStatBuf();
@@ -433,7 +434,7 @@ int main(void) {
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
 				else if (run_loop_cnt == 0)
 					GPRSLEDStat = GPRSGetStatBuf();
-					run_loop_cnt = 50;
+				run_loop_cnt = 50;
 				break;
 			case GPRS_LED_CMD_ERROR: //Ò»³¤Á½¶Ì
 			case GPRS_LED_DATA_ERROR:
