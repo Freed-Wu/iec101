@@ -133,7 +133,7 @@ int main(void) {
 
 	FLASH_ReadUserSet();
 
-	if (user_Set.FirstUsedFlag != 0x3378) {
+	if (user_Set.FirstUsedFlag != USER_FIRST_USED_FLAG) {
 		InitAllPara(); //初始化参数
 		FLASH_WriteUserSet();
 	}
