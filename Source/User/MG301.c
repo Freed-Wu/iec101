@@ -796,12 +796,11 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_RUN_Txdata_CMD: //发送数据指令
-	{
-		uint8_t i = 0;
-		uint8_t AT_Cmd[20] = {0x00};
-		uint16_t pLength;
-		uint8_t LengthString[6] = {0x00};
-		strcpy((char*)AT_Cmd, "AT+CIPSEND=0,");
+		// uint8_t i = 0;
+		// uint8_t AT_Cmd[20] = {0x00};
+		// uint16_t pLength;
+		// uint8_t LengthString[6] = {0x00};
+		strcpy((char*)AT_Cmd, "AT+CIPSEND=0,\r");
 		//		if (GPRSSendBeatDataflg) { //发送心跳数据
 		//			strcpy((char*)AT_Cmd, "AT+CIPSEND=1,");
 		//			/*Int2Str((char*)LengthString, user_Set.heart_len);
@@ -820,20 +819,20 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		//				i++;
 		//			}*/
 		//		}
-		AT_Cmd[i + 13] = '\r';
+		// AT_Cmd[i + 13] = '\r';
 		/*i++;
 		AT_Cmd[i + 10] = '\0'; //字符串结束符*/
-		USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
+		USART3_SendDataToGPRS((uint8_t*)AT_Cmd, strlen((const char*)AT_Cmd));
 		//USART3_SendDataToGPRS("AT^SISW=0,5\r",strlen((const char *)"AT^SISW=0,5\r"));
 		GPRSStat = GPRS_RUN_Txdata_CMD_ACK;
 		//GPRSStat = GPRS_RUN_Txdata;
 		sGPRSTimeDelay = WAIT_ACK;
 		GPRSLoadStatBuf(GPRS_LED_START);
-	} break;
+	break;
 	case GPRS_RUN_Txdata_CMD_ACK:
 		USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
 		if (GPRS_ReceiveLength) {
-			if (strstr((char*)GPRS_ReceiveData, ">") != NULL) {
+			if (strstr((char*)GPRS_ReceiveData, ">")) {
 				USART1_SendData((uint8_t*)"data cmd ack ok", strlen("data cmd ack ok")); //显示收到的数据
 				GPRSStat = GPRS_RUN_Txdata;
 				sGPRSTimeDelay = WAIT_ACK;
