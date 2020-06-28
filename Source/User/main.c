@@ -1,4 +1,5 @@
 #define _main_c
+#define THIS_VERSION ("GPRS V2.95(T) 20200701")
 #define DEBUG_MODE
 #define USER_IP "\"218.29.54.111\""
 #define USER_PORT "20001"
@@ -79,6 +80,7 @@ void RefreshInfoCRC(void) {
 }
 
 void InitAllPara(void) {
+	unsigned char heart[9] = {0x20, 0x18, 0x11, 0x01, 0x00, 0x67, 0x00};
 	user_Set.ip_len = strlen(USER_IP);
 	strcpy((char*)user_Set.ip_info, USER_IP);
 	user_Set.port_len = strlen(USER_PORT);
@@ -98,7 +100,6 @@ void InitAllPara(void) {
 	user_Set.password_len = strlen(USER_PASSWORD);
 	strcpy((char*)user_Set.password_info, USER_PASSWORD);
 	user_Set.heart_len = 7;
-	unsigned char heart[9] = {0x20, 0x18, 0x11, 0x01, 0x00, 0x67, 0x00};
 	strcpy((char*)user_Set.heart_info, (char*)heart);
 	user_Set.heart_time_len = strlen(USER_HEART_TIME);
 	strcpy((char*)user_Set.heart_time_info, USER_HEART_TIME);
@@ -108,6 +109,7 @@ void InitAllPara(void) {
 static uint16_t run_loop_cnt;
 
 int main(void) {
+	uint8_t Temp[16];
 	run_loop_cnt = 0;
 	info_wr_flash_flag = 0;
 	temp_wr_flash_flag = 0;
@@ -135,7 +137,6 @@ int main(void) {
 		InitAllPara(); //初始化参数
 		FLASH_WriteUserSet();
 	}
-	uint8_t Temp[16];
 	memset(Temp, 0x00, 16);
 	memcpy(Temp, user_Set.addr_info, user_Set.addr_len);
 	LINK_ADDRESS = Str2Int((char*)Temp);

@@ -99,6 +99,7 @@ void GPRS_init(void) {
 
 uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	char* pReceiveData; //指向数据域地址
+	uint8_t AT_Cmd[64] = {0x00};
 	uint16_t pReceiveLength;
 
 	pReceiveLength = 0;
@@ -130,7 +131,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		break;
 	case GPRS_POWER_CMD_SEND:
 		USART3_InitRXbuf();
-		USART3_SendDataToGPRS("AT\r", strlen("AT\r")); //是否开机
+		USART3_SendDataToGPRS((uint8_t*)"AT\r", strlen("AT\r")); //是否开机
 		sGPRSTimeDelay = WAIT_ACK;
 
 		GPRSStat = GPRS_POWER_CMD_ACK;
@@ -151,7 +152,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	case GPRS_POWER_ON_START:
 		if (sGPRSTimeDelay == 0) {
 			GPIO_SetBits(GSM_PWUP, GSM_PWUP_PIN); //拉低GPRS模块开机引脚电平
-			DelayMs(500);
+			Delay10ms(50);
 			GPIO_ResetBits(GSM_PWUP, GSM_PWUP_PIN);
 			sGPRSTimeDelay = WAIT_START; //延时2S左右
 			GPRSStat = GPRS_POWER_WAIT_START;
@@ -182,7 +183,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		break;
 	case GPRS_POWER_RST:
 		if (sGPRSTimeDelay == 0) {
-			USART3_SendDataToGPRS("AT+CFUN=1,1\r", strlen("AT+CFUN=1,1\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+CFUN=1,1\r", strlen("AT+CFUN=1,1\r"));
 			GPRSStat = GPRS_POWER_RST_ACK;
 			sGPRSTimeDelay = WAIT_ACK; //5S
 		}
@@ -208,7 +209,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	//设置APN
 	case GPRS_APN_CMD_SEND:
 		if (sGPRSTimeDelay == 0) {
-			USART3_SendDataToGPRS("AT+CGDCONT=1,\"IP\",\"CTNET\"\r", SIZEOF("AT+CGDCONT=1,\"IP\",\"CTNET\"\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+CGDCONT=1,\"IP\",\"CTNET\"\r", SIZEOF("AT+CGDCONT=1,\"IP\",\"CTNET\"\r"));
 			GPRSStat = GPRS_APN_CMD_ACK;
 			sGPRSTimeDelay = WAIT_ACK; //5S
 		}
@@ -234,7 +235,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	case GPRS_CHECK_CSQ_A:
 		if (sGPRSTimeDelay == 0) {
 			//GPRSErrorCnt = 0;
-			USART3_SendDataToGPRS("AT+CSQ\r", strlen("AT+CSQ\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+CSQ\r", strlen("AT+CSQ\r"));
 			GPRSStat = GPRS_CHECK_CSQ_ACK_A;
 			sGPRSTimeDelay = WAIT_ACK; //5S
 		}
@@ -258,7 +259,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	//查询注册网络状态
 	case GPRS_CHECK_CREG_SEND:
 		if (sGPRSTimeDelay == 0) {
-			USART3_SendDataToGPRS("AT+CREG?\r", strlen("AT+CREG?\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+CREG?\r", strlen("AT+CREG?\r"));
 			GPRSStat = GPRS_CHECK_CREG_ACK;
 			sGPRSTimeDelay = WAIT_ACK; //5S
 		}
@@ -282,7 +283,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	//查询注册信息
 	case GPRS_CHECK_CPSI_SEND:
 		if (sGPRSTimeDelay == 0) {
-			USART3_SendDataToGPRS("AT+CPSI?\r", strlen("AT+CPSI?\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+CPSI?\r", strlen("AT+CPSI?\r"));
 			GPRSStat = GPRS_CHECK_CPSI_ACK;
 			sGPRSTimeDelay = WAIT_ACK; //5S
 		}
@@ -305,7 +306,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		break;
 	case GPRS_CHECK_CMD_SEND:
 		if (sGPRSTimeDelay == 0) {
-			USART3_SendDataToGPRS("AT+CGREG?\r", strlen("AT+CGREG?\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+CGREG?\r", strlen("AT+CGREG?\r"));
 			GPRSStat = GPRS_CHECK_CMD_ACK;
 			sGPRSTimeDelay = WAIT_ACK; //5S
 		}
@@ -341,7 +342,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	case GPRS_TCP_conType_SEND:
 		if (sGPRSTimeDelay == 0) {
 			GPRSErrorCnt = 0;
-			USART3_SendDataToGPRS("AT+CIPMODE=0\r", strlen("AT+CIPMODE=0\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+CIPMODE=0\r", strlen("AT+CIPMODE=0\r"));
 			GPRSStat = GPRS_TCP_conType_ACK;
 			sGPRSTimeDelay = WAIT_ACK; //5S
 		}
@@ -365,7 +366,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	//NETOPEN-------------------------------------------------------------------
 	case GPRS_TCP_NETOPEN_SEND:
 		if (sGPRSTimeDelay == 0) {
-			USART3_SendDataToGPRS("AT+NETOPEN\r", strlen("AT+NETOPEN\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+NETOPEN\r", strlen("AT+NETOPEN\r"));
 			GPRSStat = GPRS_TCP_NETOPEN_ACK;
 			sGPRSTimeDelay = WAIT_ACK; //5S
 		}
@@ -390,7 +391,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	//BUFFERMODE-------------------------------------------------------------------
 	case GPRS_TCP_BUFFERMODE_SEND:
 		if (sGPRSTimeDelay == 0) {
-			USART3_SendDataToGPRS("AT+CIPRXGET=1\r", strlen("AT+CIPRXGET=1\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+CIPRXGET=1\r", strlen("AT+CIPRXGET=1\r"));
 			GPRSStat = GPRS_TCP_BUFFERMODE_ACK;
 			sGPRSTimeDelay = WAIT_ACK; //5S
 		}
@@ -680,9 +681,6 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 
 **************************************************************************/
 	case GPRS_RUN_Rxdata_CMD: //接收数据指令
-		uint8_t AT_Cmd[20] = {0x00};
-		uint16_t pLength;
-		uint8_t LengthString[6] = {0x00};
 		strcpy((char*)AT_Cmd, "AT+CIPSEND=0,");
 		// uint8_t i = 0;
 		//			Int2Str((char*)LengthString, user_Set.heart_len);
@@ -716,7 +714,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			sGPRSTimeDelay = NEXT_CMD_DLY;
 		}
 		else if (sGPRSSentdataDelay == 0) { //2S钟读一次，去缓冲区读数据
-			USART3_SendDataToGPRS("AT+CIPRXGET=2,0\r", strlen("AT+CIPRXGET=2,0\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+CIPRXGET=2,0\r", strlen("AT+CIPRXGET=2,0\r"));
 			GPRSStat = GPRS_RUN_Rxdata;
 			sGPRSTimeDelay = WAIT_ACK;
 		}
@@ -794,11 +792,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_RUN_Txdata_CMD: //发送数据指令
-		uint8_t AT_Cmd[20] = {0x00};
-		uint16_t pLength;
-		uint8_t LengthString[6] = {0x00};
-		strcpy((char*)AT_Cmd, "AT+CIPSEND=0,");
-		uint8_t i = 0;
+		strcpy((char*)AT_Cmd, "AT+CIPSEND=0,\r");
+		//uint8_t i = 0;
 		//		if (GPRSSendBeatDataflg) { //发送心跳数据
 		//			strcpy((char*)AT_Cmd, "AT+CIPSEND=1,");
 		//			/*Int2Str((char*)LengthString, user_Set.heart_len);
@@ -817,7 +812,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		//				i++;
 		//			}*/
 		//		}
-		AT_Cmd[i + strlen("AT+CIPSEND=0,")] = '\r';
+		//AT_Cmd[i + strlen("AT+CIPSEND=0,")] = '\r';
 		/*i++;
 		AT_Cmd[i + strlen("AT+CIPSEND=0,")] = '\0'; //字符串结束符*/
 		USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
@@ -839,7 +834,6 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 	break;
 	case GPRS_RUN_Txdata: //心跳包指令应答信号
-		uint8_t AT_Cmd[64] = {0x00};
 		strcpy((char*)AT_Cmd, "  "); // I don't know why it always lose 2 chars. Fuck it!
 		// uint16_t pLength;
 		// uint8_t LengthString[10] = {0x00};
