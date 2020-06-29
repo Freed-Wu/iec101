@@ -52,9 +52,8 @@ extern uint32_t TempDisConnectDelay[3];
 void SpiWrite(unsigned char b) {
 	unsigned char i = 8;
 
-	if (DebugNRF905Dly) {
+	if (DebugNRF905Dly)
 		USART1_SendCharToRS232(b);
-	}
 	while (i--) {
 		Delay(10);
 		GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET); //CLK = 0
@@ -91,9 +90,8 @@ unsigned char SpiRead(void) {
 	Delay(10);
 	GPIO_WriteBit(GPIOA, GPIO_Pin_7, Bit_SET); //SMDI
 
-	if (DebugNRF905Dly) {
+	if (DebugNRF905Dly)
 		USART1_SendCharToRS232(ddata);
-	}
 	return ddata;
 }
 /*
@@ -111,9 +109,8 @@ void SPI_RdConfiRegs(unsigned char cmd, int length) {
 	}
 	SpiWrite(cmd);
 
-	for (i = 0; i < length; i++) { //read tx address
+	for (i = 0; i < length; i++) //read tx address
 		WIRELESS_RxBuffer[i] = SpiRead();
-	}
 
 	GPIO_WriteBit(NRF905_CSN, NRF905_CSN_PIN, Bit_SET); //CSN = 1
 	Delay(10);
@@ -154,17 +151,15 @@ void TxPacket(void) {
 	while (data == 0) {
 		data = GPIO_ReadInputDataBit(NRF905_DR, NRF905_DR_PIN);
 		if (j < 100) {
-			if (i < 10000) {
+			if (i < 10000)
 				i++;
-			}
 			else {
 				i = 0;
 				j = j + 1;
 			}
 		}
-		else {
+		else
 			break;
-		}
 	}
 
 	GPIO_WriteBit(NRF905_TRCE, NRF905_TRCE_PIN, Bit_SET); //TRX_CE = 1
@@ -279,24 +274,20 @@ void Wait_Rec_Packet(void) {
 			case 0x02:
 			case 0x03: //跌落A //跌落B //跌落C
 				if (pData == 0x01) {
-					if (moduleMaskEn == 0) { //非屏蔽状态及时发送状态
+					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
 						ChangeUpdate(pAddr, 0x01, &Tx_Time);
-					}
-					if (CheckInfoCRCIsOK() == 0) {
+					if (CheckInfoCRCIsOK() == 0)
 						FLASH_RD_Module_Status();
-					}
 					Info[pAddr - 1] = 0x01;
 					InfoDisConnectDelay[pAddr - 1] = 50 * 60 * 60 * 12;
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
 				}
 				else if (pData == 0x02) {
-					if (moduleMaskEn == 0) { //非屏蔽状态及时发送状态
+					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
 						ChangeUpdate(pAddr, 0x00, &Tx_Time);
-					}
-					if (CheckInfoCRCIsOK() == 0) {
+					if (CheckInfoCRCIsOK() == 0)
 						FLASH_RD_Module_Status();
-					}
 					Info[pAddr - 1] = 0x00;
 					InfoDisConnectDelay[pAddr - 1] = 50 * 60 * 60 * 12;
 					RefreshInfoCRC();
@@ -308,23 +299,19 @@ void Wait_Rec_Packet(void) {
 			case 0x06:
 			case 0x07: //漏报1
 				if (pData == 0x01) {
-					if (moduleMaskEn == 0) { //非屏蔽状态及时发送状态
+					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
 						ChangeUpdate(pAddr + 3, 0x01, &Tx_Time);
-					}
-					if (CheckInfoCRCIsOK() == 0) {
+					if (CheckInfoCRCIsOK() == 0)
 						FLASH_RD_Module_Status();
-					}
 					Info[pAddr + 2] = 0x01; //漏保存储在Info中的6 7 8 9
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
 				}
 				else if (pData == 0x02) {
-					if (moduleMaskEn == 0) { //非屏蔽状态及时发送状态
+					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
 						ChangeUpdate(pAddr + 3, 0x00, &Tx_Time);
-					}
-					if (CheckInfoCRCIsOK() == 0) {
+					if (CheckInfoCRCIsOK() == 0)
 						FLASH_RD_Module_Status();
-					}
 					Info[pAddr + 2] = 0x00;
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
@@ -338,9 +325,8 @@ void Wait_Rec_Packet(void) {
 				if ((int8_t)pData < 125 && (int8_t)pData > (int8_t)(-85)) { //温度在有效范围内
 					InfoTemp[pAddr - 0x61] = pData;
 					TempDisConnectDelay[pAddr - 61] = 50 * 60 * 60 * 12;
-					if (moduleMaskEn == 0) { //非屏蔽状态及时发送状态
+					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
 						TempChangeUpdate(pAddr - 0x60, InfoTemp[pAddr - 0x61], &Tx_Time); //温度值突发上传
-					}
 					temp_wr_flash_flag = 1;
 				}
 
@@ -350,7 +336,6 @@ void Wait_Rec_Packet(void) {
 			} //switch
 			Wireless_CNT = Wireless_CNT - 12;
 			Wireless_RdPtr = Wireless_RdPtr + 12;
-
 		} //校验通过
 
 		//遥控屏蔽数据在这里
@@ -361,7 +346,6 @@ void Wait_Rec_Packet(void) {
 				 && ((uint8_t)(WIRELESS_Rxd[Wireless_RdPtr + 4] + WIRELESS_Rxd[Wireless_RdPtr + 5] + WIRELESS_Rxd[Wireless_RdPtr + 6] + WIRELESS_Rxd[Wireless_RdPtr + 7]
 							   + WIRELESS_Rxd[Wireless_RdPtr + 8] + WIRELESS_Rxd[Wireless_RdPtr + 9])
 					 == WIRELESS_Rxd[Wireless_RdPtr + 10])
-
 		) { //校验通过
 			/*
 						返回应答帧
@@ -457,24 +441,10 @@ uint16_t reccnt = 0;
 //
 unsigned int checknrf905_conf(void) {
 	SPI_RdConfiRegs(0x10, 10); //read configure registers
-	if (/*(WIRELESS_RxBuffer[0] == RFConf[1])
-		&& (WIRELESS_RxBuffer[0] == RFConf[1])
-		&& */
-		(WIRELESS_RxBuffer[1] == RFConf[2]) && (WIRELESS_RxBuffer[2] == RFConf[3]) && (WIRELESS_RxBuffer[3] == RFConf[4]) && (WIRELESS_RxBuffer[4] == RFConf[5]) && (WIRELESS_RxBuffer[5] == RFConf[6])
-		&& (WIRELESS_RxBuffer[6] == RFConf[7]) && (WIRELESS_RxBuffer[7] == RFConf[8]) && (WIRELESS_RxBuffer[8] == RFConf[9]) && (WIRELESS_RxBuffer[9] == RFConf[10])) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
+	return !strncmp((const char*)WIRELESS_RxBuffer + 1, (const char*)RFConf + 2, 9);
 }
 
 unsigned int checknrf905_addr(void) {
 	SPI_RdConfiRegs(0x23, 4); //read tx address
-	if ((WIRELESS_RxBuffer[0] == 0xa1) && (WIRELESS_RxBuffer[1] == 0x51) && (WIRELESS_RxBuffer[2] == 0xa8) && (WIRELESS_RxBuffer[3] == 0x58)) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
+	return !strncmp((const char*)WIRELESS_RxBuffer, "\xa1\x51\xa8\x58", 4);
 }

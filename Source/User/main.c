@@ -228,8 +228,7 @@ int main(void) {
 					EnableExtINT();
 				}
 			}
-			else {
-				if (Info[3] == 1) { //状态改变保存一次
+			else if (Info[3] == 1) { //状态改变保存一次
 					DisableExtINT();
 					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
 						FLASH_RD_Module_Status();
@@ -238,7 +237,6 @@ int main(void) {
 					info_wr_flash_flag = 1;
 					EnableExtINT();
 				}
-			}
 			//温度不在线测试
 			if ((TempDisConnectDelay[0] == 0) || (TempDisConnectDelay[1] == 0) || (TempDisConnectDelay[2] == 0)) {
 				if (Info[4] == 0) { //状态改变保存一次
@@ -251,7 +249,7 @@ int main(void) {
 					EnableExtINT();
 				}
 			}
-			else {
+			else
 				if (Info[4] == 1) { //状态改变保存一次
 					DisableExtINT();
 					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
@@ -261,7 +259,6 @@ int main(void) {
 					info_wr_flash_flag = 1;
 					EnableExtINT();
 				}
-			}
 
 			if (GPIO_ReadInputDataBit(NRF905_DR, NRF905_DR_PIN)) { //中断中未捕获数据上升沿时 初始化中断服务程序并初始化NRF905
 				Delay(10);

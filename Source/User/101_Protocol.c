@@ -112,10 +112,9 @@ uint8_t CheckError(uint8_t* pBuffer) {
 		Length1 = pBuffer[1];
 		Length2 = pBuffer[2];
 
-		if (Length1 != Length2) {
+		if (Length1 != Length2)
 			return ERROR; //两个长度字节不相等,返回错误
-		}
-		else {
+		else
 			//校验和相等且最后一个字节为0x16
 			if ((GetCheckSum(pBuffer) == pBuffer[4 + Length1]) && (pBuffer[5 + Length1] == 0x16)) {
 				RxControlField = pBuffer[4]; //帧校验成功后取得控制域数据
@@ -123,7 +122,6 @@ uint8_t CheckError(uint8_t* pBuffer) {
 			}
 			else
 				return ERROR;
-		}
 	}
 
 	/* 固定帧长第一字节和最后字节校验 */
@@ -136,10 +134,9 @@ uint8_t CheckError(uint8_t* pBuffer) {
 		else
 			return ERROR;
 	}
-	else {
+	else
 		//无效帧，丢弃
 		return ERROR;
-	}
 }
 
 /*
@@ -157,9 +154,8 @@ uint8_t Protocol101_RxLink(void) {
 	RxFCV = (RxControlField >> 4) & 0x01; //取得FCV位
 	RxFunctionCode = RxControlField & 0x0F; //取得功能码
 
-	if ((RxDIR == M2S_DIR) && (RxPRM == 1)) {
+	if ((RxDIR == M2S_DIR) && (RxPRM == 1))
 		return SUCCESS; //接收标志位判断
-	}
 	else {
 		// newFrame = 1;
 		LastFCB = RxFCB;
@@ -390,9 +386,8 @@ uint8_t ResponseCallAll(void) {
 	for (i = 0; i < ASDU_Length; i++)
 		TempCallAllBuf[i + 7] = TempASDU_Buf[i];
 
-	for (i = 0; i < (ASDU_Length + 3); i++) {
+	for (i = 0; i < (ASDU_Length + 3); i++)
 		CheckSum += TempCallAllBuf[i + 4]; //计算校验和
-	}
 
 	TempCallAllBuf[ASDU_Length + 7] = CheckSum;
 	TempCallAllBuf[ASDU_Length + 8] = 0x16;
@@ -461,9 +456,8 @@ void UpdateDataForCallAll(void) {
 	for (i = 0; i < ASDU_Length; i++)
 		TempCallAllBuf[i + 7] = TempASDU_Buf[i];
 
-	for (i = 0; i < (ASDU_Length + 3); i++) {
+	for (i = 0; i < (ASDU_Length + 3); i++)
 		CheckSum += TempCallAllBuf[i + 4]; //计算校验和
-	}
 
 	TempCallAllBuf[ASDU_Length + 7] = CheckSum;
 	TempCallAllBuf[ASDU_Length + 8] = 0x16;
@@ -512,9 +506,8 @@ void UpdateTempForCallAll(void) {
 	for (i = 0; i < ASDU_Length; i++)
 		TempCallAllBuf[i + 7] = TempASDU_Buf[i];
 
-	for (i = 0; i < (ASDU_Length + 3); i++) {
+	for (i = 0; i < (ASDU_Length + 3); i++)
 		CheckSum += TempCallAllBuf[i + 4]; //计算校验和
-	}
 
 	TempCallAllBuf[ASDU_Length + 7] = CheckSum;
 	TempCallAllBuf[ASDU_Length + 8] = 0x16;
@@ -551,9 +544,8 @@ void EndOfCallAll(void) {
 	for (i = 0; i < ASDU_Length; i++)
 		TempCallAllBuf[i + 7] = TempASDU_Buf[i];
 
-	for (i = 0; i < (ASDU_Length + 3); i++) {
+	for (i = 0; i < (ASDU_Length + 3); i++)
 		CheckSum += TempCallAllBuf[i + 4]; //计算校验和
-	}
 
 	TempCallAllBuf[ASDU_Length + 7] = CheckSum;
 	TempCallAllBuf[ASDU_Length + 8] = 0x16;

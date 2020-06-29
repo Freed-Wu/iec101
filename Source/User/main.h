@@ -2,6 +2,7 @@
 #define __MAIN_H__
 
 #include "stm32f10x.h"
+#include "string.h"
 
 typedef struct {
 	uint16_t ip_len;
