@@ -54,14 +54,12 @@ static FLASH_Status FLASH_Page_Erase(uint32_t _addr) {
 		FLASH_ErasePage(_addr); //擦除页
 		FLASH_WaitForLastOperation(0x000B0000); //等待擦除完成
 
-		for (i = 0; i < STM32_FLASH_PAGE_SIZE; i += 2) {
+		for (i = 0; i < STM32_FLASH_PAGE_SIZE; i += 2)
 			if (*(uint16_t*)(_addr + STM32_FLASH_PAGE_SIZE) != 0xffff) {
 			}
-		}
-		if (i == STM32_FLASH_PAGE_SIZE) {
+		if (i == STM32_FLASH_PAGE_SIZE)
 			break;
-		}
-		{ ErrCnt++; }
+		ErrCnt++;
 	}
 	if (ErrCnt == 3)
 		return FLASH_ERROR_WRP;
@@ -93,13 +91,11 @@ FLASH_Status FLASH_Write(uint32_t Address, uint16_t* DataObj, uint16_t Counter) 
 				DataObj++;
 				Status = FLASH_WaitForLastOperation(0x00002000); //等待编程完成
 
-				if (Status != FLASH_COMPLETE) {
+				if (Status != FLASH_COMPLETE)
 					break;
-				}
 			}
-			else {
+			else
 				break;
-			}
 		}
 	}
 	return Status;
@@ -141,16 +137,14 @@ uint16_t FLASH_Check(uint32_t Address, uint16_t* DataObj, uint16_t Counter) {
 	Counter = Counter >> 1;
 
 	while (Counter) {
-		if (*DataObj != *(uint16_t*)Address) {
+		if (*DataObj != *(uint16_t*)Address)
 			return ERROR;
-		}
 		Address += 2;
 		DataObj++;
 		Counter--;
 	}
-	if (Counter != 0) {
+	if (Counter != 0)
 		return FLASH_ERROR_WRP;
-	}
 	return SUCCESS;
 }
 
@@ -171,9 +165,8 @@ uint16_t FLASH_WriteUserSet(void) {
 		FLASH_Page_Erase(EE_STARTADDR_USERSET_0);
 		FLASH_Write(EE_STARTADDR_USERSET_0, (uint16_t*)(&user_Set), sizeof(user_Set));
 
-		if (FLASH_Check(EE_STARTADDR_USERSET_0, (uint16_t*)&user_Set, sizeof(user_Set)) == SUCCESS) {
+		if (FLASH_Check(EE_STARTADDR_USERSET_0, (uint16_t*)&user_Set, sizeof(user_Set)) == SUCCESS)
 			break;
-		}
 	}
 	//备份数据
 	errcnt = 0;
@@ -182,9 +175,8 @@ uint16_t FLASH_WriteUserSet(void) {
 		FLASH_Page_Erase(EE_STARTADDR_USERSET_1);
 		FLASH_Write(EE_STARTADDR_USERSET_1, (uint16_t*)(&user_Set), sizeof(user_Set));
 
-		if (FLASH_Check(EE_STARTADDR_USERSET_1, (uint16_t*)&user_Set, sizeof(user_Set)) == SUCCESS) {
+		if (FLASH_Check(EE_STARTADDR_USERSET_1, (uint16_t*)&user_Set, sizeof(user_Set)) == SUCCESS)
 			break;
-		}
 	}
 	FLASH_Lock();
 	return SUCCESS;
@@ -202,18 +194,15 @@ uint16_t FLASH_ReadUserSet(void) {
 	FLASH_Read(EE_STARTADDR_USERSET_0, (uint16_t*)(&user_Set), sizeof(user_Set)); //读出数据
 
 	crc = CRC16((uint8_t*)(&user_Set), (uint32_t)(&user_Set.crc16) - (uint32_t)(&user_Set));
-	if (crc == user_Set.crc16) {
+	if (crc == user_Set.crc16)
 		return SUCCESS;
-	}
 	else {
 		FLASH_Read(EE_STARTADDR_USERSET_1, (uint16_t*)(&user_Set), sizeof(user_Set)); //读出数据
 		crc = CRC16((uint8_t*)(&user_Set), (uint32_t)(&user_Set.crc16) - (uint32_t)(&user_Set));
-		if (crc == user_Set.crc16) {
+		if (crc == user_Set.crc16)
 			return SUCCESS;
-		}
-		else {
+		else
 			return ERROR;
-		}
 	}
 }
 
@@ -263,9 +252,8 @@ static FLASH_Status FLASH_WR_OneFrameToOnePage(uint32_t PAGE_StartAddress, uint1
 	for (ValidIndex = 0; ValidIndex <= (STM32_FLASH_PAGE_SIZE - EEPROM_FRAME_LEN); ValidIndex += EEPROM_FRAME_LEN) //找到未写入的字节
 	{
 		Address = PAGE_StartAddress + ValidIndex;
-		if (0xffff == *(uint16_t*)Address) {
+		if (0xffff == *(uint16_t*)Address)
 			break;
-		}
 	}
 
 	//2 本页已经写满则清除整个页面
@@ -293,11 +281,8 @@ static FLASH_Status FLASH_RD_OneFrameFromOnePage(uint32_t PAGE_StartAddress, uin
 
 	//检测下一帧是否有数据写入，运行到最后一帧数据时直接退出，因为最后一帧的下一帧已经超出了数据范围，则最后一帧即为有效数据帧
 	for (ValidIndex = 0; ValidIndex < (STM32_FLASH_PAGE_SIZE - EEPROM_FRAME_LEN); ValidIndex += EEPROM_FRAME_LEN) //找到未写入的字节//找到未写入的字节
-	{
-		if (FLAG_RECORD_USED != *(uint16_t*)(PAGE_StartAddress + ValidIndex + EEPROM_FRAME_LEN)) {
+		if (FLAG_RECORD_USED != *(uint16_t*)(PAGE_StartAddress + ValidIndex + EEPROM_FRAME_LEN))
 			break;
-		}
-	}
 
 	// when the 'current' record is found, read data of it
 	for (i = 0; i < (EEPROM_DATA_LEN / 2); i++)
@@ -324,16 +309,13 @@ int FLASH_WR_Module_Status(void) {
 
 	//生成要存入的数据
 
-	if (CheckInfoCRCIsOK() == 0) {
+	if (CheckInfoCRCIsOK() == 0)
 		FLASH_RD_Module_Status();
-	}
 
 	pdata[0] = 0x00; //重新排列数据
-	for (i = 0; i < 16; i++) { //一共存储十个数据
-		if (Info[i] == 0) { //正常
+	for (i = 0; i < 16; i++) //一共存储十个数据
+		if (Info[i] == 0) //正常
 			pdata[0] = pdata[0] | (1 << i);
-		}
-	}
 	pdata[1] = pdata[0];
 	pdata[2] = CRC16((uint8_t*)pdata, 4);
 
@@ -345,9 +327,8 @@ int FLASH_WR_Module_Status(void) {
 	while (i < PAGE_REUSE_TIMES) {
 		i++;
 		FLASH_RD_OneFrameFromOnePage(EE_STARTADDR_STATUS_0, rData); //先读出数据，如果数据一致则不存储
-		if ((pdata[0] == rData[0]) && (pdata[1] == rData[1]) && (pdata[2] == rData[2])) {
+		if ((pdata[0] == rData[0]) && (pdata[1] == rData[1]) && (pdata[2] == rData[2]))
 			break;
-		}
 		FLASH_WR_OneFrameToOnePage(EE_STARTADDR_STATUS_0, pdata);
 	}
 
@@ -359,9 +340,8 @@ int FLASH_WR_Module_Status(void) {
 	while (i < PAGE_REUSE_TIMES) { //先读出数据，如果数据一致则不存储
 		i++;
 		FLASH_RD_OneFrameFromOnePage(EE_STARTADDR_STATUS_1, rData);
-		if ((pdata[0] == rData[0]) && (pdata[1] == rData[1]) && (pdata[2] == rData[2])) {
+		if ((pdata[0] == rData[0]) && (pdata[1] == rData[1]) && (pdata[2] == rData[2]))
 			break;
-		}
 		FLASH_WR_OneFrameToOnePage(EE_STARTADDR_STATUS_1, pdata);
 	}
 
@@ -386,21 +366,17 @@ void FLASH_RD_Module_Status(void) {
 		FLASH_RD_OneFrameFromOnePage(EE_STARTADDR_STATUS_1, rData);
 
 		if ((rData[0] != rData[1]) || CRC16((uint8_t*)rData, 4) != rData[2]) { //读FLASH失败时置默认值
-			for (i = 0; i < 16; i++) {
+			for (i = 0; i < 16; i++)
 				Info[i] = 0;
-			}
 			RefreshInfoCRC();
 			return;
 		}
 	}
 
-	for (i = 0; i < 16; i++) { //读数据成功时
-		if ((rData[1] & (1 << i)) == 0) { //跌落
+	for (i = 0; i < 16; i++) //读数据成功时
+		if ((rData[1] & (1 << i)) == 0) //跌落
 			Info[i] = 1;
-		}
-		else {
+		else
 			Info[i] = 0; //正常
-		}
-	}
 	RefreshInfoCRC();
 }
