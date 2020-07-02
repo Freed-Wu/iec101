@@ -109,7 +109,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	if (sGPRSSentdataDelay > 0)
 		sGPRSSentdataDelay--;
 	if (BeatCnt < HeartTime) {
-		BeatCnt += 2000; //步进是20ms   //原是2
+		BeatCnt += 2; //步进是20ms   //原是2
 	}
 	if (GPRSStat > 0x700) { //正常收发数据状态5分钟未收到总召唤时重发
 		if (sGPRSNotCallRstDelay) {
@@ -417,7 +417,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	case GPRS_TCP_Name_SEND: //APN
 		if (sGPRSTimeDelay == 0) {
 			uint8_t i, j = 0;
-			uint8_t APN_Name[100] = "AT+CIPOPEN=0,\"TCP\",\"";
+			uint8_t APN_Name[100] = "AT+CIPOPEN=2,\"TCP\",\"";
 			uint8_t Len1 = 0;
 			uint8_t Len2 = 0;
 			uint8_t Length = 0;
@@ -426,7 +426,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			j = 0;
 			Len1 = user_Set.ip_len;
 			Len2 = user_Set.port_len;
-			Length = strlen("AT+CIPOPEN=0,\"TCP\",");
+			Length = strlen("AT+CIPOPEN=2,\"TCP\",");
 			while (Len1--) {
 				APN_Name[i + Length] = user_Set.ip_info[i];
 				i++;
@@ -718,12 +718,13 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			sGPRSTimeDelay = NEXT_CMD_DLY;
 		}
 		else if (sGPRSSentdataDelay == 0) { //2S钟读一次，去缓冲区读数据
-			USART3_SendDataToGPRS((uint8_t*)"AT+CIPRXGET=2,0\r", strlen("AT+CIPRXGET=2,0\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+CIPRXGET=3,2\r", strlen("AT+CIPRXGET=3,2\r"));
 			GPRSStat = GPRS_RUN_Rxdata;
 			sGPRSTimeDelay = WAIT_ACK;
 		}
-		break;
+		break; 
 	case GPRS_RUN_Rxdata: //接收数据
+		USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
 		if (GPRS_ReceiveLength) { //缓冲区中有数据
 			if (strstr((char*)GPRS_ReceiveData, "ERROR")) {
 				if (GPRSFaultcnt < 1) {
@@ -738,18 +739,18 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 				}
 			}
 			else {
-				pReceiveData = strstr((char*)GPRS_ReceiveData, "+CIPRXGET:2,0,");
+				pReceiveData = strstr((char*)GPRS_ReceiveData, "+CIPRXGET:3,2,");
 				if (pReceiveData) {
 					uint8_t i = 0;
-					if (pReceiveData[strlen("+CIPRXGET:2,0,") + 1] == '\r') {
-						pReceiveLength = (pReceiveData[strlen("+CIPRXGET:2,0,")] - '0');
+					if (pReceiveData[strlen("+CIPRXGET:3,2,") + 1] == '\r') {
+						pReceiveLength = (pReceiveData[strlen("+CIPRXGET:3,2,")] - '0');
 						for (i = 0; i < pReceiveLength; i++)
-							pRecBuffer[i] = pReceiveData[i + strlen("+CIPRXGET:2,0,")];
+							pRecBuffer[i] = pReceiveData[i + strlen("+CIPRXGET:3,2,")];
 					}
 					else {
-						pReceiveLength = (pReceiveData[strlen("+CIPRXGET:2,0,")] - '0') * 10 + (pReceiveData[strlen("+CIPRXGET:2,0,") + 1] - '0');
+						pReceiveLength = (pReceiveData[strlen("+CIPRXGET:3,2,")] - '0') * 10 + (pReceiveData[strlen("+CIPRXGET:3,2,") + 1] - '0');
 						for (i = 0; i < pReceiveLength; i++)
-							pRecBuffer[i] = pReceiveData[i + strlen("+CIPRXGET:2,0,") + 1];
+							pRecBuffer[i] = pReceiveData[i + strlen("+CIPRXGET:3,2,") + 1];
 					}
 				}
 				if ((pReceiveLength == 0) && (sGPRSNotCallRstDelay == 0)) {
@@ -800,7 +801,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		// uint8_t AT_Cmd[20] = {0x00};
 		// uint16_t pLength;
 		// uint8_t LengthString[6] = {0x00};
-		strcpy((char*)AT_Cmd, "AT+CIPSEND=0,\r");
+		strcpy((char*)AT_Cmd, "AT+CIPSEND=2,\r");
 		//		if (GPRSSendBeatDataflg) { //发送心跳数据
 		//			strcpy((char*)AT_Cmd, "AT+CIPSEND=1,");
 		//			/*Int2Str((char*)LengthString, user_Set.heart_len);
@@ -844,16 +845,15 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_RUN_Txdata: //心跳包指令应答信号
-		strcpy((char*)AT_Cmd, "  "); // I don't know why it always lose 2 chars. Fuck it!
-		// uint16_t pLength;
+		//strcpy((char*)AT_Cmd, "hello"); 
 		// uint8_t LengthString[10] = {0x00};
 		//Int2Str((char*)LengthString, user_Set.heart_len);
 		// uint8_t i = 0;
 		if (GPRSSendBeatDataflg) //发送心跳数据
 		{
 			strcat((char*)AT_Cmd, (char*)user_Set.heart_info);
-			USART1_SendData(AT_Cmd, strlen((char*)AT_Cmd)); //显示收到的数据
-			USART1_SendData((uint8_t*)"heart ok", strlen("heart ok")); //显示收到的数据
+			//USART1_SendData(AT_Cmd, strlen((char*)AT_Cmd)); //显示收到的数据
+			//USART1_SendData((uint8_t*)"heart ok", strlen("heart ok")); //显示收到的数据
 		}
 		//			Int2Str((char*)LengthString, user_Set.heart_len);
 		//			while (LengthString[i]) {
@@ -862,6 +862,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		//			}
 		else //否则发送数据
 			strcat((char*)AT_Cmd, (char*)GPRS_Tx0.TxBuf[GPRS_Tx0.TxPtrOut]);
+	    //USART1_SendData((char*)GPRS_Tx0.TxBuf[GPRS_Tx0.TxPtrOut], strlen((char*)GPRS_Tx0.TxBuf[GPRS_Tx0.TxPtrOut])); //显示收到的数据
 		//				USART3_SendDataToGPRS("\r", 1);
 		//			BeatCnt = 0;
 		//			pLength = GPRS_Tx0.TxLength[GPRS_Tx0.TxPtrOut];

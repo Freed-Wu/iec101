@@ -344,7 +344,8 @@ int FLASH_WR_Module_Status(void) {
 			break;
 		FLASH_WR_OneFrameToOnePage(EE_STARTADDR_STATUS_1, pdata);
 	}
-
+  
+	USART1_SendData(pdata, strlen((const char*)pdata)); //显示收到的数据
 	return 0;
 }
 

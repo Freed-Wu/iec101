@@ -11,6 +11,7 @@
 #include "main.h"
 #include "mydef.h"
 #include "stm32f10x.h"
+#include "conf_USART.H"  //原无
 
 /*
 温度模块地址 01 02 03
@@ -185,7 +186,7 @@ void Wait_Rec_Packet(void) {
 
 	DisableExtINT();
 	//每次数据处理完退出 进入时重新放入新数据，一次最多放入64字节
-
+  
 	Wireless_WrPtr = 0; //每次产生中断都清缓冲区，进中断后处理完数据退出中断
 	Wireless_CNT = 0;
 	Wireless_RdPtr = 0;
@@ -207,6 +208,7 @@ void Wait_Rec_Packet(void) {
 				break;
 			}
 		}
+		USART1_SendData((char*)WIRELESS_Rxd, strlen((char*)WIRELESS_Rxd)); //显示收到的数据
 		GPIO_WriteBit(NRF905_TXEN, NRF905_TXEN_PIN, Bit_RESET);
 		GPIO_WriteBit(NRF905_TRCE, NRF905_TRCE_PIN, Bit_SET); //允许接收
 		GPIO_WriteBit(NRF905_CSN, NRF905_CSN_PIN, Bit_SET); //CSN = 0

@@ -32,6 +32,7 @@
 #include "stm32f10x.h"
 #include "string.h"
 #include "user_Configuration.h"
+#include "conf_USART.H"
 
 #define BVL GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) //电池电压检测脚
 
@@ -355,6 +356,7 @@ int main(void) {
 
 			//
 			if (info_wr_flash_flag == 1) {
+				USART1_SendData((uint8_t*)"write ok", strlen("write ok")); //显示收到的数据
 				FLASH_WR_Module_Status();
 				info_wr_flash_flag = 0;
 			}
