@@ -746,24 +746,26 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			else {
 				if (strstr((char*)GPRS_ReceiveData, "+CIPRXGET")) {
 					uint8_t i = 0;
+					uint16_t len=16;
 									
 					USART1_SendData((uint8_t*)"jisuan lenth\r", strlen("jisuan lenth\r")); //显示收到的数据
 			
-//					if (GPRS_ReceiveData[strlen("+CIPRXGET: 3,2,") + 1] == '\r') {
-//						pLength = (GPRS_ReceiveData[strlen("+CIPRXGET: 3,2,")] - '0');
-//						for (i = 0; i <pLength; i++)
-//							pRecBuffer[i] = GPRS_ReceiveData[i+3+strlen("+CIPRXGET: 3,2,")];
-//					}
-//					else {
-//						pLength = (GPRS_ReceiveData[strlen("+CIPRXGET: 3,2,")] - '0') * 10 + (GPRS_ReceiveData[strlen("+CIPRXGET: 3,2,") + 1] - '0');
-//						for (i = 0; i < pLength; i++)
-//							pRecBuffer[i] =GPRS_ReceiveData[i + 3+strlen("+CIPRXGET: 3,2,") + 1];
-//					}
-					pReceiveLength =34;
+					if (GPRS_ReceiveData[36] == '\r') {
+						pReceiveLength = (GPRS_ReceiveData[33] - '0')*2;
 						for (i = 0; i <pReceiveLength; i++)
-							pRecBuffer[i] = GPRS_ReceiveData[i+39];
-					  //USART1_SendData(pLength, strlen(pLength)); //显示收到的数据
-					  USART1_SendData(pRecBuffer, 34); //显示收到的数据
+							pRecBuffer[i] = GPRS_ReceiveData[i+38];
+					}
+					else {
+						pReceiveLength = ((GPRS_ReceiveData[33] - 0x30) * 10 + (GPRS_ReceiveData[34] - 0x30))*2;
+						for (i = 0; i < pReceiveLength; i++)
+							pRecBuffer[i] =GPRS_ReceiveData[i + 39];
+					}
+//					pReceiveLength =34;
+//						for (i = 0; i <pReceiveLength; i++)
+//							pRecBuffer[i] = GPRS_ReceiveData[i+39];
+					  //USART1_SendData((char*)len, strlen((const char*)len)); //显示收到的数据
+					  //USART1_SendData((char*)pReceiveLength, strlen((char*)pReceiveLength)); //显示收到的数据
+					  USART1_SendData(pRecBuffer, pReceiveLength); //显示收到的数据
 					  //USART1_SendData((char*)"lenth", strlen("lenth")); //显示收到的数据
 				}
 				if ((pReceiveLength == 0) && (sGPRSNotCallRstDelay == 0)) {
