@@ -298,8 +298,11 @@ int main(void) {
 			//一旦检测到TCP通道断开，立即启动连接
 			ReceiveDataFromGPRSflg = SuperviseTCP(DataFromGPRSBuffer);
 			if (ReceiveDataFromGPRSflg)
+			{
 				DataProcess();
-
+				USART1_SendData((char*)"DATA OK",strlen((char*)"DATA OK"));
+			  USART1_SendData(DataFromGPRSBuffer,17);
+			}
 			//配置串口处理程序
 			rs232_set_process();
 			USART1_supervise(); //长时间没有接收到数据时清一次数据
