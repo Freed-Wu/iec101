@@ -700,7 +700,7 @@ uint8_t DataProcess(void) {
 			//数据校验通过，可以开始处理数据
 			if (Protocol101_RxLink() == SUCCESS) {
 				TempRxFunctionCode = RxFunctionCode;
-
+        USART1_SendData((char*)TempRxFunctionCode, strlen((char*)TempRxFunctionCode)); //显示收到的数据
 				switch (TempRxFunctionCode) {
 				case 0: //主站复位远方链路
 					ResponseResetRemoteLink();
