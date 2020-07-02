@@ -101,7 +101,7 @@
 #define GPRS_COM_TX_PIN GPIO_Pin_10
 #define GPRS_COM_RX_PIN GPIO_Pin_11
 #define GPRS_COM_IRQn USART3_IRQn
-#define GPRS_RCV_BUF 80
+#define GPRS_RCV_BUF 160
 
 #define RS232_REC_BUFF_SIZE 80
 #define RS232_END_FLAG1 '?' //RS232一桢数据结束标志1

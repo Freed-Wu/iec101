@@ -207,7 +207,7 @@ void USART3_IRQHandler(void) {
 		USART3_RxBuf[USART3_RxLength] = USART_ReceiveData(GPRS_COM);
 		if (DebugDly > 0) //接收到的信号通过调试串口发出
 			DEBUG_COM->DR = USART3_RxBuf[USART3_RxLength];
-		if (USART3_RxLength < 61)
+		if (USART3_RxLength < 128)
 			USART3_RxLength++;
 	}
 }
