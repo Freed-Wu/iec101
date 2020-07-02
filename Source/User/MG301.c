@@ -719,7 +719,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			sGPRSTimeDelay = NEXT_CMD_DLY;
 		}
 		else if (sGPRSSentdataDelay == 0) { //2S钟读一次，去缓冲区读数据
-			USART3_SendDataToGPRS((uint8_t*)"AT+CIPRXGET=3,2\r", strlen("AT+CIPRXGET=3,2\r"));
+			USART3_SendDataToGPRS((uint8_t*)"AT+CIPRXGET=2,2\r", strlen("AT+CIPRXGET=2,2\r"));
 			GPRSStat = GPRS_RUN_Rxdata;
 			sGPRSTimeDelay = WAIT_ACK;
 		}
@@ -751,12 +751,12 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 					USART1_SendData((uint8_t*)"jisuan lenth\r", strlen("jisuan lenth\r")); //显示收到的数据
 			
 					if (GPRS_ReceiveData[36] == '\r') {
-						pReceiveLength = (GPRS_ReceiveData[33] - '0')*2;
+						pReceiveLength = (GPRS_ReceiveData[33] - '0');
 						for (i = 0; i <pReceiveLength; i++)
 							pRecBuffer[i] = GPRS_ReceiveData[i+38];
 					}
 					else {
-						pReceiveLength = ((GPRS_ReceiveData[33] - 0x30) * 10 + (GPRS_ReceiveData[34] - 0x30))*2;
+						pReceiveLength = (GPRS_ReceiveData[33] - 0x30) * 10 + (GPRS_ReceiveData[34] - 0x30);
 						for (i = 0; i < pReceiveLength; i++)
 							pRecBuffer[i] =GPRS_ReceiveData[i + 39];
 					}
