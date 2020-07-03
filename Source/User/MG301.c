@@ -102,7 +102,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	char* pReceiveData;
 	uint8_t AT_Cmd[64] = {0x00};
 	uint16_t pReceiveLength;
-
+  uint8_t LengthString[64] = {0x00};
+	uint8_t i = 0;
 	pReceiveLength = 0;
 	GPRS_ReceiveLength = Supervise_USART3(GPRS_ReceiveData); //接收到数据标示
 	if (sGPRSTimeDelay > 0)
@@ -865,32 +866,32 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		break;
 	case GPRS_RUN_Txdata: //心跳包指令应答信号
 		//strcpy((char*)AT_Cmd, "hello"); 
-		// uint8_t LengthString[10] = {0x00};
-		//Int2Str((char*)LengthString, user_Set.heart_len);
-		// uint8_t i = 0;
+		 Int2Str((char*)LengthString, user_Set.heart_len);
 		if (GPRSSendBeatDataflg) //发送心跳数据
 		{
-			strcat((char*)AT_Cmd, (char*)user_Set.heart_info);
+			//strcat((char*)AT_Cmd, (char*)user_Set.heart_info);
 			//USART1_SendData(AT_Cmd, strlen((char*)AT_Cmd)); //显示收到的数据
 			//USART1_SendData((uint8_t*)"heart ok", strlen("heart ok")); //显示收到的数据
-		}
-		//			Int2Str((char*)LengthString, user_Set.heart_len);
-		//			while (LengthString[i]) {
-		//				AT_Cmd[i] = LengthString[i];
-		//				i++;
-		//			}
+		//}
+//					Int2Str((char*)LengthString, user_Set.heart_len);
+//					while (LengthString[i]) {
+//						AT_Cmd[i] = LengthString[i];
+//						i++;
+//					}
+				USART3_SendDataToGPRS(user_Set.heart_info, user_Set.heart_len);
+				USART3_SendDataToGPRS("\x1a\r", 2);
+				}
 		else //否则发送数据
-			strcat((char*)AT_Cmd, (char*)GPRS_Tx0.TxBuf[GPRS_Tx0.TxPtrOut]);
+			//strcat((char*)AT_Cmd, (char*)GPRS_Tx0.TxBuf[GPRS_Tx0.TxPtrOut]);
 	    //USART1_SendData((char*)GPRS_Tx0.TxBuf[GPRS_Tx0.TxPtrOut], strlen((char*)GPRS_Tx0.TxBuf[GPRS_Tx0.TxPtrOut])); //显示收到的数据
 		//				USART3_SendDataToGPRS("\r", 1);
-		//			BeatCnt = 0;
-		//			pLength = GPRS_Tx0.TxLength[GPRS_Tx0.TxPtrOut];
-		//			Int2Str((char*)LengthString, pLength);
-		//			while (LengthString[i]) {
-		//				AT_Cmd[i] = LengthString[i];
-		//				i++;
-		//			}
-		//		}
+				{	
+		      BeatCnt = 0;
+					
+					USART3_SendDataToGPRS((uint8_t*)GPRS_Tx0.TxBuf[GPRS_Tx0.TxPtrOut], GPRS_Tx0.TxLength[GPRS_Tx0.TxPtrOut]);
+					USART3_SendDataToGPRS("\x1a\r", 2);
+					rmDataFromGPRSTxbuf();
+				}
 		//		if (GPRS_ReceiveLength) {
 		//			//接收到数据就开始发送数据，并不管是否正确
 		//			if (GPRSSendBeatDataflg) {
@@ -933,8 +934,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		//			GPRSLoadStatBuf(GPRS_LED_CMD_TO);
 		//			;
 		//		}
-		strcat((char*)AT_Cmd, "\x1a\r");
-		USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
+		
+		//USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
 		GPRSStat = GPRS_RUN_Txdata_ACK;
 		sGPRSTimeDelay = WAIT_ACK;
 		break;
