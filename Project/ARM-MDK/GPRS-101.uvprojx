@@ -540,11 +540,6 @@
               <FilePath>..\..\Source\User\stm32f10x_it.c</FilePath>
             </File>
             <File>
-              <FileName>MG301.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Source\User\MG301.c</FilePath>
-            </File>
-            <File>
               <FileName>fun.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Source\User\fun.c</FilePath>
@@ -578,6 +573,11 @@
               <FileName>bsp_bkp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Source\User\bsp_bkp.c</FilePath>
+            </File>
+            <File>
+              <FileName>SIM7600.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Source\User\SIM7600.c</FilePath>
             </File>
           </Files>
         </Group>

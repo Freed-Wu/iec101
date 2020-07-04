@@ -1,7 +1,7 @@
 #include "conf_USART.h"
 #include "101_Protocol.h"
 #include "Flash.h"
-#include "MG301.h"
+#include "SIM7600.h"
 #include "ds3231.h"
 #include "fun.h"
 #include "i2c_ee.h"
