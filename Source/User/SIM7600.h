@@ -1,5 +1,5 @@
-#ifndef __MG301_H__
-#define __MG301_H__
+#ifndef __SIM7600_H__
+#define __SIM7600_H__
 #include "stm32f10x.h"
 
 //#define GPRS_IDLE 			(uint16_t)0x0000		//´ý»ú×´Ì¬
@@ -121,16 +121,16 @@ typedef struct {
 
 //extern int my_memcpy(char *address1,char *address2,uint16_t num);
 
-void MG301_SW_Init(void);
+void SIM7600_SW_Init(void);
 
-void MG301_Reset(void);
+void SIM7600_Reset(void);
 
 void LED_Toggle(void);
 
-void MG301_Delay(uint16_t DelayMs);
+void SIM7600_Delay(uint16_t DelayMs);
 
 uint8_t AT_Cmd_Test(void);
-uint8_t MG301_Echo_Close(void);
+uint8_t SIM7600_Echo_Close(void);
 
 uint8_t ConnectToGPRS(void);
 
@@ -150,4 +150,4 @@ void GPRS_init(void);
 
 uint16_t GPRSGetStatBuf(void);
 void GPRSLoadStatBuf(uint16_t pDataBuf);
-#endif //__MG301_H__
+#endif //__SIM7600_H__
