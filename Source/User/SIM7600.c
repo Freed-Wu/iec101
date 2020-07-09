@@ -144,7 +144,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		if (GPRS_ReceiveLength) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "OK")) //开机状态
 			{
-				GPRSStat = GPRS_APN_CMD_SEND;
+				GPRSStat = GPRS_CHECK_CSQ_A;
 				sGPRSTimeDelay = NEXT_CMD_DLY;
 			}
 			else
@@ -177,7 +177,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 				}*/
 		if (sGPRSTimeDelay == WAIT_START - 125) {
 			GPIO_ResetBits(GSM_PWUP, GSM_PWUP_PIN); //拉低GPRS模块开机引脚电平
-			GPRSStat = GPRS_APN_CMD_SEND;
+			GPRSStat = GPRS_CHECK_CSQ_A;
 			sGPRSTimeDelay = NEXT_CMD_DLY;
 		}
 		else if (sGPRSTimeDelay == 0) {
@@ -197,7 +197,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		if (GPRS_ReceiveLength) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "OK")) //开机状态
 			{
-				GPRSStat = GPRS_POWER_WAIT_START;
+				GPRSStat = GPRS_CHECK_CSQ_A;
 				sGPRSTimeDelay = WAIT_ACK;
 			}
 			else {
@@ -210,30 +210,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			sGPRSTimeDelay = 0;
 		}
 		break;
-	//设置APN
-	case GPRS_APN_CMD_SEND:
-		if (sGPRSTimeDelay == 0) {
-			USART3_SendDataToGPRS((uint8_t*)"AT+CGDCONT=1,\"IP\",\"3GNET\"\r", SIZEOF("AT+CGDCONT=1,\"IP\",\"3GNET\"\r"));
-			GPRSStat = GPRS_APN_CMD_ACK;
-			sGPRSTimeDelay = WAIT_ACK; //5S
-		}
-		break;
-	case GPRS_APN_CMD_ACK:
-		USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
-		if (GPRS_ReceiveLength) { //接收到一帧数据
-			if (strstr((const char*)GPRS_ReceiveData, "OK")) //开机状态
-			{
-				GPRSStat = GPRS_CHECK_CSQ_A;
-				sGPRSTimeDelay = 200; //延时4S检测信号质量
-			}
-			else {
-				GPRSStat = GPRS_IDLE;
-			}
-		}
-		else if (sGPRSTimeDelay == 0) {
-			GPRSStat = GPRS_IDLE;
-		}
-		break;
+		
+
 		//链接GPRS-------------------------------------------------------
 		//搜网是显示信号强度-------------------------------------
 	case GPRS_CHECK_CSQ_A:
@@ -295,15 +273,25 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	case GPRS_CHECK_CPSI_ACK:
 		USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
 		if (GPRS_ReceiveLength) { //接收到一帧数据
-			if (strstr((const char*)GPRS_ReceiveData, "OK")) //开机状态
+			if (strstr((const char*)GPRS_ReceiveData, "OK") && strstr((const char*)GPRS_ReceiveData, "NO SERVICE")) //开机状态
 			{
+				GPRSStat = GPRS_CHECK_CPSI_ACK;
+				sGPRSTimeDelay = NEXT_CMD_DLY;
+			}
+		  else {
+				if (strstr((const char*)GPRS_ReceiveData, "460-00")||strstr((const char*)GPRS_ReceiveData, "460-02")||strstr((const char*)GPRS_ReceiveData, "460-04")||strstr((const char*)GPRS_ReceiveData, "460-07")||strstr((const char*)GPRS_ReceiveData, "460-08"))
+					strcpy((char*)user_Set.apn_info,"CMNET");
+				if (strstr((const char*)GPRS_ReceiveData, "460-01")||strstr((const char*)GPRS_ReceiveData, "460-06")||strstr((const char*)GPRS_ReceiveData, "460-09"))
+					strcpy((char*)user_Set.apn_info,"3GNET");
+				if (strstr((const char*)GPRS_ReceiveData, "460-03")||strstr((const char*)GPRS_ReceiveData, "460-05")||strstr((const char*)GPRS_ReceiveData, "460-11"))
+					strcpy((char*)user_Set.apn_info,"CTNET");				
 				GPRSStat = GPRS_CHECK_CMD_SEND;
 				sGPRSTimeDelay = NEXT_CMD_DLY;
 			}
-			else {
-				GPRSStat = GPRS_CHECK_CMD_SEND; //是否检测正确都进行下一条指令
-				sGPRSTimeDelay = NEXT_CMD_DLY;
-			}
+//			else {
+//				GPRSStat = GPRS_CHECK_CMD_SEND; //是否检测正确都进行下一条指令
+//				sGPRSTimeDelay = NEXT_CMD_DLY;
+//			}
 		}
 		else if (sGPRSTimeDelay == 0)
 			GPRSStat = GPRS_IDLE;
@@ -320,7 +308,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		if (GPRS_ReceiveLength) { //接收到一帧数据
 			if (strstr((const char*)GPRS_ReceiveData, "CGREG: 0,1\r\n\r\nOK") || strstr((const char*)GPRS_ReceiveData, "CGREG: 0,5\r\n\r\nOK")) //开机状态
 			{
-				GPRSStat = GPRS_TCP_conType_SEND;
+				GPRSStat = GPRS_APN_CMD_SEND;
 				sGPRSTimeDelay = NEXT_CMD_DLY;
 				GPRSErrorCnt = 0;
 				GPRSCheckRstcnt = 0;
@@ -342,6 +330,47 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		else if (sGPRSTimeDelay == 0)
 			GPRSStat = GPRS_IDLE;
 		break;
+		
+	//设置APN
+	case GPRS_APN_CMD_SEND:
+		if (sGPRSTimeDelay == 0) {
+			uint8_t i = 0;
+			uint8_t APN[100] = "AT+CGDCONT=1,\"IP\",\"";
+			uint8_t Len = 0;
+			uint8_t Length = 0;
+			Length=strlen( "AT+CGDCONT=1,\"IP\",\"");
+			Len=user_Set.apn_len;
+			while (Len--) {
+				APN[i + Length] = user_Set.apn_info[i];
+				i++;
+			}
+			APN[i + Length] = '\"';
+			i++;
+			APN[i + Length] = '\r';
+			i++;
+			USART3_SendDataToGPRS(APN, i + Length);
+			//USART3_SendDataToGPRS((uint8_t*)"AT+CGDCONT=1,\"IP\",\"CMNET\"\r", SIZEOF("AT+CGDCONT=1,\"IP\",\"CMNET\"\r"));
+			GPRSStat = GPRS_APN_CMD_ACK;
+			sGPRSTimeDelay = WAIT_ACK; //5S
+		}
+		break;
+	case GPRS_APN_CMD_ACK:
+		USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
+		if (GPRS_ReceiveLength) { //接收到一帧数据
+			if (strstr((const char*)GPRS_ReceiveData, "OK")) //开机状态
+			{
+				GPRSStat = GPRS_TCP_conType_SEND;
+				sGPRSTimeDelay = 200; //延时4S检测信号质量
+			}
+			else {
+				GPRSStat = GPRS_IDLE;
+			}
+		}
+		else if (sGPRSTimeDelay == 0) {
+			GPRSStat = GPRS_IDLE;
+		}
+		break;		
+		
 	//链接TCP-------------------------------------------------------------------
 	case GPRS_TCP_conType_SEND:
 		if (sGPRSTimeDelay == 0) {
@@ -687,19 +716,19 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 
 **************************************************************************/
 	case GPRS_RUN_Rxdata_CMD: //接收数据指令
-		//strcpy((char*)AT_Cmd, "AT+CIPSEND=0,\r");
-		// uint8_t i = 0;
-		//			Int2Str((char*)LengthString, user_Set.heart_len);
-		//			while (LengthString[i]) {
-		//				AT_Cmd[i + strlen("AT+CIPSEND=0,")] = LengthString[i];
-		//				i++;
-		//			}
-		//   AT_Cmd[i + strlen("AT+CIPSEND=0,")] = '\r';
-		//		i++;
-		//		AT_Cmd[i + strlen("AT+CIPSEND=0,")] = '\0'; //字符串结束符
-		//USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
-		//Delay(50);
-
+//		if ()
+//		strcpy((char*)AT_Cmd, "AT+CIPSEND=0,\r");
+//		 uint8_t i = 0;
+//					Int2Str((char*)LengthString, user_Set.heart_len);
+//					while (LengthString[i]) {
+//						AT_Cmd[i + strlen("AT+CIPSEND=0,")] = LengthString[i];
+//						i++;
+//					}
+//		AT_Cmd[i + strlen("AT+CIPSEND=0,")] = '\r';
+//		i++;
+//		AT_Cmd[i + strlen("AT+CIPSEND=0,")] = '\0'; //字符串结束符
+//		USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
+//		Delay(50);
 		USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
 
 		if (ReqGPRSConfigflg) {
@@ -731,7 +760,9 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
 		if (GPRS_ReceiveLength) { //缓冲区中有数据
 			if (strstr((char*)GPRS_ReceiveData, "No data")) {
-				if (GPRSFaultcnt<ERRMAXNUM)
+				GPRSStat = GPRS_RUN_Rxdata_CMD;
+				sGPRSTimeDelay = WAIT_ACK;
+				/*if (GPRSFaultcnt<ERRMAXNUM)
 				{	
 					GPRSFaultcnt++;
 					GPRSStat = GPRS_RUN_Rxdata_CMD;
@@ -743,7 +774,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 					USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));
 					GPRSStat = GPRS_POWER_RST;
 					sGPRSTimeDelay = NEXT_CMD_DLY;					
-				}
+				}*/
 			}
 			else if (strstr((char*)GPRS_ReceiveData, "ERROR")) {
 				if (GPRSFaultcnt < 1) {
