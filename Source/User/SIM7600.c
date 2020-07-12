@@ -1091,13 +1091,14 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 					GPRSStat = GPRS_RUN_Rxdata_CMD;
 					sGPRSTimeDelay = NEXT_CMD_DLY;
 					if (HeartTime > NEXT_CMD_DLY)
-						BeatCnt = HeartTime - NEXT_CMD_DLY;
+						//BeatCnt = HeartTime - NEXT_CMD_DLY;   //屏蔽了错误，不重发
+					  BeatCnt = 0;
 					else
 						BeatCnt = 0;
 				}
 				else {
-					USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
-					GPRSStat = GPRS_POWER_RST;
+					//USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
+					GPRSStat = GPRS_RUN_Rxdata_CMD;
 					sGPRSTimeDelay = NEXT_CMD_DLY; //
 				}
 				GPRSLoadStatBuf(GPRS_LED_DATA_ERROR);
@@ -1142,13 +1143,14 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 					GPRSStat = GPRS_RUN_Rxdata_CMD;
 					sGPRSTimeDelay = NEXT_CMD_DLY;
 					if (HeartTime > NEXT_CMD_DLY)
-						BeatCnt = HeartTime - NEXT_CMD_DLY;
+						//BeatCnt = HeartTime - NEXT_CMD_DLY;   //屏蔽了错误，不重发
+					  BeatCnt = 0;
 					else
 						BeatCnt = 0;
 				}
 				else {
-					USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
-					GPRSStat = GPRS_POWER_RST;
+					//USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
+					GPRSStat = GPRS_RUN_Rxdata_CMD;
 					sGPRSTimeDelay = NEXT_CMD_DLY; //
 				}
 				GPRSLoadStatBuf(GPRS_LED_DATA_ERROR);
