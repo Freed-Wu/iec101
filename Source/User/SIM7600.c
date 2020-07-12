@@ -13,7 +13,7 @@ GPRSStatBuf GPRSStatBuf0;
 uint16_t ReqGPRSConfigflg;
 
 /*static*/ uint32_t BeatCnt = 0;
-char BeatCnt2[64];
+//char BeatCnt2[64];
 static uint8_t GPRS_ReceiveData[GPRS_RCV_BUF];
 static uint16_t GPRS_ReceiveLength;
 
@@ -32,8 +32,9 @@ uint16_t GPRSOpenErrorCnt;
 uint16_t GPRSSendBeatDataflg = 0;
 uint16_t GPRSFaultcnt; //接收不到总召唤计数，每次收不到总召唤则复位301，3次复位不成功则关机重启
 uint16_t GPRSCheckRstcnt;
-uint16_t GPRSSendFrrorFlg; //发送数据错误指令
-
+uint16_t GPRSSendErrorFlg; //发送数据错误指令
+uint16_t GPRSSendErrorCnt; //发送数据错误计数
+uint16_t SendData_len;
 
 extern DEVICE_SET user_Set;
 
@@ -61,6 +62,7 @@ void GPRSInitTxStatBuf(void) {
 
 void GPRS_init(void) {
 	static uint16_t data_flg;
+	uint8_t Temp[6];
 
 	GPIO_ResetBits(GSM_PWUP, GSM_PWUP_PIN); //低电压时开机脚为高，不动作
 
@@ -69,7 +71,8 @@ void GPRS_init(void) {
 
 	//以下是将部分参数的字符型转为整型数据
 	//将心跳包时间从字符串转为整型
-	HeartTime = Str2Int((char*)user_Set.heart_time_info);
+	memcpy(Temp, user_Set.heart_time_info, user_Set.heart_time_len);
+	HeartTime = Str2Int((char*)Temp);
 	HeartTime *= 100; //换算成ms
 
 	//初始化发送缓冲区
@@ -104,9 +107,10 @@ void GPRS_init(void) {
 uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 //	uint8_t autoflag=0;
 	char* pReceiveData;
+	char str[64];
 	uint8_t AT_Cmd[64] = {0x00};
 	uint16_t pReceiveLength;
-  uint8_t LengthString[64] = {0x00};
+	uint8_t LengthString[64] = {0x00};
 	uint8_t i = 0;
 	pReceiveLength = 0;
 	GPRS_ReceiveLength = Supervise_USART3(GPRS_ReceiveData); //接收到数据标示
@@ -807,10 +811,10 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 //		USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
 //		Delay(50);
 		USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
-	  Int2Str(BeatCnt2,BeatCnt);
-	  //strcat(BeatCnt2,"\r");
-	  BeatCnt2[9]='\r';
-    USART1_SendData(BeatCnt2,strlen(BeatCnt2));
+//		Int2Str(BeatCnt2,BeatCnt);
+		//strcat(BeatCnt2,"\r");
+//		BeatCnt2[9]='\r';
+//		USART1_SendData(BeatCnt2,strlen(BeatCnt2));
 		if (ReqGPRSConfigflg) {
 			GPRSStat = GPRS_POWER_RST;
 			ReqGPRSConfigflg = 0;
@@ -873,7 +877,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 					uint8_t i = 0;
 					uint16_t len=16;
 									
-					USART1_SendData((uint8_t*)"jisuan lenth\r", strlen("jisuan lenth\r")); //显示收到的数据
+					//USART1_SendData((uint8_t*)"jisuan lenth\r", strlen("jisuan lenth\r")); //显示收到的数据
 			
 					if (GPRS_ReceiveData[36] == '\r') {
 						pReceiveLength = (GPRS_ReceiveData[33] - '0');
@@ -944,7 +948,16 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		// uint8_t AT_Cmd[20] = {0x00};
 		// uint16_t pLength;
 		// uint8_t LengthString[6] = {0x00};
-		strcpy((char*)AT_Cmd, "AT+CIPSEND=2,\r");
+		strcpy((char*)AT_Cmd, "AT+CIPSEND=2,");
+		if (GPRSSendBeatDataflg){ //发送心跳数据
+			Int2Str(str, user_Set.heart_len);
+			strcat((char*)AT_Cmd, str);
+		}
+		else {//否则发送数据
+			Int2Str(str, GPRS_Tx0.TxLength[GPRS_Tx0.TxPtrOut]);
+			strcat((char*)AT_Cmd, str);
+		}
+		strcat((char*)AT_Cmd, "\r");
 		//		if (GPRSSendBeatDataflg) { //发送心跳数据
 		//			strcpy((char*)AT_Cmd, "AT+CIPSEND=1,");
 		//			/*Int2Str((char*)LengthString, user_Set.heart_len);
@@ -978,7 +991,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		if (GPRS_ReceiveLength) {
 			if (strstr((char*)GPRS_ReceiveData, ">")) {
 				USART1_SendData((uint8_t*)"data cmd ack ok", strlen("data cmd ack ok")); //显示收到的数据
-				GPRSSendFrrorFlg = 0;
+				GPRSSendErrorFlg = 0;
+				GPRSSendErrorCnt= 0;
 				GPRSLoadStatBuf(GPRS_LED_CMD_TO);
 				GPRSStat = GPRS_RUN_Txdata;
 				sGPRSTimeDelay = WAIT_ACK;
@@ -986,9 +1000,22 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			else if (sGPRSTimeDelay == 0) {
 				USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
 				GPRSStat = GPRS_POWER_RST;
-				GPRSSendFrrorFlg = 1;
+				GPRSSendErrorFlg = 1;
 				GPRSLoadStatBuf(GPRS_LED_CMD_ERROR);
 				sGPRSTimeDelay = NEXT_CMD_DLY;
+			}
+			else{
+				if (GPRSSendErrorCnt < 2) {
+					GPRSSendErrorCnt++;
+					GPRSStat = GPRS_RUN_Txdata_CMD;
+					sGPRSTimeDelay = NEXT_CMD_DLY;
+				}
+				else {
+					USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
+					GPRSStat = GPRS_POWER_RST;
+					sGPRSTimeDelay = NEXT_CMD_DLY; //
+				}
+			
 			}
 		}
 		break;
@@ -1008,8 +1035,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 //					}
 			  GPRSSendBeatDataflg=0;
 				USART3_SendDataToGPRS(user_Set.heart_info, user_Set.heart_len);
-				USART3_SendDataToGPRS("\x1a\r", 2);
-			  GPRSStat = GPRS_RUN_Txheart_ACK;
+				GPRSStat = GPRS_RUN_Txheart_ACK;
 				}
 		else //否则发送数据
 			//strcat((char*)AT_Cmd, (char*)GPRS_Tx0.TxBuf[GPRS_Tx0.TxPtrOut]);
@@ -1019,7 +1045,8 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		      BeatCnt = 0;
 					
 					USART3_SendDataToGPRS((uint8_t*)GPRS_Tx0.TxBuf[GPRS_Tx0.TxPtrOut], GPRS_Tx0.TxLength[GPRS_Tx0.TxPtrOut]);
-					USART3_SendDataToGPRS("\x1a\r", 2);
+					SendData_len=GPRS_Tx0.TxLength[GPRS_Tx0.TxPtrOut];
+					//USART3_SendDataToGPRS("\x1a\r", 2);
 					rmDataFromGPRSTxbuf();
 					GPRSStat = GPRS_RUN_Txdata_ACK;
 				}
@@ -1039,11 +1066,11 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		//				sGPRSTimeDelay = WAIT_ACK;
 		//			}
 		//			if (strstr((char*)GPRS_ReceiveData, "\r\nOK\r\n") || (strstr((char*)GPRS_ReceiveData, "+CIPSEND:"))) {
-		//				GPRSSendFrrorFlg = 0;
+		//				GPRSSendErrorFlg = 0;
 		//				GPRSLoadStatBuf(GPRS_LED_DATA); //发送数据
 		//			}
 		//			else { //
-		//				GPRSSendFrrorFlg = 1;
+		//				GPRSSendErrorFlg = 1;
 		//				GPRSLoadStatBuf(GPRS_LED_CMD_ERROR);
 		//			}
 		//		}
@@ -1061,7 +1088,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		//				GPRSStat = GPRS_RUN_Txdata_ACK;
 		//				sGPRSTimeDelay = WAIT_ACK;
 		//			}
-		//			GPRSSendFrrorFlg = 1;
+		//			GPRSSendErrorFlg = 1;
 		//			GPRSLoadStatBuf(GPRS_LED_CMD_TO);
 		//			;
 		//		}
@@ -1071,12 +1098,12 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		sGPRSTimeDelay = WAIT_ACK;
 		break;
 	case GPRS_RUN_Txheart_ACK:
-		if (sGPRSTimeDelay == 0){
+		//if (sGPRSTimeDelay == 0){
 	  USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
-		//if (GPRS_ReceiveLength) { //接收到一帧数据
-			if (strstr((const char*)GPRS_ReceiveData+user_Set.heart_len, "OK")) //
+		if (GPRS_ReceiveLength) { //接收到一帧数据
+			if (strstr((const char*)GPRS_ReceiveData+user_Set.heart_len, "CIPSEND")) //
 			{
-				GPRSSendFrrorFlg = 0;
+				GPRSSendErrorFlg = 0;
 				GPRSErrorCnt = 0; //配置成功后清除错误计数
 				GPRSStat = GPRS_RUN_Rxdata_CMD;
 				sGPRSTimeDelay = NEXT_CMD_DLY; //两个数据的间隔;
@@ -1091,44 +1118,43 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 					GPRSStat = GPRS_RUN_Rxdata_CMD;
 					sGPRSTimeDelay = NEXT_CMD_DLY;
 					if (HeartTime > NEXT_CMD_DLY)
-						//BeatCnt = HeartTime - NEXT_CMD_DLY;   //屏蔽了错误，不重发
-					  BeatCnt = 0;
+						BeatCnt = HeartTime - NEXT_CMD_DLY;
 					else
 						BeatCnt = 0;
 				}
 				else {
-					//USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
-					GPRSStat = GPRS_RUN_Rxdata_CMD;
+					USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
+					GPRSStat = GPRS_POWER_RST;
 					sGPRSTimeDelay = NEXT_CMD_DLY; //
 				}
 				GPRSLoadStatBuf(GPRS_LED_DATA_ERROR);
 			}
 	}
-//		else if (sGPRSTimeDelay == 0) {
-//			if (GPRSErrorCnt < 2) {
-//				GPRSErrorCnt++;
-//				GPRSStat = GPRS_RUN_Rxdata_CMD;
-//				sGPRSTimeDelay = NEXT_CMD_DLY;
-//				if (HeartTime > NEXT_CMD_DLY)
-//					BeatCnt = HeartTime - NEXT_CMD_DLY;
-//				else
-//					BeatCnt = 0;
-//			}
-//			else {
-//				USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
-//				GPRSStat = GPRS_POWER_RST;
-//				sGPRSTimeDelay = NEXT_CMD_DLY; //
-//			}
-//			GPRSLoadStatBuf(GPRS_LED_DATA_TO);
-//		}
+		else if (sGPRSTimeDelay == 0) {
+			if (GPRSErrorCnt < 2) {
+				GPRSErrorCnt++;
+				GPRSStat = GPRS_RUN_Rxdata_CMD;
+				sGPRSTimeDelay = NEXT_CMD_DLY;
+				if (HeartTime > NEXT_CMD_DLY)
+					BeatCnt = HeartTime - NEXT_CMD_DLY;
+				else
+					BeatCnt = 0;
+			}
+			else {
+				USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
+				GPRSStat = GPRS_POWER_RST;
+				sGPRSTimeDelay = NEXT_CMD_DLY; //
+			}
+			GPRSLoadStatBuf(GPRS_LED_DATA_TO);
+		}
 		break;
 	case GPRS_RUN_Txdata_ACK:
-		if (sGPRSTimeDelay == 0){
+		//if (sGPRSTimeDelay == 0){
 	  USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
-		//if (GPRS_ReceiveLength) { //接收到一帧数据
-			if (strstr((const char*)GPRS_ReceiveData, "OK")) //
+		if (GPRS_ReceiveLength) { //接收到一帧数据
+			if (strstr((const char*)GPRS_ReceiveData+SendData_len, "CIPSEND")) //
 			{
-				GPRSSendFrrorFlg = 0;
+				GPRSSendErrorFlg = 0;
 				GPRSErrorCnt = 0; //配置成功后清除错误计数
 				GPRSStat = GPRS_RUN_Rxdata_CMD;
 				sGPRSTimeDelay = NEXT_CMD_DLY; //两个数据的间隔;
@@ -1143,36 +1169,35 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 					GPRSStat = GPRS_RUN_Rxdata_CMD;
 					sGPRSTimeDelay = NEXT_CMD_DLY;
 					if (HeartTime > NEXT_CMD_DLY)
-						//BeatCnt = HeartTime - NEXT_CMD_DLY;   //屏蔽了错误，不重发
-					  BeatCnt = 0;
+						BeatCnt = HeartTime - NEXT_CMD_DLY;
 					else
 						BeatCnt = 0;
 				}
 				else {
-					//USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
-					GPRSStat = GPRS_RUN_Rxdata_CMD;
+					USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
+					GPRSStat = GPRS_POWER_RST;
 					sGPRSTimeDelay = NEXT_CMD_DLY; //
 				}
 				GPRSLoadStatBuf(GPRS_LED_DATA_ERROR);
 			}
 	}
-//		else if (sGPRSTimeDelay == 0) {
-//			if (GPRSErrorCnt < 2) {
-//				GPRSErrorCnt++;
-//				GPRSStat = GPRS_RUN_Rxdata_CMD;
-//				sGPRSTimeDelay = NEXT_CMD_DLY;
-//				if (HeartTime > NEXT_CMD_DLY)
-//					BeatCnt = HeartTime - NEXT_CMD_DLY;
-//				else
-//					BeatCnt = 0;
-//			}
-//			else {
-//				USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
-//				GPRSStat = GPRS_POWER_RST;
-//				sGPRSTimeDelay = NEXT_CMD_DLY; //
-//			}
-//			GPRSLoadStatBuf(GPRS_LED_DATA_TO);
-//		}
+		else if (sGPRSTimeDelay == 0) {
+			if (GPRSErrorCnt < 2) {
+				GPRSErrorCnt++;
+				GPRSStat = GPRS_RUN_Rxdata_CMD;
+				sGPRSTimeDelay = NEXT_CMD_DLY;
+				if (HeartTime > NEXT_CMD_DLY)
+					BeatCnt = HeartTime - NEXT_CMD_DLY;
+				else
+					BeatCnt = 0;
+			}
+			else {
+				USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
+				GPRSStat = GPRS_POWER_RST;
+				sGPRSTimeDelay = NEXT_CMD_DLY; //
+			}
+			GPRSLoadStatBuf(GPRS_LED_DATA_TO);
+		}
 		break;
 	default: //
 		GPRSStat = GPRS_IDLE;
