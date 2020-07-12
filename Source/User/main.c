@@ -7,7 +7,7 @@
 #define USER_APN "ctnet"
 #define USER_USER "cm"
 #define USER_PASSWORD "gprs"
-#define USER_HEART_TIME "40"
+#define USER_HEART_TIME "30"
 #define USER_FIRST_USED_FLAG 0x3378
 #define USER_HEART "0123"
 /* Includes ------------------------------------------------------------------*/
