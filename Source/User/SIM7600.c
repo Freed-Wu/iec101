@@ -561,7 +561,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	case GPRS_TCP_Name_ACK:
 		USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
 		if (GPRS_ReceiveLength) { //接收到一帧数据
-			if (strstr((const char*)GPRS_ReceiveData, "OK")||strstr((const char*)GPRS_ReceiveData, "0")) //开机状态
+			if (strstr((const char*)GPRS_ReceiveData, "OK")||strstr((const char*)GPRS_ReceiveData, "2,0")) //开机状态
 			{
 				GPRSErrorCnt = 0; //配置成功后清除错误计数
 				GPRSOpenErrorCnt = 0;
@@ -995,6 +995,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 	case GPRS_RUN_Txdata: //心跳包指令应答信号
 		//strcpy((char*)AT_Cmd, "hello"); 
 		// Int2Str((char*)LengthString, user_Set.heart_len);
+	if (sGPRSTimeDelay==0){
 		if (GPRSSendBeatDataflg) //发送心跳数据
 		{
 			//strcat((char*)AT_Cmd, (char*)user_Set.heart_info);
@@ -1008,6 +1009,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 //					}
 			  GPRSSendBeatDataflg=0;
 				USART3_SendDataToGPRS(user_Set.heart_info, user_Set.heart_len);
+			  //USART3_SendDataToGPRS((char*)"hello",strlen((char*)"hello"));
 				USART3_SendDataToGPRS("\x1a\r", 2);
 			  GPRSStat = GPRS_RUN_Txheart_ACK;
 				}
@@ -1023,6 +1025,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 					rmDataFromGPRSTxbuf();
 					GPRSStat = GPRS_RUN_Txdata_ACK;
 				}
+			
 		//		if (GPRS_ReceiveLength) {
 		//			//接收到数据就开始发送数据，并不管是否正确
 		//			if (GPRSSendBeatDataflg) {
@@ -1069,6 +1072,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		//USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
 		GPRSLoadStatBuf(GPRS_LED_DATA); //发送数据			
 		sGPRSTimeDelay = WAIT_ACK;
+	}
 		break;
 	case GPRS_RUN_Txheart_ACK:
 		if (sGPRSTimeDelay == 0){
