@@ -835,6 +835,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			sGPRSTimeDelay = NEXT_CMD_DLY;
 		}
 		else if (sGPRSSentdataDelay == 0) { //2S钟读一次，去缓冲区读数据
+			sGPRSSentdataDelay= 100;
 			USART3_SendDataToGPRS((uint8_t*)"AT+CIPRXGET=2,2\r", strlen("AT+CIPRXGET=2,2\r"));
 			GPRSStat = GPRS_RUN_Rxdata;
 			sGPRSTimeDelay = WAIT_ACK;
@@ -925,7 +926,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 			if (sGPRSNotCallRstDelay) {
 				USART3_SendDataToGPRS((uint8_t*)"AT+CIPCLOSE=2\r", strlen("AT+CIPCLOSE=2\r"));   //先断开连接再重启
 				GPRSStat = GPRS_POWER_RST;
-				sGPRSSentdataDelay = 100; //2S钟读一次缓冲
+				//sGPRSSentdataDelay = 100; //2S钟读一次缓冲
 				sGPRSTimeDelay = NEXT_CMD_DLY;
 			}
 			else {
