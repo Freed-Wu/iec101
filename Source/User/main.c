@@ -434,9 +434,9 @@ int main(void) {
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 				else if (run_loop_cnt == 28)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				else if (run_loop_cnt == 0)
+				else if (run_loop_cnt == 0){
 					GPRSLEDStat = GPRSGetStatBuf();
-				run_loop_cnt = 50;
+				run_loop_cnt = 50;}
 				break;
 			case GPRS_LED_CMD_ERROR: //Ò»³¤Á½¶Ì
 			case GPRS_LED_DATA_ERROR:
