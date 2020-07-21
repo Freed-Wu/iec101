@@ -34,29 +34,29 @@
 #include "user_Configuration.h"
 #include "conf_USART.H"
 
-#define BVL GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) //µç³ØµçÑ¹¼ì²â½Å
+#define BVL GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) //ç”µæ± ç”µå‹æ£€æµ‹è„š
 
-/*¾²Ì¬±äÁ¿ÉùÃ÷*/
+/*é™æ€å˜é‡å£°æ˜*/
 //static uint16_t PowerOK_flag;
 static uint16_t ReceiveDataFromGPRSflg;
 
-volatile uint16_t SysTick_10msflg; //10msÒç³ö±êÖ¾£¬Ö÷³ÌĞò10msÔËĞĞÒ»´Î
+volatile uint16_t SysTick_10msflg; //10msæº¢å‡ºæ ‡å¿—ï¼Œä¸»ç¨‹åº10msè¿è¡Œä¸€æ¬¡
 DEVICE_SET user_Set;
 uint16_t GPRSLEDStat;
 uint16_t info_wr_flash_flag;
 uint16_t temp_wr_flash_flag;
-uint16_t DebugDly; //ÓÃÓÚ´®¿Úµ÷ÊÔÑÓÊ±
+uint16_t DebugDly; //ç”¨äºä¸²å£è°ƒè¯•å»¶æ—¶
 uint16_t DebugNRF905Dly;
 uint16_t nrf905ReaddRegDly;
 uint32_t nrf905InitDly;
 
 uint16_t ReceiveLength;
 
-uint8_t Info[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; //¿ª¹ØÁ¿ÊıÁ¿ 0/1/2 µøÂä 3µøÂä×´Ì¬ 4ÎÂ¶È×´Ì¬ 5 Ç·Ñ¹ 6/7/8/9 Â©±£
-uint16_t InfoCRC16; //Ã¿´ÎÊı¾İ¶ÁĞ´Ö®Ç°¶¼ÒªĞ£ÑéÊı¾İµÄÓĞĞ§ĞÔ£¬ÎŞĞ§Ê±ÒªÖØĞÂ´ÓFLASHÖĞ¶ÁÈ¡
-uint8_t InfoTemp[8]; //ÎÂ¶È
+uint8_t Info[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; //å¼€å…³é‡æ•°é‡ 0/1/2 è·Œè½ 3è·Œè½çŠ¶æ€ 4æ¸©åº¦çŠ¶æ€ 5 æ¬ å‹ 6/7/8/9 æ¼ä¿
+uint16_t InfoCRC16; //æ¯æ¬¡æ•°æ®è¯»å†™ä¹‹å‰éƒ½è¦æ ¡éªŒæ•°æ®çš„æœ‰æ•ˆæ€§ï¼Œæ— æ•ˆæ—¶è¦é‡æ–°ä»FLASHä¸­è¯»å–
+uint8_t InfoTemp[8]; //æ¸©åº¦
 uint8_t DataFromGPRSBuffer[64];
-uint8_t moduleMaskEn; // Ä£¿é¹ÊÕÏMASK
+uint8_t moduleMaskEn; // æ¨¡å—æ•…éšœMASK
 uint32_t moduleMaskDly;
 uint32_t PowerLowDly;
 uint32_t PowerOKDly;
@@ -70,13 +70,13 @@ extern uint16_t reqVersionflg;
 extern uint16_t GPRSStat;
 extern TimeStructure Tx_Time;
 
-//Õı³£·µ»Ø1£¬´íÎó·µ»Ø0
-//Ã¿´Î¶ÁĞ´¶¼ÒªÖØĞÂĞ£ÑéCRC£¬ÓĞ´íÊ±ÔòÖØĞÂ´ÓFLASHÖĞ¶ÁÈ¡Êı¾İ
+//æ­£å¸¸è¿”å›1ï¼Œé”™è¯¯è¿”å›0
+//æ¯æ¬¡è¯»å†™éƒ½è¦é‡æ–°æ ¡éªŒCRCï¼Œæœ‰é”™æ—¶åˆ™é‡æ–°ä»FLASHä¸­è¯»å–æ•°æ®
 uint16_t CheckInfoCRCIsOK(void) {
 	return CRC16(Info, 16) == InfoCRC16;
 }
 
-//Êı¾İ¸Ä±äºó¸üĞÂCRC
+//æ•°æ®æ”¹å˜åæ›´æ–°CRC
 void RefreshInfoCRC(void) {
 	InfoCRC16 = CRC16(Info, 16);
 }
@@ -116,19 +116,19 @@ int main(void) {
 	info_wr_flash_flag = 0;
 	temp_wr_flash_flag = 0;
 	DebugNRF905Dly = 0 * 50 * 60;
-	//Æ¬ÉÏÉè±¸³õÊ¼»¯
+	//ç‰‡ä¸Šè®¾å¤‡åˆå§‹åŒ–
 	RCC_Configuration();
-	SysTick_Init(); //10msÖĞ¶ÏÒ»´Î
+	SysTick_Init(); //10msä¸­æ–­ä¸€æ¬¡
 	NVIC_Configuration();
 	GPIO_Configuration();
-	USART1_Configuration(); //RS232ÅäÖÃÍ¨µÀ
-	USART3_Configuration(); //GPRSÍ¨µÀ
-	EXTI_Configuration(); //NRF595ÖĞ¶Ï½Å¿ØÖÆ
-	SYSCLKConfig_STOP(); //ĞİÃßÅäÖÃ
-	//Æ¬ÍâÉè±¸³õÊ¼»¯
+	USART1_Configuration(); //RS232é…ç½®é€šé“
+	USART3_Configuration(); //GPRSé€šé“
+	EXTI_Configuration(); //NRF595ä¸­æ–­è„šæ§åˆ¶
+	SYSCLKConfig_STOP(); //ä¼‘çœ é…ç½®
+	//ç‰‡å¤–è®¾å¤‡åˆå§‹åŒ–
 
 	//work led	on
-	GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //µÆÁÁ
+	GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //ç¯äº®
 	Delay(10);
 	PowerUp_NRF905();
 	Delay(50);
@@ -136,7 +136,7 @@ int main(void) {
 	FLASH_ReadUserSet();
 
 	if (user_Set.FirstUsedFlag != USER_FIRST_USED_FLAG) {
-		InitAllPara(); //³õÊ¼»¯²ÎÊı
+		InitAllPara(); //åˆå§‹åŒ–å‚æ•°
 		FLASH_WriteUserSet();
 	}
 	memset(Temp, 0x00, 16);
@@ -145,14 +145,11 @@ int main(void) {
 	memset(Temp, 0x00, 16);
 
 	FLASH_RD_Module_Status();
-
-#ifndef DEBUG_MODE
 	IWDG_Init(IWDG_Prescaler_16, 0xFFF); //1.6s
 	IWDG_Feed(); //clr WDG
-#endif
-	GPRS_init(); //±äÁ¿³õÊ¼»¯
-	//¶ÁÎÂ¶ÈÖµ
-	PWR_BackupAccessCmd(ENABLE); //Ê¹ÄÜºó±¸¼Ä´æÆ÷·ÂÎÊ
+	GPRS_init(); //å˜é‡åˆå§‹åŒ–
+	//è¯»æ¸©åº¦å€¼
+	PWR_BackupAccessCmd(ENABLE); //ä½¿èƒ½åå¤‡å¯„å­˜å™¨ä»¿é—®
 	if ((BKP_ReadBackupRegister(BKP_DR1) != 0XA55A) || bkp_ReadTempData() != 0) {
 		BKP_WriteBackupRegister(BKP_DR1, 0XA55A);
 		InfoTemp[0] = 30;
@@ -163,17 +160,17 @@ int main(void) {
 		InfoTemp[5] = 30;
 		InfoTemp[6] = 30;
 		InfoTemp[7] = 30;
-		bkp_WriteTempData(); //³õÊ¼»¯Ò»´ÎÊı¾İ
+		bkp_WriteTempData(); //åˆå§‹åŒ–ä¸€æ¬¡æ•°æ®
 	}
 
 	EXTI_ClearITPendingBit(EXTI_Line11);
 	EnableExtINT();
 
-	DebugDly = 0; //0·ÖÖÓÊ±¼ä
+	DebugDly = 0; //0åˆ†é’Ÿæ—¶é—´
 	PowerLowDly = 0;
 	PowerOKDly = 0;
 	nrf905ReaddRegDly = 50 * 1 * 1;
-	nrf905InitDly = 50 * 60 * 60 * 47; //48¸öĞ¡Ê±Ç¿ÖÆ³õÊ¼»¯Ò»´Î
+	nrf905InitDly = 50 * 60 * 60 * 47; //48ä¸ªå°æ—¶å¼ºåˆ¶åˆå§‹åŒ–ä¸€æ¬¡
 	InfoDisConnectDelay[0] = 50 * 60 * 60 * 12;
 	InfoDisConnectDelay[1] = 50 * 60 * 60 * 12;
 	InfoDisConnectDelay[2] = 50 * 60 * 60 * 12;
@@ -192,7 +189,7 @@ int main(void) {
 			if (moduleMaskDly > 0)
 				moduleMaskDly--;
 			else
-				moduleMaskEn = 0; //ÆÁ±Î24Ğ¡Ê±ºó×Ô¶¯ÍË³ö
+				moduleMaskEn = 0; //å±è”½24å°æ—¶åè‡ªåŠ¨é€€å‡º
 
 			if (reqVersionflg) {
 				reqVersionflg = 0;
@@ -219,9 +216,9 @@ int main(void) {
 				TempDisConnectDelay[2]--;
 
 			if ((InfoDisConnectDelay[0] == 0) || (InfoDisConnectDelay[1] == 0) || (InfoDisConnectDelay[2] == 0)) {
-				if (Info[3] == 0) { //×´Ì¬¸Ä±ä±£´æÒ»´Î
+				if (Info[3] == 0) { //çŠ¶æ€æ”¹å˜ä¿å­˜ä¸€æ¬¡
 					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) //Ã¿´Î¸Ä±äInfoÊı¾İÖ®Ç°¶¼ÒªÖØĞÂ
+					if (CheckInfoCRCIsOK() == 0) //æ¯æ¬¡æ”¹å˜Infoæ•°æ®ä¹‹å‰éƒ½è¦é‡æ–°
 						FLASH_RD_Module_Status();
 					Info[3] = 0x01;
 					RefreshInfoCRC();
@@ -229,20 +226,20 @@ int main(void) {
 					EnableExtINT();
 				}
 			}
-			else if (Info[3] == 1) { //×´Ì¬¸Ä±ä±£´æÒ»´Î
+			else if (Info[3] == 1) { //çŠ¶æ€æ”¹å˜ä¿å­˜ä¸€æ¬¡
 					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) //Ã¿´Î¸Ä±äInfoÊı¾İÖ®Ç°¶¼ÒªÖØĞÂ
+					if (CheckInfoCRCIsOK() == 0) //æ¯æ¬¡æ”¹å˜Infoæ•°æ®ä¹‹å‰éƒ½è¦é‡æ–°
 						FLASH_RD_Module_Status();
 					Info[3] = 0x00;
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
 					EnableExtINT();
 				}
-			//ÎÂ¶È²»ÔÚÏß²âÊÔ
+			//æ¸©åº¦ä¸åœ¨çº¿æµ‹è¯•
 			if ((TempDisConnectDelay[0] == 0) || (TempDisConnectDelay[1] == 0) || (TempDisConnectDelay[2] == 0)) {
-				if (Info[4] == 0) { //×´Ì¬¸Ä±ä±£´æÒ»´Î
+				if (Info[4] == 0) { //çŠ¶æ€æ”¹å˜ä¿å­˜ä¸€æ¬¡
 					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) //Ã¿´Î¸Ä±äInfoÊı¾İÖ®Ç°¶¼ÒªÖØĞÂ
+					if (CheckInfoCRCIsOK() == 0) //æ¯æ¬¡æ”¹å˜Infoæ•°æ®ä¹‹å‰éƒ½è¦é‡æ–°
 						FLASH_RD_Module_Status();
 					Info[4] = 0x01;
 					RefreshInfoCRC();
@@ -251,9 +248,9 @@ int main(void) {
 				}
 			}
 			else
-				if (Info[4] == 1) { //×´Ì¬¸Ä±ä±£´æÒ»´Î
+				if (Info[4] == 1) { //çŠ¶æ€æ”¹å˜ä¿å­˜ä¸€æ¬¡
 					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) //Ã¿´Î¸Ä±äInfoÊı¾İÖ®Ç°¶¼ÒªÖØĞÂ
+					if (CheckInfoCRCIsOK() == 0) //æ¯æ¬¡æ”¹å˜Infoæ•°æ®ä¹‹å‰éƒ½è¦é‡æ–°
 						FLASH_RD_Module_Status();
 					Info[4] = 0x00;
 					RefreshInfoCRC();
@@ -261,7 +258,7 @@ int main(void) {
 					EnableExtINT();
 				}
 
-			if (GPIO_ReadInputDataBit(NRF905_DR, NRF905_DR_PIN)) { //ÖĞ¶ÏÖĞÎ´²¶»ñÊı¾İÉÏÉıÑØÊ± ³õÊ¼»¯ÖĞ¶Ï·şÎñ³ÌĞò²¢³õÊ¼»¯NRF905
+			if (GPIO_ReadInputDataBit(NRF905_DR, NRF905_DR_PIN)) { //ä¸­æ–­ä¸­æœªæ•è·æ•°æ®ä¸Šå‡æ²¿æ—¶ åˆå§‹åŒ–ä¸­æ–­æœåŠ¡ç¨‹åºå¹¶åˆå§‹åŒ–NRF905
 				Delay(10);
 				if (GPIO_ReadInputDataBit(NRF905_DR, NRF905_DR_PIN)) {
 					DisableExtINT();
@@ -271,31 +268,29 @@ int main(void) {
 				}
 			}
 
-			/*¼ì²âNRF905µÄÓĞĞ§ĞÔ*/
+			/*æ£€æµ‹NRF905çš„æœ‰æ•ˆæ€§*/
 			if (nrf905ReaddRegDly > 0)
 				nrf905ReaddRegDly--;
 			else {
 				uint16_t nrf905errorflg;
 
 				nrf905errorflg = 0;
-				nrf905ReaddRegDly = 50 * 20; //20S¶ÁÒ»´Î¼Ä´æÆ÷Öµ
+				nrf905ReaddRegDly = 50 * 20; //20Sè¯»ä¸€æ¬¡å¯„å­˜å™¨å€¼
 				DisableExtINT();
-				if (checknrf905_conf() == 0) //´íÎó
+				if (checknrf905_conf() == 0) //é”™è¯¯
 					nrf905errorflg = 1;
-				if (checknrf905_addr() == 0) //´íÎó
+				if (checknrf905_addr() == 0) //é”™è¯¯
 					nrf905errorflg = 1;
 				if (nrf905errorflg == 1 || (nrf905InitDly == 0)) {
 					nrf905errorflg = 0;
-					nrf905InitDly = 50 * 60 * 60 * 47; //48¸öĞ¡Ê±Ç¿ÖÆ³õÊ¼»¯Ò»´Î
+					nrf905InitDly = 50 * 60 * 60 * 47; //48ä¸ªå°æ—¶å¼ºåˆ¶åˆå§‹åŒ–ä¸€æ¬¡
 					PowerUp_NRF905();
 				}
 				EnableExtINT();
 			}
 			//LED_Toggle();
-#ifndef DEBUG_MODE
 			IWDG_Feed(); //clr WDG
-#endif
-			//Ò»µ©¼ì²âµ½TCPÍ¨µÀ¶Ï¿ª£¬Á¢¼´Æô¶¯Á¬½Ó
+			//ä¸€æ—¦æ£€æµ‹åˆ°TCPé€šé“æ–­å¼€ï¼Œç«‹å³å¯åŠ¨è¿æ¥
 			ReceiveDataFromGPRSflg = SuperviseTCP(DataFromGPRSBuffer);
 			if (ReceiveDataFromGPRSflg)
 			{
@@ -303,26 +298,26 @@ int main(void) {
 				USART1_SendData((char*)"DATA OK",strlen((char*)"DATA OK"));
 			  USART1_SendData(DataFromGPRSBuffer,17);
 			}
-			//ÅäÖÃ´®¿Ú´¦Àí³ÌĞò
+			//é…ç½®ä¸²å£å¤„ç†ç¨‹åº
 			rs232_set_process();
-			USART1_supervise(); //³¤Ê±¼äÃ»ÓĞ½ÓÊÕµ½Êı¾İÊ±ÇåÒ»´ÎÊı¾İ
-			//µç³ØµçÑ¹¼ì²â£¬Õı³£Ê±BVLÎªµÍµçÆ½
-			if (!BVL) //µçÑ¹µÍ
+			USART1_supervise(); //é•¿æ—¶é—´æ²¡æœ‰æ¥æ”¶åˆ°æ•°æ®æ—¶æ¸…ä¸€æ¬¡æ•°æ®
+			//ç”µæ± ç”µå‹æ£€æµ‹ï¼Œæ­£å¸¸æ—¶BVLä¸ºä½ç”µå¹³
+			if (!BVL) //ç”µå‹ä½
 			{
 				PowerOKDly = 0;
 				if (CheckInfoCRCIsOK() == 0)
 					FLASH_RD_Module_Status();
 
-				if (Info[5] == 0) //µ±Ç°×´Ì¬Îª¸ßµçÑ¹×´Ì¬
+				if (Info[5] == 0) //å½“å‰çŠ¶æ€ä¸ºé«˜ç”µå‹çŠ¶æ€
 				{
-					if (PowerLowDly < 50 * 60 * 10) //ÑÓÊ±10·ÖÖÓ±¨µçÑ¹µÍ
+					if (PowerLowDly < 50 * 60 * 10) //å»¶æ—¶10åˆ†é’ŸæŠ¥ç”µå‹ä½
 						PowerLowDly++;
 					else {
 						GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET);
 						//read time
 						ReadDATATime();
 						ChangeUpdate(0x06, 0x01, &Tx_Time);
-						if (CheckInfoCRCIsOK() == 0) //Ã¿´Î¸Ä±äInfoÊı¾İÖ®Ç°¶¼ÒªÖØĞÂ
+						if (CheckInfoCRCIsOK() == 0) //æ¯æ¬¡æ”¹å˜Infoæ•°æ®ä¹‹å‰éƒ½è¦é‡æ–°
 							FLASH_RD_Module_Status();
 						Info[5] = 0x01;
 						RefreshInfoCRC();
@@ -338,7 +333,7 @@ int main(void) {
 				if (CheckInfoCRCIsOK() == 0)
 					FLASH_RD_Module_Status();
 				if (Info[5] != 0) {
-					if (PowerOKDly < 50 * 60 * 30) //30·ÖÖÓ±¨Õı³£
+					if (PowerOKDly < 50 * 60 * 30) //30åˆ†é’ŸæŠ¥æ­£å¸¸
 						PowerOKDly++;
 					else {
 						GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET);
@@ -359,7 +354,7 @@ int main(void) {
 
 			//
 			if (info_wr_flash_flag == 1) {
-				USART1_SendData((uint8_t*)"write ok", strlen("write ok")); //ÏÔÊ¾ÊÕµ½µÄÊı¾İ
+				USART1_SendData((uint8_t*)"write ok", strlen("write ok")); //æ˜¾ç¤ºæ”¶åˆ°çš„æ•°æ®
 				FLASH_WR_Module_Status();
 				info_wr_flash_flag = 0;
 			}
@@ -372,8 +367,8 @@ int main(void) {
 				run_loop_cnt--;
 			switch (GPRSLEDStat) {
 			case GPRS_LED_IDLE:
-				if (GPRSStat < 0x700) { //ÅäÖÃ×´Ì¬
-					if (((run_loop_cnt) == 14)) //°ëÃëÖÓÉÁÒ»´Î
+				if (GPRSStat < 0x700) { //é…ç½®çŠ¶æ€
+					if (((run_loop_cnt) == 14)) //åŠç§’é’Ÿé—ªä¸€æ¬¡
 						GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 					else if (run_loop_cnt == 12)
 						GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
@@ -382,16 +377,16 @@ int main(void) {
 				}
 				else {
 					GPRSLEDStat = GPRSGetStatBuf();
-					if (GPRSLEDStat == GPRS_LED_IDLE) { //·ÇÅäÖÃµÄµÈ´ı×´Ì¬4sÖÓÉÁ4mS
-						if (GPRSStat == GPRS_RUN_Txdata) { //µÈ´ıÖ¸Áî·µ»Ø¼°·¢ËÍÊı¾İ
+					if (GPRSLEDStat == GPRS_LED_IDLE) { //éé…ç½®çš„ç­‰å¾…çŠ¶æ€4sé’Ÿé—ª4mS
+						if (GPRSStat == GPRS_RUN_Txdata) { //ç­‰å¾…æŒ‡ä»¤è¿”å›åŠå‘é€æ•°æ®
 							if (run_loop_cnt == 49)
 								GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 							else if (run_loop_cnt == 47)
 								GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-							else if (run_loop_cnt == 0) //2SÁÁÒ»´Î
+							else if (run_loop_cnt == 0) //2Säº®ä¸€æ¬¡
 								run_loop_cnt = 50;
 						}
-						else if (GPRSStat == GPRS_RUN_Txdata_ACK) { //µÈ´ıÊı¾İ·µ»ØÕıÈ·
+						else if (GPRSStat == GPRS_RUN_Txdata_ACK) { //ç­‰å¾…æ•°æ®è¿”å›æ­£ç¡®
 							if (run_loop_cnt == 49)
 								GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 							else if (run_loop_cnt == 47)
@@ -399,32 +394,32 @@ int main(void) {
 							else if (run_loop_cnt == 0)
 								run_loop_cnt = 50;
 						}
-						else { //Õı³£ÔËĞĞµÄ¿ÕÏĞ×´Ì¬4SÉÁÒ»´Î
+						else { //æ­£å¸¸è¿è¡Œçš„ç©ºé—²çŠ¶æ€4Sé—ªä¸€æ¬¡
 							if (run_loop_cnt == 199)
 								GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 							else if (run_loop_cnt == 194)
 								GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-							else if (run_loop_cnt == 0) { //4SÁÁÒ»´Î
+							else if (run_loop_cnt == 0) { //4Säº®ä¸€æ¬¡
 								GPRSLEDStat = GPRSGetStatBuf();
 								run_loop_cnt = 200;
 							}
 						}
 					}
-					else //½øÈë·¢ËÍ×´Ì¬
+					else //è¿›å…¥å‘é€çŠ¶æ€
 						run_loop_cnt = 50;
 				}
 				break;
-			case GPRS_LED_START: //Ò»³¤
+			case GPRS_LED_START: //ä¸€é•¿
 				if (run_loop_cnt == 49)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 				else if (run_loop_cnt == 35)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				else if (run_loop_cnt == 0) { //4SÁÁÒ»´Î
+				else if (run_loop_cnt == 0) { //4Säº®ä¸€æ¬¡
 					GPRSLEDStat = GPRSGetStatBuf();
 					run_loop_cnt = 50;
 				}
 				break;
-				//case GPRS_LED_CMD_OK:	//Ò»³¤Ò»¶Ì
+				//case GPRS_LED_CMD_OK:	//ä¸€é•¿ä¸€çŸ­
 			case GPRS_LED_DATA_OK: //
 				if (run_loop_cnt == 49)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
@@ -438,13 +433,13 @@ int main(void) {
 					GPRSLEDStat = GPRSGetStatBuf();
 				run_loop_cnt = 50;}
 				break;
-			case GPRS_LED_CMD_ERROR: //Ò»³¤Á½¶Ì
+			case GPRS_LED_CMD_ERROR: //ä¸€é•¿ä¸¤çŸ­
 			case GPRS_LED_DATA_ERROR:
 				if (run_loop_cnt == 49)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 				else if (run_loop_cnt == 35)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				else if (run_loop_cnt == 30) //1¶Ì
+				else if (run_loop_cnt == 30) //1çŸ­
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 				else if (run_loop_cnt == 28)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
@@ -457,13 +452,13 @@ int main(void) {
 					run_loop_cnt = 50;
 				}
 				break;
-			case GPRS_LED_CMD_TO: //Ò»³¤Èı¶Ì
+			case GPRS_LED_CMD_TO: //ä¸€é•¿ä¸‰çŸ­
 			case GPRS_LED_DATA_TO:
 				if (run_loop_cnt == 49)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 				else if (run_loop_cnt == 38)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				else if (run_loop_cnt == 30) //1¶Ì
+				else if (run_loop_cnt == 30) //1çŸ­
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 				else if (run_loop_cnt == 28)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
@@ -480,7 +475,7 @@ int main(void) {
 					run_loop_cnt = 100;
 				}
 				break;
-			case GPRS_LED_DATA: //ÆµÉÁ
+			case GPRS_LED_DATA: //é¢‘é—ª
 				if ((run_loop_cnt & 0x2) != 0)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 				else
@@ -497,7 +492,7 @@ int main(void) {
 
 		} //if()
 #ifndef DEBUG_MODE
-		__WFI(); //½øÈëË¯ÃßÄ£Ê½
+		__WFI(); //è¿›å…¥ç¡çœ æ¨¡å¼
 #endif
 	} //while
 } //main
