@@ -797,24 +797,6 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 
 **************************************************************************/
 	case GPRS_RUN_Rxdata_CMD: //接收数据指令
-//		if ()
-//		strcpy((char*)AT_Cmd, "AT+CIPSEND=0,\r");
-//		 uint8_t i = 0;
-//					Int2Str((char*)LengthString, user_Set.heart_len);
-//					while (LengthString[i]) {
-//						AT_Cmd[i + strlen("AT+CIPSEND=0,")] = LengthString[i];
-//						i++;
-//					}
-//		AT_Cmd[i + strlen("AT+CIPSEND=0,")] = '\r';
-//		i++;
-//		AT_Cmd[i + strlen("AT+CIPSEND=0,")] = '\0'; //字符串结束符
-//		USART3_SendDataToGPRS(AT_Cmd, strlen((const char*)AT_Cmd));
-//		Delay(50);
-		//USART1_SendData(GPRS_ReceiveData, GPRS_ReceiveLength); //显示收到的数据
-//		Int2Str(BeatCnt2,BeatCnt);
-		//strcat(BeatCnt2,"\r");
-//		BeatCnt2[9]='\r';
-//		USART1_SendData(BeatCnt2,strlen(BeatCnt2));
 		if (ReqGPRSConfigflg) {
 			GPRSStat = GPRS_POWER_RST;
 			ReqGPRSConfigflg = 0;
@@ -822,7 +804,7 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		else if (GPRS_Tx0.TxNum > 0) {
 			if (sGPRSTimeDelay == 0) {
 				GPRSStat = GPRS_RUN_Txdata_CMD;
-				USART1_SendData((uint8_t*)"TX NUM", strlen("TX NUM")); //显示收到的数据
+				//USART1_SendData((uint8_t*)"TX NUM", strlen("TX NUM")); //显示收到的数据
 				GPRSSendBeatDataflg = 0;
 			}
 			BeatCnt = 0;
@@ -945,10 +927,6 @@ uint16_t SuperviseTCP(uint8_t* pRecBuffer) {
 		}
 		break;
 	case GPRS_RUN_Txdata_CMD: //发送数据指令
-		// uint8_t i = 0;
-		// uint8_t AT_Cmd[20] = {0x00};
-		// uint16_t pLength;
-		// uint8_t LengthString[6] = {0x00};
 		strcpy((char*)AT_Cmd, "AT+CIPSEND=2,");
 		if (GPRSSendBeatDataflg){ //发送心跳数据
 			Int2Str(str, user_Set.heart_len);
