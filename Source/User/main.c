@@ -46,6 +46,7 @@ uint16_t GPRSLEDStat;
 uint16_t info_wr_flash_flag;
 uint16_t temp_wr_flash_flag;
 uint16_t DebugDly; //用于串口调试延时
+uint16_t IWDG_Delay5s; //看门狗feed间隔5s
 uint16_t DebugNRF905Dly;
 uint16_t nrf905ReaddRegDly;
 uint32_t nrf905InitDly;
@@ -145,7 +146,7 @@ int main(void) {
 	memset(Temp, 0x00, 16);
 
 	FLASH_RD_Module_Status();
-	IWDG_Init(IWDG_Prescaler_16, 0xFFF); //1.6s
+	IWDG_Init(IWDG_Prescaler_64, 0xFFF); //6.4s
 	IWDG_Feed(); //clr WDG
 	GPRS_init(); //变量初始化
 	//读温度值
@@ -167,6 +168,7 @@ int main(void) {
 	EnableExtINT();
 
 	DebugDly = 0; //0分钟时间
+	IWDG_Delay5s = 250;
 	PowerLowDly = 0;
 	PowerOKDly = 0;
 	nrf905ReaddRegDly = 50 * 1 * 1;
@@ -186,6 +188,8 @@ int main(void) {
 			SysTick_10msflg = 0;
 			if (DebugDly > 0)
 				DebugDly--;
+			if (IWDG_Delay5s > 0)
+				IWDG_Delay5s--;
 			if (moduleMaskDly > 0)
 				moduleMaskDly--;
 			else
@@ -289,7 +293,12 @@ int main(void) {
 				EnableExtINT();
 			}
 			//LED_Toggle();
-			IWDG_Feed(); //clr WDG
+			if (IWDG_Delay5s == 0)
+			{
+			   IWDG_Feed(); //clr WDG
+				 IWDG_Delay5s = 250;
+			}
+			
 			//一旦检测到TCP通道断开，立即启动连接
 			ReceiveDataFromGPRSflg = SuperviseTCP(DataFromGPRSBuffer);
 			if (ReceiveDataFromGPRSflg)
@@ -354,7 +363,7 @@ int main(void) {
 
 			//
 			if (info_wr_flash_flag == 1) {
-				USART1_SendData((uint8_t*)"write ok", strlen("write ok")); //显示收到的数据
+				//USART1_SendData((uint8_t*)"write ok", strlen("write ok")); //显示收到的数据
 				FLASH_WR_Module_Status();
 				info_wr_flash_flag = 0;
 			}
