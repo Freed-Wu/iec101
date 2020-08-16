@@ -1,5 +1,6 @@
 #include "nrf905.h"
-#include "101_Protocol.h"
+//#include "101_Protocol.h"
+#include "modbus.h"
 #include "conf_NVIC.h"
 #include "conf_USART.h"
 #include "conf_sys.h"
@@ -277,7 +278,7 @@ void Wait_Rec_Packet(void) {
 			case 0x03: //跌落A //跌落B //跌落C
 				if (pData == 0x01) {
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
-						ChangeUpdate(pAddr, 0x01, &Tx_Time);
+						//ChangeUpdate(pAddr, 0x01, &Tx_Time);
 					if (CheckInfoCRCIsOK() == 0)
 						FLASH_RD_Module_Status();
 					Info[pAddr - 1] = 0x01;
@@ -287,7 +288,7 @@ void Wait_Rec_Packet(void) {
 				}
 				else if (pData == 0x02) {
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
-						ChangeUpdate(pAddr, 0x00, &Tx_Time);
+						//ChangeUpdate(pAddr, 0x00, &Tx_Time);
 					if (CheckInfoCRCIsOK() == 0)
 						FLASH_RD_Module_Status();
 					Info[pAddr - 1] = 0x00;
@@ -302,19 +303,19 @@ void Wait_Rec_Packet(void) {
 			case 0x07: //漏报1
 				if (pData == 0x01) {
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
-						ChangeUpdate(pAddr + 3, 0x01, &Tx_Time);
+						//ChangeUpdate(pAddr + 3, 0x01, &Tx_Time);
 					if (CheckInfoCRCIsOK() == 0)
 						FLASH_RD_Module_Status();
-					Info[pAddr + 2] = 0x01; //漏保存储在Info中的6 7 8 9
+					Info[pAddr + 6] = 0x01; //漏保存储在Info中的6 7 8 9
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
 				}
 				else if (pData == 0x02) {
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
-						ChangeUpdate(pAddr + 3, 0x00, &Tx_Time);
+						//ChangeUpdate(pAddr + 3, 0x00, &Tx_Time);
 					if (CheckInfoCRCIsOK() == 0)
 						FLASH_RD_Module_Status();
-					Info[pAddr + 2] = 0x00;
+					Info[pAddr + 6] = 0x00;
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
 				}
@@ -326,9 +327,9 @@ void Wait_Rec_Packet(void) {
 
 				if ((int8_t)pData < 125 && (int8_t)pData > (int8_t)(-85)) { //温度在有效范围内
 					InfoTemp[pAddr - 0x61] = pData;
-					TempDisConnectDelay[pAddr - 61] = 50 * 60 * 60 * 12;
+					TempDisConnectDelay[pAddr - 0x61] = 50 * 60 * 60 * 12;
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
-						TempChangeUpdate(pAddr - 0x60, InfoTemp[pAddr - 0x61], &Tx_Time); //温度值突发上传
+						//TempChangeUpdate(pAddr - 0x60, InfoTemp[pAddr - 0x61], &Tx_Time); //温度值突发上传
 					temp_wr_flash_flag = 1;
 				}
 

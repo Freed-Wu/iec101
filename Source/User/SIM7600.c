@@ -14,7 +14,7 @@ uint16_t ReqGPRSConfigflg;
 
 /*static*/ uint32_t BeatCnt = 0;
 //char BeatCnt2[64];
-static uint8_t GPRS_ReceiveData[GPRS_RCV_BUF];
+uint8_t GPRS_ReceiveData[GPRS_RCV_BUF];
 static uint16_t GPRS_ReceiveLength;
 
 #define TIME_GPRSNotCallRstDelay (uint32_t)(50 * 60 * 12) //(50 * 60 * 12)
