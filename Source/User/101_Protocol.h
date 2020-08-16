@@ -171,7 +171,7 @@ typedef struct {
 	uint16_t InfoAddress;
 	uint8_t InfoData[16];
 } ASDU_DataStructure;
-
+/*
 typedef struct {
 	uint8_t Year;
 	uint8_t Month;
@@ -181,7 +181,7 @@ typedef struct {
 	uint8_t Sec;
 	uint16_t MilliSec;
 } TimeStructure;
-
+*/
 extern unsigned char Time_Data[8];
 
 extern uint8_t ProtocolRxBuffer[64]; //存储主站发过来的命令
@@ -190,13 +190,13 @@ extern uint16_t LINK_ADDRESS; //定义链路地址
 
 uint8_t Protocol(uint8_t* pBuffer);
 
-uint8_t DataProcess(void);
+//uint8_t DataProcess(void);
 
 void LinkInit(void);
 
 uint8_t ResponseCallAll(void);
 
-void ChangeUpdate(uint16_t InfoAdress, uint8_t Info, TimeStructure* Time);
+//void ChangeUpdate(uint16_t InfoAdress, uint8_t Info, TimeStructure* Time);
 
-void TempChangeUpdate(uint16_t InfoAdress, uint8_t Info, TimeStructure* Time);
+//void TempChangeUpdate(uint16_t InfoAdress, uint8_t Info, TimeStructure* Time);
 #endif //__101_PROTOCOL_H__

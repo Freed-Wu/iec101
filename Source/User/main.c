@@ -12,7 +12,8 @@
 #define USER_HEART "0123"
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "101_Protocol.h"
+#include "mydef.h"
+//#include "101_Protocol.h"
 #include "Flash.h"
 #include "SIM7600.h"
 #include "Para_Config.h"
@@ -21,6 +22,7 @@
 #include "conf_NVIC.h"
 #include "conf_RCC.h"
 #include "conf_USART.h"
+#include "conf_USART_RS485.h"
 #include "conf_sys.h"
 #include "conf_tim2.h"
 #include "crc.h"
@@ -33,13 +35,15 @@
 #include "string.h"
 #include "user_Configuration.h"
 #include "conf_USART.H"
+#include "modbus.h"
 
 #define BVL GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) //电池电压检测脚
 
+extern uint8_t  CSD_485_COM_RxBuf[CSD_485_RX_BUF];
 /*静态变量声明*/
 //static uint16_t PowerOK_flag;
-static uint16_t ReceiveDataFromGPRSflg;
-
+uint16_t ReceiveDataFromGPRSflg;
+uint16_t LINK_ADDRESS;
 volatile uint16_t SysTick_10msflg; //10ms溢出标志，主程序10ms运行一次
 DEVICE_SET user_Set;
 uint16_t GPRSLEDStat;
@@ -70,6 +74,7 @@ unsigned int nrf905DR;
 extern uint16_t reqVersionflg;
 extern uint16_t GPRSStat;
 extern TimeStructure Tx_Time;
+extern uint16_t HTComm_Addr;
 
 //正常返回1，错误返回0
 //每次读写都要重新校验CRC，有错时则重新从FLASH中读取数据
@@ -113,6 +118,7 @@ static uint16_t run_loop_cnt;
 
 int main(void) {
 	uint8_t Temp[16];
+	int temp1 = 0;
 	run_loop_cnt = 0;
 	info_wr_flash_flag = 0;
 	temp_wr_flash_flag = 0;
@@ -123,6 +129,7 @@ int main(void) {
 	NVIC_Configuration();
 	GPIO_Configuration();
 	USART1_Configuration(); //RS232配置通道
+	USART2_Configuration();			//Modbus通道
 	USART3_Configuration(); //GPRS通道
 	EXTI_Configuration(); //NRF595中断脚控制
 	SYSCLKConfig_STOP(); //休眠配置
@@ -218,50 +225,53 @@ int main(void) {
 				TempDisConnectDelay[1]--;
 			if (TempDisConnectDelay[2])
 				TempDisConnectDelay[2]--;
-
-			if ((InfoDisConnectDelay[0] == 0) || (InfoDisConnectDelay[1] == 0) || (InfoDisConnectDelay[2] == 0)) {
-				if (Info[3] == 0) { //状态改变保存一次
-					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
-						FLASH_RD_Module_Status();
-					Info[3] = 0x01;
-					RefreshInfoCRC();
-					info_wr_flash_flag = 1;
-					EnableExtINT();
+      for (temp1=0;temp1<3;temp1++)
+			{
+				if (InfoDisConnectDelay[temp1] == 0) {
+					if (Info[temp1+4] == 0) { //状态改变保存一次
+						DisableExtINT();
+						if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
+							FLASH_RD_Module_Status();
+						Info[temp1+4] = 0x01;
+						RefreshInfoCRC();
+						info_wr_flash_flag = 1;
+						EnableExtINT();
+					}
 				}
+				else if (Info[temp1+4] == 1) { //状态改变保存一次
+						DisableExtINT();
+						if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
+							FLASH_RD_Module_Status();
+						Info[temp1+4] = 0x00;
+						RefreshInfoCRC();
+						info_wr_flash_flag = 1;
+						EnableExtINT();
+					}
 			}
-			else if (Info[3] == 1) { //状态改变保存一次
-					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
-						FLASH_RD_Module_Status();
-					Info[3] = 0x00;
-					RefreshInfoCRC();
-					info_wr_flash_flag = 1;
-					EnableExtINT();
-				}
 			//温度不在线测试
-			if ((TempDisConnectDelay[0] == 0) || (TempDisConnectDelay[1] == 0) || (TempDisConnectDelay[2] == 0)) {
-				if (Info[4] == 0) { //状态改变保存一次
-					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
-						FLASH_RD_Module_Status();
-					Info[4] = 0x01;
-					RefreshInfoCRC();
-					info_wr_flash_flag = 1;
-					EnableExtINT();
+			for (temp1=0;temp1<3;temp1++){
+				if (TempDisConnectDelay[temp1] == 0) {
+					if (Info[temp1+7] == 0) { //状态改变保存一次
+						DisableExtINT();
+						if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
+							FLASH_RD_Module_Status();
+						Info[temp1+7] = 0x01;
+						RefreshInfoCRC();
+						info_wr_flash_flag = 1;
+						EnableExtINT();
+					}
 				}
+				else
+					if (Info[temp1+7] == 1) { //状态改变保存一次
+						DisableExtINT();
+						if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
+							FLASH_RD_Module_Status();
+						Info[temp1+7] = 0x00;
+						RefreshInfoCRC();
+						info_wr_flash_flag = 1;
+						EnableExtINT();
+					}
 			}
-			else
-				if (Info[4] == 1) { //状态改变保存一次
-					DisableExtINT();
-					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
-						FLASH_RD_Module_Status();
-					Info[4] = 0x00;
-					RefreshInfoCRC();
-					info_wr_flash_flag = 1;
-					EnableExtINT();
-				}
-
 			if (GPIO_ReadInputDataBit(NRF905_DR, NRF905_DR_PIN)) { //中断中未捕获数据上升沿时 初始化中断服务程序并初始化NRF905
 				Delay(10);
 				if (GPIO_ReadInputDataBit(NRF905_DR, NRF905_DR_PIN)) {
@@ -303,10 +313,12 @@ int main(void) {
 			ReceiveDataFromGPRSflg = SuperviseTCP(DataFromGPRSBuffer);
 			if (ReceiveDataFromGPRSflg)
 			{
-				DataProcess();
+				/*DataProcess();*/
+				CSD_485_UARTIsp();
 				USART1_SendData((char*)"DATA OK",strlen((char*)"DATA OK"));
 			  USART1_SendData(DataFromGPRSBuffer,17);
 			}
+			Supervise_CSD_485_COM();//modbus常时间没有通信时初妈化modbus串口
 			//配置串口处理程序
 			rs232_set_process();
 			USART1_supervise(); //长时间没有接收到数据时清一次数据
@@ -317,7 +329,7 @@ int main(void) {
 				if (CheckInfoCRCIsOK() == 0)
 					FLASH_RD_Module_Status();
 
-				if (Info[5] == 0) //当前状态为高电压状态
+				if (Info[3] == 0) //当前状态为高电压状态
 				{
 					if (PowerLowDly < 50 * 60 * 10) //延时10分钟报电压低
 						PowerLowDly++;
@@ -325,10 +337,10 @@ int main(void) {
 						GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET);
 						//read time
 						ReadDATATime();
-						ChangeUpdate(0x06, 0x01, &Tx_Time);
+						//ChangeUpdate(0x06, 0x01, &Tx_Time);
 						if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
 							FLASH_RD_Module_Status();
-						Info[5] = 0x01;
+						Info[3] = 0x01;
 						RefreshInfoCRC();
 						info_wr_flash_flag = 1;
 						//USART1_SendDataToRS232("Module Power is Low\r\n",21);
@@ -341,17 +353,17 @@ int main(void) {
 				PowerLowDly = 0;
 				if (CheckInfoCRCIsOK() == 0)
 					FLASH_RD_Module_Status();
-				if (Info[5] != 0) {
+				if (Info[3] != 0) {
 					if (PowerOKDly < 50 * 60 * 30) //30分钟报正常
 						PowerOKDly++;
 					else {
 						GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET);
 						//read time
 						ReadDATATime();
-						ChangeUpdate(0x06, 0x00, &Tx_Time);
+						//ChangeUpdate(0x06, 0x00, &Tx_Time);
 						if (CheckInfoCRCIsOK() == 0)
 							FLASH_RD_Module_Status();
-						Info[5] = 0x00;
+						Info[3] = 0x00;
 						RefreshInfoCRC();
 						info_wr_flash_flag = 1;
 						//USART1_SendDataToRS232("Module Power is OK\r\n",20);
