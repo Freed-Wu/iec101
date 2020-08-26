@@ -1,10 +1,10 @@
 //#include "101_Protocol.h"
-#include "modbus.h"
 #include "SIM7600.h"
 #include "conf_USART.h"
 #include "ds3231.h"
 #include "flash.h"
 #include "main.h"
+#include "modbus.h"
 #include "stm32f10x.h"
 
 uint16_t LINK_ADDRESS = 0x0021; //定义链路地址
@@ -118,11 +118,11 @@ uint8_t CheckError(uint8_t* pBuffer) {
 		else
 			//校验和相等且最后一个字节为0x16
 			if ((GetCheckSum(pBuffer) == pBuffer[4 + Length1]) && (pBuffer[5 + Length1] == 0x16)) {
-				RxControlField = pBuffer[4]; //帧校验成功后取得控制域数据
-				return SUCCESS;
-			}
-			else
-				return ERROR;
+			RxControlField = pBuffer[4]; //帧校验成功后取得控制域数据
+			return SUCCESS;
+		}
+		else
+			return ERROR;
 	}
 
 	/* 固定帧长第一字节和最后字节校验 */

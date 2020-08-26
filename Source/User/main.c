@@ -15,12 +15,13 @@
 #include "mydef.h"
 //#include "101_Protocol.h"
 #include "Flash.h"
-#include "SIM7600.h"
 #include "Para_Config.h"
+#include "SIM7600.h"
 #include "bsp_bkp.h"
 #include "conf_GPIO.h"
 #include "conf_NVIC.h"
 #include "conf_RCC.h"
+#include "conf_USART.H"
 #include "conf_USART.h"
 #include "conf_USART_RS485.h"
 #include "conf_sys.h"
@@ -30,16 +31,15 @@
 #include "fun.h"
 #include "gprs.h"
 #include "i2c_ee.h"
+#include "modbus.h"
 #include "nrf905.h"
 #include "stm32f10x.h"
 #include "string.h"
 #include "user_Configuration.h"
-#include "conf_USART.H"
-#include "modbus.h"
 
 #define BVL GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) //电池电压检测脚
 
-extern uint8_t  CSD_485_COM_RxBuf[CSD_485_RX_BUF];
+extern uint8_t CSD_485_COM_RxBuf[CSD_485_RX_BUF];
 /*静态变量声明*/
 //static uint16_t PowerOK_flag;
 uint16_t ReceiveDataFromGPRSflg;
@@ -129,7 +129,7 @@ int main(void) {
 	NVIC_Configuration();
 	GPIO_Configuration();
 	USART1_Configuration(); //RS232配置通道
-	USART2_Configuration();			//Modbus通道
+	USART2_Configuration(); //Modbus通道
 	USART3_Configuration(); //GPRS通道
 	EXTI_Configuration(); //NRF595中断脚控制
 	SYSCLKConfig_STOP(); //休眠配置
@@ -225,52 +225,50 @@ int main(void) {
 				TempDisConnectDelay[1]--;
 			if (TempDisConnectDelay[2])
 				TempDisConnectDelay[2]--;
-      for (temp1=0;temp1<3;temp1++)
-			{
+			for (temp1 = 0; temp1 < 3; temp1++) {
 				if (InfoDisConnectDelay[temp1] == 0) {
-					if (Info[temp1+4] == 0) { //状态改变保存一次
+					if (Info[temp1 + 4] == 0) { //状态改变保存一次
 						DisableExtINT();
 						if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
 							FLASH_RD_Module_Status();
-						Info[temp1+4] = 0x01;
+						Info[temp1 + 4] = 0x01;
 						RefreshInfoCRC();
 						info_wr_flash_flag = 1;
 						EnableExtINT();
 					}
 				}
-				else if (Info[temp1+4] == 1) { //状态改变保存一次
-						DisableExtINT();
-						if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
-							FLASH_RD_Module_Status();
-						Info[temp1+4] = 0x00;
-						RefreshInfoCRC();
-						info_wr_flash_flag = 1;
-						EnableExtINT();
-					}
+				else if (Info[temp1 + 4] == 1) { //状态改变保存一次
+					DisableExtINT();
+					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
+						FLASH_RD_Module_Status();
+					Info[temp1 + 4] = 0x00;
+					RefreshInfoCRC();
+					info_wr_flash_flag = 1;
+					EnableExtINT();
+				}
 			}
 			//温度不在线测试
-			for (temp1=0;temp1<3;temp1++){
+			for (temp1 = 0; temp1 < 3; temp1++) {
 				if (TempDisConnectDelay[temp1] == 0) {
-					if (Info[temp1+7] == 0) { //状态改变保存一次
+					if (Info[temp1 + 7] == 0) { //状态改变保存一次
 						DisableExtINT();
 						if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
 							FLASH_RD_Module_Status();
-						Info[temp1+7] = 0x01;
+						Info[temp1 + 7] = 0x01;
 						RefreshInfoCRC();
 						info_wr_flash_flag = 1;
 						EnableExtINT();
 					}
 				}
-				else
-					if (Info[temp1+7] == 1) { //状态改变保存一次
-						DisableExtINT();
-						if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
-							FLASH_RD_Module_Status();
-						Info[temp1+7] = 0x00;
-						RefreshInfoCRC();
-						info_wr_flash_flag = 1;
-						EnableExtINT();
-					}
+				else if (Info[temp1 + 7] == 1) { //状态改变保存一次
+					DisableExtINT();
+					if (CheckInfoCRCIsOK() == 0) //每次改变Info数据之前都要重新
+						FLASH_RD_Module_Status();
+					Info[temp1 + 7] = 0x00;
+					RefreshInfoCRC();
+					info_wr_flash_flag = 1;
+					EnableExtINT();
+				}
 			}
 			if (GPIO_ReadInputDataBit(NRF905_DR, NRF905_DR_PIN)) { //中断中未捕获数据上升沿时 初始化中断服务程序并初始化NRF905
 				Delay(10);
@@ -303,22 +301,20 @@ int main(void) {
 				EnableExtINT();
 			}
 			//LED_Toggle();
-			if (IWDG_Delay5s == 0)
-			{
-			   IWDG_Feed(); //clr WDG
-				 IWDG_Delay5s = 250;
+			if (IWDG_Delay5s == 0) {
+				IWDG_Feed(); //clr WDG
+				IWDG_Delay5s = 250;
 			}
-			
+
 			//一旦检测到TCP通道断开，立即启动连接
 			ReceiveDataFromGPRSflg = SuperviseTCP(DataFromGPRSBuffer);
-			if (ReceiveDataFromGPRSflg)
-			{
+			if (ReceiveDataFromGPRSflg) {
 				/*DataProcess();*/
 				CSD_485_UARTIsp();
-				USART1_SendData((char*)"DATA OK",strlen((char*)"DATA OK"));
-			  USART1_SendData(DataFromGPRSBuffer,17);
+				USART1_SendData((char*)"DATA OK", strlen((char*)"DATA OK"));
+				USART1_SendData(DataFromGPRSBuffer, 17);
 			}
-			Supervise_CSD_485_COM();//modbus常时间没有通信时初妈化modbus串口
+			Supervise_CSD_485_COM(); //modbus常时间没有通信时初妈化modbus串口
 			//配置串口处理程序
 			rs232_set_process();
 			USART1_supervise(); //长时间没有接收到数据时清一次数据
@@ -450,9 +446,10 @@ int main(void) {
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_RESET); //work led on
 				else if (run_loop_cnt == 28)
 					GPIO_WriteBit(ARM_RUN, ARM_RUN_PIN, Bit_SET);
-				else if (run_loop_cnt == 0){
+				else if (run_loop_cnt == 0) {
 					GPRSLEDStat = GPRSGetStatBuf();
-				run_loop_cnt = 50;}
+					run_loop_cnt = 50;
+				}
 				break;
 			case GPRS_LED_CMD_ERROR: //一长两短
 			case GPRS_LED_DATA_ERROR:
