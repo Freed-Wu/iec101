@@ -1,7 +1,7 @@
 #include "nrf905.h"
 //#include "101_Protocol.h"
-#include "modbus.h"
 #include "conf_NVIC.h"
+#include "conf_USART.H" //原无
 #include "conf_USART.h"
 #include "conf_sys.h"
 #include "conf_usart.h"
@@ -10,9 +10,9 @@
 #include "fun.h"
 #include "i2c_ee.h"
 #include "main.h"
+#include "modbus.h"
 #include "mydef.h"
 #include "stm32f10x.h"
-#include "conf_USART.H"  //原无
 
 /*
 温度模块地址 01 02 03
@@ -187,7 +187,7 @@ void Wait_Rec_Packet(void) {
 
 	DisableExtINT();
 	//每次数据处理完退出 进入时重新放入新数据，一次最多放入64字节
-  
+
 	Wireless_WrPtr = 0; //每次产生中断都清缓冲区，进中断后处理完数据退出中断
 	Wireless_CNT = 0;
 	Wireless_RdPtr = 0;
@@ -279,8 +279,8 @@ void Wait_Rec_Packet(void) {
 				if (pData == 0x01) {
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
 						//ChangeUpdate(pAddr, 0x01, &Tx_Time);
-					if (CheckInfoCRCIsOK() == 0)
-						FLASH_RD_Module_Status();
+						if (CheckInfoCRCIsOK() == 0)
+							FLASH_RD_Module_Status();
 					Info[pAddr - 1] = 0x01;
 					InfoDisConnectDelay[pAddr - 1] = 50 * 60 * 60 * 12;
 					RefreshInfoCRC();
@@ -289,8 +289,8 @@ void Wait_Rec_Packet(void) {
 				else if (pData == 0x02) {
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
 						//ChangeUpdate(pAddr, 0x00, &Tx_Time);
-					if (CheckInfoCRCIsOK() == 0)
-						FLASH_RD_Module_Status();
+						if (CheckInfoCRCIsOK() == 0)
+							FLASH_RD_Module_Status();
 					Info[pAddr - 1] = 0x00;
 					InfoDisConnectDelay[pAddr - 1] = 50 * 60 * 60 * 12;
 					RefreshInfoCRC();
@@ -304,8 +304,8 @@ void Wait_Rec_Packet(void) {
 				if (pData == 0x01) {
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
 						//ChangeUpdate(pAddr + 3, 0x01, &Tx_Time);
-					if (CheckInfoCRCIsOK() == 0)
-						FLASH_RD_Module_Status();
+						if (CheckInfoCRCIsOK() == 0)
+							FLASH_RD_Module_Status();
 					Info[pAddr + 6] = 0x01; //漏保存储在Info中的6 7 8 9
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
@@ -313,8 +313,8 @@ void Wait_Rec_Packet(void) {
 				else if (pData == 0x02) {
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
 						//ChangeUpdate(pAddr + 3, 0x00, &Tx_Time);
-					if (CheckInfoCRCIsOK() == 0)
-						FLASH_RD_Module_Status();
+						if (CheckInfoCRCIsOK() == 0)
+							FLASH_RD_Module_Status();
 					Info[pAddr + 6] = 0x00;
 					RefreshInfoCRC();
 					info_wr_flash_flag = 1;
@@ -330,7 +330,7 @@ void Wait_Rec_Packet(void) {
 					TempDisConnectDelay[pAddr - 0x61] = 50 * 60 * 60 * 12;
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
 						//TempChangeUpdate(pAddr - 0x60, InfoTemp[pAddr - 0x61], &Tx_Time); //温度值突发上传
-					temp_wr_flash_flag = 1;
+						temp_wr_flash_flag = 1;
 				}
 
 				break;
@@ -348,8 +348,7 @@ void Wait_Rec_Packet(void) {
 				 && (WIRELESS_Rxd[Wireless_RdPtr + 7] == 0XFF) && (WIRELESS_Rxd[Wireless_RdPtr + 11] == 0x16) //数据尾
 				 && ((uint8_t)(WIRELESS_Rxd[Wireless_RdPtr + 4] + WIRELESS_Rxd[Wireless_RdPtr + 5] + WIRELESS_Rxd[Wireless_RdPtr + 6] + WIRELESS_Rxd[Wireless_RdPtr + 7]
 							   + WIRELESS_Rxd[Wireless_RdPtr + 8] + WIRELESS_Rxd[Wireless_RdPtr + 9])
-					 == WIRELESS_Rxd[Wireless_RdPtr + 10])
-		) { //校验通过
+					 == WIRELESS_Rxd[Wireless_RdPtr + 10])) { //校验通过
 			/*
 						返回应答帧
 			*/

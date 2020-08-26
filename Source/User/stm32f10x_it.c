@@ -23,8 +23,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
-#include "SIM7600.h"
 #include "Para_Config.h"
+#include "SIM7600.h"
 #include "conf_USART.h"
 #include "main.h"
 #include "string.h"
