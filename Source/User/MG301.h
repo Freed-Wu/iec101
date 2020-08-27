@@ -1,5 +1,5 @@
-#ifndef __SIM7600_H__
-#define __SIM7600_H__
+#ifndef __MG301_H__
+#define __MG301_H__
 #include "stm32f10x.h"
 
 //#define GPRS_IDLE 			(uint16_t)0x0000		//´ý»ú×´Ì¬
@@ -16,8 +16,8 @@
 #define GPRS_POWER_WAIT_START (uint16_t)0X0106
 #define GPRS_POWER_RST (uint16_t)0X0107
 #define GPRS_POWER_RST_ACK (uint16_t)0X0108
-#define GPRS_APN_CMD_SEND (uint16_t)0X0201
-#define GPRS_APN_CMD_ACK (uint16_t)0X0202
+#define GPRS_ECHO_CMD_SEND (uint16_t)0X0201
+#define GPRS_ECHO_CMD_ACK (uint16_t)0X0202
 
 #define GPRS_CHECK_CSQ_A (uint16_t)0x0301 //GPRSÁ¬½Ó¼ì²â
 #define GPRS_CHECK_CSQ_ACK_A (uint16_t)0x0302
@@ -25,10 +25,6 @@
 #define GPRS_CHECK_CMD_ACK (uint16_t)0x0304
 #define GPRS_CHECK_CSQ_B (uint16_t)0x0305 //GPRSÁ¬½Ó¼ì²â
 #define GPRS_CHECK_CSQ_ACK_B (uint16_t)0x0306
-#define GPRS_CHECK_CREG_SEND (uint16_t)0x0307 //²éÑ¯×¢²áÍøÂç×´Ì¬
-#define GPRS_CHECK_CREG_ACK (uint16_t)0x0308
-#define GPRS_CHECK_CPSI_SEND (uint16_t)0x0309 //×¢²áÐÅÏ¢
-#define GPRS_CHECK_CPSI_ACK (uint16_t)0x030A
 
 #define GPRS_TCP_conType_SEND (uint16_t)0x0403 //conType
 #define GPRS_TCP_conType_ACK (uint16_t)0x0404
@@ -38,10 +34,6 @@
 #define GPRS_TCP_User_ACK (uint16_t)0x0408
 #define GPRS_TCP_Password_SEND (uint16_t)0x0409 //Password
 #define GPRS_TCP_Password_ACK (uint16_t)0x040A
-#define GPRS_TCP_NETOPEN_SEND (uint16_t)0x040B //NETOPEN
-#define GPRS_TCP_NETOPEN_ACK (uint16_t)0x040C
-#define GPRS_TCP_BUFFERMODE_SEND (uint16_t)0x040D //BUFFERMODE
-#define GPRS_TCP_BUFFERMODE_ACK (uint16_t)0x040E
 
 #define GPRS_TCP_srvType_SEND (uint16_t)0x0501 //srvType
 #define GPRS_TCP_srvType_ACK (uint16_t)0x0502
@@ -58,11 +50,9 @@
 #define GPRS_RUN_Rxdata_CMD (uint16_t)0x0702
 #define GPRS_RUN_Rxdata (uint16_t)0x0703
 #define GPRS_RUN_Txdata_CMD (uint16_t)0x0704
-#define GPRS_RUN_Txdata_CMD_ACK (uint16_t)0x0707
 #define GPRS_RUN_Txdata (uint16_t)0x0705
 #define GPRS_RUN_Txdata_ACK (uint16_t)0x0706
-#define GPRS_RUN_Txheart_ACK (uint16_t)0x0708
-#define WAIT_ACK (uint16_t)150 //6S
+#define WAIT_ACK (uint16_t)150 //3S
 #define NEXT_CMD_DLY (uint16_t)20 //100ms
 #define WAIT_START (uint16_t)150
 
@@ -122,16 +112,16 @@ typedef struct {
 
 //extern int my_memcpy(char *address1,char *address2,uint16_t num);
 
-void SIM7600_SW_Init(void);
+void MG301_SW_Init(void);
 
-void SIM7600_Reset(void);
+void MG301_Reset(void);
 
 void LED_Toggle(void);
 
-void SIM7600_Delay(uint16_t DelayMs);
+void MG301_Delay(uint16_t DelayMs);
 
 uint8_t AT_Cmd_Test(void);
-uint8_t SIM7600_Echo_Close(void);
+uint8_t MG301_Echo_Close(void);
 
 uint8_t ConnectToGPRS(void);
 
@@ -151,4 +141,4 @@ void GPRS_init(void);
 
 uint16_t GPRSGetStatBuf(void);
 void GPRSLoadStatBuf(uint16_t pDataBuf);
-#endif //__SIM7600_H__
+#endif //__MG301_H__

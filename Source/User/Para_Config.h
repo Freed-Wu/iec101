@@ -17,7 +17,7 @@ typedef struct {
 	uint8_t Res;
 } ConfigParaObj;
 
-extern ConfigParaObj SIM7600_ConfigParaObj;
+extern ConfigParaObj MG301_ConfigParaObj;
 
 extern uint8_t ConfigFlag;
 
