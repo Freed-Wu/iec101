@@ -60,9 +60,9 @@ void SpiWrite(unsigned char b) {
 		Delay(10);
 		GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET); //CLK = 0
 		if (b & 0x80)
-			GPIO_WriteBit(GPIOA, GPIO_Pin_6, Bit_SET); //SMDI
+			GPIO_WriteBit(GPIOA, GPIO_Pin_7, Bit_SET); //SMDI
 		else
-			GPIO_WriteBit(GPIOA, GPIO_Pin_6, Bit_RESET); //SMDI
+			GPIO_WriteBit(GPIOA, GPIO_Pin_7, Bit_RESET); //SMDI
 		b <<= 1;
 		Delay(10);
 		GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET); //CLK = 1
@@ -78,19 +78,19 @@ void SpiWrite(unsigned char b) {
 unsigned char SpiRead(void) {
 	unsigned char i = 8;
 	unsigned char ddata = 0;
-	GPIO_WriteBit(GPIOA, GPIO_Pin_6, Bit_RESET); //SMDI
+	GPIO_WriteBit(GPIOA, GPIO_Pin_7, Bit_RESET); //SMDI
 	while (i--) {
 		ddata <<= 1;
 		GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET); //CLK = 0
 		Delay(10);
-		if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_7)) //SMDO
+		if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6)) //SMDO
 			ddata |= 0x01;
 		GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET); //CLK = 1
 		Delay(10);
 	}
 	GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET); //CLK = 0
 	Delay(10);
-	GPIO_WriteBit(GPIOA, GPIO_Pin_6, Bit_SET); //SMDI
+	GPIO_WriteBit(GPIOA, GPIO_Pin_7, Bit_SET); //SMDI
 
 	if (DebugNRF905Dly)
 		USART1_SendCharToRS232(ddata);
