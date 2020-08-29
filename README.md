@@ -8,9 +8,13 @@
 
 ## 资料
 
-- MG301.c 和 MG301.h 程序源代码；
+- [SIM7500_SIM7600 Series_AT Command Manual_V2.00.pdf](https://cn.simcom.com/service-929.html)
+- [SIM7500_SIM7600_SIM7800 Series_TCPIP_Application Note_V2.00](https://cn.simcom.com/service-909.html)
+- [SIM7100_SIM7500_SIM7600 Series_UART_Application Note_V2.00](https://cn.simcom.com/service-923.html)
+- [SIM7600CE_硬件设计手册_V1.09](https://cn.simcom.com/service-669.html)
+- [SIM7600CE_产品规格书_20200427](https://cn.simcom.com/service-728.html)
+- [SIM7600 Reference Design V1.02](https://cn.simcom.com/service-697.html)
 - MG323-B 上网模块 AT 指令手册；
-- SIM7600CE 上网模块 AT 指令手册。
 
 ## 目录结构
 
