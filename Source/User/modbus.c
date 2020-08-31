@@ -2,8 +2,7 @@
 #include "conf_USART_RS485.h"
 #include "crc.h"
 #include "mydef.h"
-//#include "SIM7600.h"
-#include "MG301.h"
+#include "sim7600.h"
 #include "stm32f10x.h"
 #include "string.h"
 

@@ -1,5 +1,5 @@
 #define _main_c
-#define THIS_VERSION ("GPRS V3.0.4")
+#define THIS_VERSION ("GPRS V2.95(T) 20200701")
 #define DEBUG_MODE
 #define USER_IP "218.29.54.111"
 #define USER_PORT "20001"
@@ -15,8 +15,7 @@
 #include "101_Protocol.h"
 #include "Flash.h"
 #include "Para_Config.h"
-//#include "SIM7600.h"
-#include "MG301.h"
+#include "SIM7600.h"
 #include "bsp_bkp.h"
 #include "conf_GPIO.h"
 #include "conf_NVIC.h"

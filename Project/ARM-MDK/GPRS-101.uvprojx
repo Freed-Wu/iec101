@@ -575,6 +575,11 @@
               <FilePath>..\..\Source\User\bsp_bkp.c</FilePath>
             </File>
             <File>
+              <FileName>SIM7600.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Source\User\SIM7600.c</FilePath>
+            </File>
+            <File>
               <FileName>conf_USART_RS485.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Source\User\conf_USART_RS485.c</FilePath>
@@ -583,11 +588,6 @@
               <FileName>modbus.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Source\User\modbus.c</FilePath>
-            </File>
-            <File>
-              <FileName>MG301.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Source\User\MG301.c</FilePath>
             </File>
           </Files>
         </Group>
