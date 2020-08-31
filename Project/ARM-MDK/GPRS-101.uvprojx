@@ -48,7 +48,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\Output\</OutputDirectory>
-          <OutputName>GPRS-modbus</OutputName>
+          <OutputName>GPRS-101</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -520,6 +520,11 @@
           <GroupName>User</GroupName>
           <Files>
             <File>
+              <FileName>101_Protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Source\User\101_Protocol.c</FilePath>
+            </File>
+            <File>
               <FileName>Flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Source\User\Flash.c</FilePath>
@@ -624,7 +629,7 @@
       <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="4.3.0" condition="Cortex-M Device">
         <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="4.5.0"/>
         <targetInfos>
-          <targetInfo name="GPRS-modbus"/>
+          <targetInfo name="GPRS-101"/>
         </targetInfos>
       </component>
     </components>

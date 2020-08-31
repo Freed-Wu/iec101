@@ -569,7 +569,7 @@ void GetClockFromServer(TimeStructure* TimeStruct, uint8_t* pBuffer) {
 // InfoAdress -- 上单元编号：1~6
 // Info -- 上单元状态：0-正常；1-跌落
 //*Time -- 时间结构体
-/*
+
 void ChangeUpdate(uint16_t InfoAdress, uint8_t Info, TimeStructure* Time) {
 	uint8_t i;
 	uint8_t CheckSum = 0;
@@ -654,7 +654,7 @@ void TempChangeUpdate(uint16_t InfoAdress, uint8_t Info, TimeStructure* Time) {
 		SendDataToGPRSbuf((char*)InfoArray, 24);
 	}
 }
-*/
+
 void ResponseTimeSynchronous(void) {
 	uint8_t i = 0;
 	uint8_t CheckSum = 0;
@@ -693,7 +693,6 @@ void ResponseTimeSynchronous(void) {
 /*
    更改这个结构，以实现通过GPRS发送一个数据时
    */
-/*
 uint8_t DataProcess(void) {
 	uint8_t TempRxFunctionCode = 0;
 
@@ -755,7 +754,7 @@ uint8_t DataProcess(void) {
 
 	return ERROR;
 }
-*/
+
 //判断属于哪条命令
 /*
 uint8_t Protocol(uint8_t* pBuffer) {

@@ -278,9 +278,9 @@ void Wait_Rec_Packet(void) {
 			case 0x03: //跌落A //跌落B //跌落C
 				if (pData == 0x01) {
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
-						//ChangeUpdate(pAddr, 0x01, &Tx_Time);
-						if (CheckInfoCRCIsOK() == 0)
-							FLASH_RD_Module_Status();
+						ChangeUpdate(pAddr, 0x01, &Tx_Time);
+					if (CheckInfoCRCIsOK() == 0)
+						FLASH_RD_Module_Status();
 					Info[pAddr - 1] = 0x01;
 					InfoDisConnectDelay[pAddr - 1] = 50 * 60 * 60 * 12;
 					RefreshInfoCRC();
@@ -288,9 +288,9 @@ void Wait_Rec_Packet(void) {
 				}
 				else if (pData == 0x02) {
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
-						//ChangeUpdate(pAddr, 0x00, &Tx_Time);
-						if (CheckInfoCRCIsOK() == 0)
-							FLASH_RD_Module_Status();
+						ChangeUpdate(pAddr, 0x00, &Tx_Time);
+					if (CheckInfoCRCIsOK() == 0)
+						FLASH_RD_Module_Status();
 					Info[pAddr - 1] = 0x00;
 					InfoDisConnectDelay[pAddr - 1] = 50 * 60 * 60 * 12;
 					RefreshInfoCRC();
@@ -327,10 +327,10 @@ void Wait_Rec_Packet(void) {
 
 				if ((int8_t)pData < 125 && (int8_t)pData > (int8_t)(-85)) { //温度在有效范围内
 					InfoTemp[pAddr - 0x61] = pData;
-					TempDisConnectDelay[pAddr - 0x61] = 50 * 60 * 60 * 12;
+					TempDisConnectDelay[pAddr - 61] = 50 * 60 * 60 * 12;
 					if (moduleMaskEn == 0) //非屏蔽状态及时发送状态
-						//TempChangeUpdate(pAddr - 0x60, InfoTemp[pAddr - 0x61], &Tx_Time); //温度值突发上传
-						temp_wr_flash_flag = 1;
+						TempChangeUpdate(pAddr - 0x60, InfoTemp[pAddr - 0x61], &Tx_Time); //温度值突发上传
+					temp_wr_flash_flag = 1;
 				}
 
 				break;
